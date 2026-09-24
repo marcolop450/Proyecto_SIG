@@ -7,6 +7,7 @@
     <title>@ViewData["Title"] - VisorDatosSIG</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
@@ -15,37 +16,46 @@
     {
         <header class="app-header">
             <a class="app-brand" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-geo-alt-fill" style="color: var(--accent-gold);"></i>
                 VisorDatosSIG
             </a>
             <div class="d-flex align-items-center gap-3">
-                <span class="badge" style="background-color: #4A4D46; color: #E8E5DC; font-weight: normal; padding: 0.4rem 0.75rem;">
-                    Usuario: <strong>@(User.FindFirst("NombreCompleto")?.Value ?? User.Identity.Name)</strong>
-                    <small class="ms-1" style="color: #C89D3C;">(@string.Join(", ", User.FindAll(ClaimTypes.Role).Select(c => c.Value)))</small>
-                </span>
+                <div class="d-flex align-items-center gap-2 px-3 py-1 rounded" style="background-color: #383B35; border: 1px solid #484B44;">
+                    <i class="bi bi-person-circle" style="color: var(--accent-gold); font-size: 1.1rem;"></i>
+                    <span style="color: #E8E5DC; font-size: 0.88rem;">
+                        <strong>@(User.FindFirst("NombreCompleto")?.Value ?? User.Identity.Name)</strong>
+                        <span class="ms-1 px-2 py-0 rounded text-uppercase" style="background-color: #242622; color: var(--accent-gold); font-size: 0.72rem; letter-spacing: 0.5px;">
+                            @string.Join(", ", User.FindAll(ClaimTypes.Role).Select(c => c.Value))
+                        </span>
+                    </span>
+                </div>
                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline m-0">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-sm btn-sand py-1 px-3">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-sm btn-sand py-1 px-3 d-flex align-items-center gap-1">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Cerrar Sesión
+                    </button>
                 </form>
             </div>
         </header>
 
         <div class="app-layout">
             <aside class="app-sidebar">
-                <div class="sidebar-heading">Navegación</div>
+                <div class="sidebar-heading">Módulos del Sistema</div>
                 <ul class="sidebar-menu">
                     <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
                         <a asp-controller="Home" asp-action="Index">
-                            <span>▦</span> Panel Principal
+                            <i class="bi bi-speedometer2"></i> Panel Principal
                         </a>
                     </li>
                     <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Mapa" ? "active" : "")">
                         <a asp-controller="Mapa" asp-action="Index">
-                            <span>🗺</span> Visor Cartográfico
+                            <i class="bi bi-map"></i> Visor Cartográfico
                         </a>
                     </li>
                     <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Consultas" ? "active" : "")">
                         <a asp-controller="Consultas" asp-action="Index">
-                            <span>🔍</span> Consulta Temática
+                            <i class="bi bi-search"></i> Consulta Temática
                         </a>
                     </li>
                 </ul>
@@ -56,25 +66,28 @@
                     <ul class="sidebar-menu">
                         <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Usuarios" ? "active" : "")">
                             <a asp-controller="Admin" asp-action="Usuarios">
-                                <span>👥</span> Usuarios y Roles
+                                <i class="bi bi-people"></i> Usuarios y Roles
                             </a>
                         </li>
                         <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Configuracion" ? "active" : "")">
                             <a asp-controller="Admin" asp-action="Configuracion">
-                                <span>⚙</span> Configuración
+                                <i class="bi bi-gear"></i> Configuración
                             </a>
                         </li>
                         <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Bitacora" ? "active" : "")">
                             <a asp-controller="Admin" asp-action="Bitacora">
-                                <span>📋</span> Bitácora
+                                <i class="bi bi-journal-text"></i> Bitácora
                             </a>
                         </li>
                     </ul>
                 }
 
                 <div class="mt-auto p-3 text-muted" style="font-size: 0.75rem; border-top: 1px solid #383B35;">
-                    <div>VisorDatosSIG v1.0</div>
-                    <div>Sistema Geográfico</div>
+                    <div class="d-flex align-items-center gap-1">
+                        <i class="bi bi-shield-lock-fill text-success"></i>
+                        <span>Entorno Seguro · SRID 4326</span>
+                    </div>
+                    <div class="mt-1">VisorDatosSIG v1.0 Enterprise</div>
                 </div>
             </aside>
 

@@ -6,6 +6,14 @@ using VisorDatosSIG.Application.Interfaces;
 
 namespace VisorDatosSIG.Web.Controllers;
 
+public class LogEntryDto
+{
+    public string Timestamp { get; set; } = string.Empty;
+    public string Tipo { get; set; } = "INFO";
+    public string Modulo { get; set; } = "General";
+    public string Mensaje { get; set; } = string.Empty;
+}
+
 [Authorize(Roles = "Administrador")]
 public class AdminController : Controller
 {
@@ -40,12 +48,52 @@ public class AdminController : Controller
             logPath = Path.GetFullPath(logPath);
         }
 
-        string logContent = System.IO.File.Exists(logPath) 
-            ? System.IO.File.ReadAllText(logPath) 
-            : "No se encontró el archivo de bitácora local.";
+        string rawLog = System.IO.File.Exists(logPath) ? System.IO.File.ReadAllText(logPath) : string.Empty;
+        var entries = new List<LogEntryDto>();
+
+        if (!string.IsNullOrEmpty(rawLog))
+        {
+            var lines = rawLog.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var line in lines)
+            {
+                if (line.StartsWith("[") && line.Length > 10 && line[9] == ']')
+                {
+                    string time = line.Substring(1, 8);
+                    string msg = line.Substring(11).Trim();
+                    string tipo = "INFO";
+                    string mod = "Sistema";
+
+                    if (msg.Contains("Advertencia", StringComparison.OrdinalIgnoreCase) || msg.Contains("omitidos", StringComparison.OrdinalIgnoreCase))
+                    {
+                        tipo = "ADVERTENCIA";
+                    }
+                    else if (msg.Contains("insertadas", StringComparison.OrdinalIgnoreCase) || 
+                             msg.Contains("insertados", StringComparison.OrdinalIgnoreCase) ||
+                             msg.Contains("concluida", StringComparison.OrdinalIgnoreCase) ||
+                             msg.Contains("asociados", StringComparison.OrdinalIgnoreCase))
+                    {
+                        tipo = "EXITO";
+                    }
+
+                    if (msg.StartsWith("Manzanas", StringComparison.OrdinalIgnoreCase)) mod = "Manzanas";
+                    else if (msg.StartsWith("Lotes", StringComparison.OrdinalIgnoreCase)) mod = "Lotes";
+                    else if (msg.StartsWith("CodigosFijos", StringComparison.OrdinalIgnoreCase)) mod = "Códigos Fijos";
+                    else if (msg.StartsWith("Vias", StringComparison.OrdinalIgnoreCase)) mod = "Vías";
+                    else if (msg.Contains("Relación", StringComparison.OrdinalIgnoreCase)) mod = "Relaciones Espaciales";
+                    else if (msg.Contains("Validación", StringComparison.OrdinalIgnoreCase)) mod = "Validación OGC";
+
+                    entries.Add(new LogEntryDto { Timestamp = time, Tipo = tipo, Modulo = mod, Mensaje = msg });
+                }
+            }
+        }
 
         ViewBag.LogPath = logPath;
-        return View(model: logContent);
+        ViewBag.RawLog = rawLog;
+        ViewBag.TotalEventos = entries.Count;
+        ViewBag.TotalExitos = entries.Count(e => e.Tipo == "EXITO");
+        ViewBag.TotalAdvertencias = entries.Count(e => e.Tipo == "ADVERTENCIA");
+
+        return View(entries);
     }
 
     [HttpGet]

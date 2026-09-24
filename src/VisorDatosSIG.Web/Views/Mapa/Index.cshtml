@@ -4,13 +4,22 @@
 
 <div class="row g-2 mb-2 align-items-center">
     <div class="col-md-5">
-        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">Visor Cartográfico</h4>
+        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">
+            <i class="bi bi-map me-2" style="color: var(--primary);"></i>
+            Visor Cartográfico
+        </h4>
     </div>
     <div class="col-md-7">
         <div class="input-group">
-            <input type="text" id="txtBusquedaRapida" class="form-control" placeholder="Buscar por código, titular, UV, MZA o lote..." style="background: #FFFFFF; border-color: #C9C5B9;" />
-            <button id="btnBuscarRapido" class="btn btn-olive" type="button">Buscar</button>
-            <button id="btnResetZoom" class="btn btn-sand" type="button" title="Extensión General">⛶ Extensión</button>
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="txtBusquedaRapida" class="form-control border-start-0" placeholder="Buscar por código, titular, UV, MZA o lote..." style="background: #FFFFFF; border-color: #C9C5B9;" />
+            <button id="btnBuscarRapido" class="btn btn-olive d-flex align-items-center gap-1" type="button">
+                Buscar
+            </button>
+            <button id="btnResetZoom" class="btn btn-sand d-flex align-items-center gap-1" type="button" title="Extensión General">
+                <i class="bi bi-arrows-fullscreen"></i>
+                Extensión
+            </button>
         </div>
     </div>
 </div>
@@ -22,8 +31,13 @@
     <!-- Panel Flotante de Capas y Leyenda (Izquierda) -->
     <div id="panelCapas" class="position-absolute top-0 start-0 m-3 layer-panel" style="z-index: 1000; width: 250px; font-size: 0.85rem;">
         <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
-            <span class="fw-bold">Capas y Filtros</span>
-            <button type="button" id="btnTogglePanel" class="btn btn-sm btn-outline-secondary py-0 px-1" style="font-size: 0.75rem;" title="Minimizar panel">▲</button>
+            <span class="fw-bold d-flex align-items-center gap-1">
+                <i class="bi bi-layers"></i>
+                Capas y Filtros
+            </span>
+            <button type="button" id="btnTogglePanel" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" title="Minimizar panel">
+                <i class="bi bi-chevron-up"></i>
+            </button>
         </div>
         
         <div id="panelCapasBody">
@@ -46,7 +60,7 @@
             <!-- Control de Opacidad de Lotes para ver fondo -->
             <div class="mb-2 ps-4">
                 <div class="d-flex justify-content-between text-muted" style="font-size: 0.72rem;">
-                    <span>Opacidad:</span>
+                    <span>Opacidad Relleno:</span>
                     <span id="lblOpacidadLotes">25%</span>
                 </div>
                 <input type="range" class="form-range" id="rngOpacidadLotes" min="0" max="100" value="25" style="height: 4px;" />
@@ -70,7 +84,7 @@
 
             <!-- Filtros por Estado de Suministro -->
             <div class="fw-bold mt-2 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47; font-size: 0.78rem;">
-                Filtrar Estados de Código
+                Filtrar Estados
             </div>
             <div class="small ps-1 mb-2">
                 <div class="form-check mb-1">
@@ -107,7 +121,10 @@
     <!-- Panel Inspector de Entidad Seleccionada (Derecha) -->
     <div id="inspectorPanel" class="position-absolute top-0 end-0 m-3 p-3 shadow-md" style="z-index: 1000; width: 310px; background: rgba(255, 255, 255, 0.97); border: 1px solid #C9C5B9; border-radius: 4px; display: none;">
         <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
-            <strong id="inspectorTitle" style="color: #2D302B;">Ficha Técnica</strong>
+            <strong id="inspectorTitle" class="d-flex align-items-center gap-1" style="color: #2D302B;">
+                <i class="bi bi-info-circle text-primary"></i>
+                Ficha Técnica
+            </strong>
             <button type="button" class="btn-close btn-sm" onclick="cerrarInspector()"></button>
         </div>
         <div id="inspectorContent" style="font-size: 0.85rem; max-height: 380px; overflow-y: auto;">
@@ -142,11 +159,11 @@
             zoomControl: false,
             center: [-16.377, -60.963],
             zoom: 14,
-            minZoom: 5,   // Permite alejar hasta ver todo el departamento (+5 niveles)
-            maxZoom: 22   // Precisión métrica
+            minZoom: 5,
+            maxZoom: 22
         });
 
-        // Zoom en esquina superior derecha para evitar solapar con las capas
+        // Control de zoom en topright para evitar solapamiento
         L.control.zoom({ position: 'topright' }).addTo(map);
 
         map.createPane('paneManzanas');
@@ -314,7 +331,6 @@
             cb.addEventListener('change', renderizarCodigosFijos);
         });
 
-        // Opacidad de lotes interactiva
         document.getElementById('rngOpacidadLotes').addEventListener('input', function () {
             let val = parseInt(this.value) / 100;
             document.getElementById('lblOpacidadLotes').innerText = this.value + '%';
@@ -340,12 +356,13 @@
 
         document.getElementById('btnTogglePanel').addEventListener('click', function () {
             let body = document.getElementById('panelCapasBody');
+            let icon = this.querySelector('i');
             if (body.style.display === 'none') {
                 body.style.display = 'block';
-                this.innerText = '▲';
+                icon.className = 'bi bi-chevron-up';
             } else {
                 body.style.display = 'none';
-                this.innerText = '▼';
+                icon.className = 'bi bi-chevron-down';
             }
         });
     }

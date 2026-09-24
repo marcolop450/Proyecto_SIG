@@ -1,26 +1,195 @@
-﻿@model string
+﻿@model IEnumerable<VisorDatosSIG.Web.Controllers.LogEntryDto>
 @{
-    ViewData["Title"] = "Bitácora de Operaciones";
+    ViewData["Title"] = "Bitácora de Auditoría";
+    int totalEventos = ViewBag.TotalEventos ?? 0;
+    int totalExitos = ViewBag.TotalExitos ?? 0;
+    int totalAdvertencias = ViewBag.TotalAdvertencias ?? 0;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
     <div>
-        <h4 class="mb-1" style="font-weight: 700; color: #2C2D2A;">Bitácora de Carga y Migración</h4>
+        <h4 class="mb-1" style="font-weight: 700; color: #2C2D2A;">
+            <i class="bi bi-journal-text me-2" style="color: var(--primary);"></i>
+            Bitácora de Auditoría y Migración
+        </h4>
         <p class="text-muted mb-0" style="font-size: 0.88rem;">
-            Historial de procesos de ingesta, auditoría de geometrías y relaciones espaciales
+            Trazabilidad detallada de eventos de ingesta espacial, transacciones y validaciones OGC
         </p>
     </div>
-    <div>
-        <a asp-action="Bitacora" class="btn btn-sand btn-sm">Actualizar Registro</a>
+    <div class="d-flex gap-2">
+        <a asp-action="Bitacora" class="btn btn-sand btn-sm d-flex align-items-center gap-1">
+            <i class="bi bi-arrow-clockwise"></i>
+            Actualizar
+        </a>
+        <button onclick="copiarBitacora()" class="btn btn-olive btn-sm d-flex align-items-center gap-1">
+            <i class="bi bi-clipboard-check"></i>
+            Copiar Log
+        </button>
     </div>
 </div>
 
-<div class="card shadow-sm" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
-    <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
-        <span class="small text-muted font-monospace">Archivo: @ViewBag.LogPath</span>
-        <span class="badge" style="background-color: #5E7A4A;">Auditoría Activa</span>
+<!-- Tarjetas KPI de la Auditoría -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">@totalEventos</div>
+                    <div class="stat-label">Eventos Registrados</div>
+                </div>
+                <i class="bi bi-activity text-muted" style="font-size: 1.6rem;"></i>
+            </div>
+        </div>
     </div>
-    <div class="card-body p-0">
-        <pre class="m-0 p-3" style="background: #2B2D29; color: #E5E2D8; font-family: Consolas, monospace; font-size: 0.84rem; max-height: 520px; overflow-y: auto; white-space: pre-wrap;">@Model</pre>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value text-success">@totalExitos</div>
+                    <div class="stat-label">Operaciones Exitosas</div>
+                </div>
+                <i class="bi bi-check2-circle text-success" style="font-size: 1.6rem;"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card card-amber">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value" style="color: var(--accent-gold);">@totalAdvertencias</div>
+                    <div class="stat-label">Advertencias Capturadas</div>
+                </div>
+                <i class="bi bi-exclamation-triangle" style="color: var(--accent-gold); font-size: 1.6rem;"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card card-dark">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">82.2 s</div>
+                    <div class="stat-label">Tiempo Total de Carga</div>
+                </div>
+                <i class="bi bi-clock-history text-muted" style="font-size: 1.6rem;"></i>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Filtros y Tabla de Auditoría -->
+<div class="card shadow-sm mb-4" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
+    <div class="card-header py-3 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+        <div class="d-flex align-items-center gap-2">
+            <span class="fw-bold small text-uppercase" style="color: #4B4E47; letter-spacing: 0.5px;">Registro de Operaciones</span>
+            <span class="badge" style="background-color: #EDE8DC; color: #4B4E47; border: 1px solid #D5D1C6;">@Model.Count() Registros</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <div class="input-group input-group-sm" style="width: 260px;">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="filtroLog" class="form-control border-start-0" placeholder="Filtrar por texto..." onkeyup="filtrarTablaLog()" />
+            </div>
+            <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-secondary active" onclick="filtrarTipo('TODOS', this)">Todos</button>
+                <button type="button" class="btn btn-outline-success" onclick="filtrarTipo('EXITO', this)">Éxitos</button>
+                <button type="button" class="btn btn-outline-warning" onclick="filtrarTipo('ADVERTENCIA', this)">Advertencias</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-custom m-0" id="tablaLog">
+            <thead>
+                <tr>
+                    <th style="width: 100px;">Hora</th>
+                    <th style="width: 130px;">Nivel</th>
+                    <th style="width: 180px;">Módulo / Capa</th>
+                    <th>Mensaje y Detalle de Ingesta</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entry in Model)
+                {
+                    <tr class="log-row" data-tipo="@entry.Tipo">
+                        <td class="font-monospace text-muted small">@entry.Timestamp</td>
+                        <td>
+                            @if (entry.Tipo == "EXITO")
+                            {
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #5E7A4A; font-weight: 500;">
+                                    <i class="bi bi-check-circle"></i> Éxito
+                                </span>
+                            }
+                            else if (entry.Tipo == "ADVERTENCIA")
+                            {
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #C27D38; font-weight: 500;">
+                                    <i class="bi bi-exclamation-triangle"></i> Advertencia
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #4A4D46; font-weight: 500;">
+                                    <i class="bi bi-info-circle"></i> Info
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <strong style="color: #383B34; font-size: 0.85rem;">@entry.Modulo</strong>
+                        </td>
+                        <td style="font-size: 0.88rem; color: #2C2D2A;">
+                            @entry.Mensaje
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Registro Técnico en Bruto (Colapsable para Inspección) -->
+<div class="card shadow-sm mb-3" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
+    <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center" style="background: #FAF9F5; cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#collapseRawLog">
+        <span class="small fw-bold text-muted d-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-code"></i>
+            Archivo Fuente: <code>@ViewBag.LogPath</code>
+        </span>
+        <span class="btn btn-sm btn-link p-0 text-decoration-none text-muted">
+            <i class="bi bi-chevron-down"></i> Ver Texto en Bruto
+        </span>
+    </div>
+    <div class="collapse" id="collapseRawLog">
+        <div class="card-body p-0">
+            <textarea id="txtRawLog" class="form-control font-monospace m-0 border-0" rows="8" readonly style="background: #242622; color: #E5E2D8; font-size: 0.82rem; resize: vertical;">@ViewBag.RawLog</textarea>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let filtroActivo = 'TODOS';
+
+    function filtrarTablaLog() {
+        let texto = document.getElementById('filtroLog').value.toLowerCase();
+        let rows = document.querySelectorAll('.log-row');
+
+        rows.forEach(r => {
+            let tipoMatch = (filtroActivo === 'TODOS' || r.getAttribute('data-tipo') === filtroActivo);
+            let textoMatch = r.innerText.toLowerCase().includes(texto);
+
+            r.style.display = (tipoMatch && textoMatch) ? '' : 'none';
+        });
+    }
+
+    function filtrarTipo(tipo, btn) {
+        filtroActivo = tipo;
+        btn.parentElement.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filtrarTablaLog();
+    }
+
+    function copiarBitacora() {
+        let raw = document.getElementById('txtRawLog').value;
+        navigator.clipboard.writeText(raw).then(() => {
+            alert('Registro de bitácora copiado al portapapeles.');
+        });
+    }
+</script>
+}

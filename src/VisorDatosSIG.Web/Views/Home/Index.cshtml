@@ -5,14 +5,18 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 2px solid #E2DFD6;">
     <div>
-        <h4 class="mb-1" style="font-weight: 700; color: #2C2D2A;">Panel Principal</h4>
+        <h4 class="mb-1" style="font-weight: 700; color: #2C2D2A;">
+            <i class="bi bi-speedometer2 me-2" style="color: var(--primary);"></i>
+            Panel Principal
+        </h4>
         <p class="text-muted mb-0" style="font-size: 0.88rem;">
-            Resumen general de las capas del sistema
+            Métricas de las capas cartográficas consolidadas en Microsoft SQL Server 2022
         </p>
     </div>
     <div>
-        <a asp-controller="Mapa" asp-action="Index" class="btn btn-olive">
-            <span>🗺</span> Abrir Visor Cartográfico
+        <a asp-controller="Mapa" asp-action="Index" class="btn btn-olive d-flex align-items-center gap-2">
+            <i class="bi bi-map"></i>
+            Abrir Visor Cartográfico
         </a>
     </div>
 </div>
@@ -20,26 +24,50 @@
 <div class="row g-3 mb-4">
     <div class="col-md-3">
         <div class="stat-card">
-            <div class="stat-value">@Model.TotalManzanas.ToString("N0")</div>
-            <div class="stat-label">Manzanas</div>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">@Model.TotalManzanas.ToString("N0")</div>
+                    <div class="stat-label">Manzanas</div>
+                </div>
+                <i class="bi bi-grid-3x3 text-muted" style="font-size: 1.6rem;"></i>
+            </div>
+            <div class="text-muted small mt-2">Delimitaciones Urbanas</div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card card-amber">
-            <div class="stat-value">@Model.TotalLotes.ToString("N0")</div>
-            <div class="stat-label">Lotes Catastrales</div>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">@Model.TotalLotes.ToString("N0")</div>
+                    <div class="stat-label">Lotes Catastrales</div>
+                </div>
+                <i class="bi bi-bounding-box text-muted" style="font-size: 1.6rem;"></i>
+            </div>
+            <div class="text-muted small mt-2">Parcelas Urbanas</div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card card-terracota">
-            <div class="stat-value">@Model.TotalCodigosFijos.ToString("N0")</div>
-            <div class="stat-label">Códigos Fijos</div>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">@Model.TotalCodigosFijos.ToString("N0")</div>
+                    <div class="stat-label">Códigos Fijos</div>
+                </div>
+                <i class="bi bi-geo-alt text-muted" style="font-size: 1.6rem;"></i>
+            </div>
+            <div class="text-muted small mt-2">Puntos de Medición</div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card card-dark">
-            <div class="stat-value">@Model.TotalVias.ToString("N0")</div>
-            <div class="stat-label">Red Vial</div>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">@Model.TotalVias.ToString("N0")</div>
+                    <div class="stat-label">Red Vial</div>
+                </div>
+                <i class="bi bi-signpost-2 text-muted" style="font-size: 1.6rem;"></i>
+            </div>
+            <div class="text-muted small mt-2">Ejes Viales</div>
         </div>
     </div>
 </div>
@@ -48,14 +76,22 @@
     <div class="col-md-7">
         <div class="card shadow-sm" style="border: 1px solid #E2DFD6; background: #FFFFFF;">
             <div class="card-header py-3" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
-                <h6 class="card-title m-0 fw-bold" style="color: #383B34;">Accesos Directos</h6>
+                <h6 class="card-title m-0 fw-bold d-flex align-items-center gap-2" style="color: #383B34;">
+                    <i class="bi bi-lightning-charge"></i>
+                    Accesos Directos
+                </h6>
             </div>
             <div class="card-body p-4">
-                <div class="d-flex flex-wrap gap-2">
-                    <a asp-controller="Mapa" asp-action="Index" class="btn btn-olive px-4 py-2">
+                <p class="text-muted" style="font-size: 0.9rem;">
+                    Seleccione un módulo operativo para comenzar la navegación cartográfica o la consulta de predios:
+                </p>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <a asp-controller="Mapa" asp-action="Index" class="btn btn-olive px-4 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-map"></i>
                         Explorar Mapa y Capas
                     </a>
-                    <a asp-controller="Consultas" asp-action="Index" class="btn btn-sand px-4 py-2">
+                    <a asp-controller="Consultas" asp-action="Index" class="btn btn-sand px-4 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-search"></i>
                         Consulta Temática
                     </a>
                 </div>
@@ -66,25 +102,31 @@
     <div class="col-md-5">
         <div class="card shadow-sm" style="border: 1px solid #E2DFD6; background: #FFFFFF;">
             <div class="card-header py-3" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
-                <h6 class="card-title m-0 fw-bold" style="color: #383B34;">Estado del Motor</h6>
+                <h6 class="card-title m-0 fw-bold d-flex align-items-center gap-2" style="color: #383B34;">
+                    <i class="bi bi-hdd-network"></i>
+                    Infraestructura de Datos
+                </h6>
             </div>
             <div class="card-body p-3">
                 <ul class="list-unstyled mb-0" style="font-size: 0.88rem;">
                     <li class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Motor:</span>
-                        <strong>Microsoft SQL Server 2022</strong>
+                        <span class="text-muted">Motor Espacial:</span>
+                        <strong class="text-success d-flex align-items-center gap-1">
+                            <i class="bi bi-check-circle-fill"></i>
+                            SQL Server 2022
+                        </strong>
                     </li>
                     <li class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Base de Datos:</span>
-                        <strong>VisorDatosSIG</strong>
+                        <code>VisorDatosSIG</code>
                     </li>
                     <li class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Proyección:</span>
-                        <strong>WGS 84 (SRID 4326)</strong>
+                        <span class="text-muted">Sistema de Coordenadas:</span>
+                        <span class="badge" style="background-color: #5E7A4A;">WGS 84 (SRID 4326)</span>
                     </li>
                     <li class="d-flex justify-content-between py-2">
                         <span class="text-muted">Servicios GeoJSON:</span>
-                        <span class="badge" style="background-color: #5E7A4A;">Activos</span>
+                        <span class="badge" style="background-color: #5E7A4A;">Operativos</span>
                     </li>
                 </ul>
             </div>
