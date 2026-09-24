@@ -20,60 +20,63 @@
     <div id="mapContainer"></div>
 
     <!-- Panel Flotante de Capas y Leyenda (Izquierda) -->
-    <div class="position-absolute top-0 start-0 m-3 layer-panel" style="z-index: 1000; width: 235px; font-size: 0.85rem;">
-        <div class="fw-bold mb-2 pb-1 border-bottom text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
-            Capas Disponibles
+    <div id="panelCapas" class="position-absolute top-0 start-0 m-3 layer-panel" style="z-index: 1000; width: 245px; font-size: 0.85rem;">
+        <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
+            <span class="fw-bold">Capas y Leyenda</span>
+            <button type="button" id="btnTogglePanel" class="btn btn-sm btn-outline-secondary py-0 px-1" style="font-size: 0.75rem;" title="Minimizar panel">▲</button>
         </div>
         
-        <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" id="chkManzanas" checked />
-            <label class="form-check-label" for="chkManzanas">
-                <span class="legend-badge" style="border: 1.5px solid #5E7A4A; background: rgba(94, 122, 74, 0.1);"></span>
-                Manzanas (863)
-            </label>
-        </div>
-        
-        <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" id="chkLotes" checked />
-            <label class="form-check-label" for="chkLotes">
-                <span class="legend-badge" style="border: 1px solid #C89D3C; background: rgba(200, 157, 60, 0.25);"></span>
-                Lotes Catastrales
-            </label>
-        </div>
-        
-        <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" id="chkVias" checked />
-            <label class="form-check-label" for="chkVias">
-                <span class="legend-badge" style="height: 3px; background: #3B3D38; border-radius: 0;"></span>
-                Red Vial (578)
-            </label>
-        </div>
-        
-        <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" id="chkCodigosFijos" checked />
-            <label class="form-check-label" for="chkCodigosFijos">
-                <span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span>
-                Códigos Fijos
-            </label>
-        </div>
+        <div id="panelCapasBody">
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="chkManzanas" checked />
+                <label class="form-check-label" for="chkManzanas">
+                    <span class="legend-badge" style="border: 1.5px solid #5E7A4A; background: rgba(94, 122, 74, 0.1);"></span>
+                    Manzanas (863)
+                </label>
+            </div>
+            
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="chkLotes" checked />
+                <label class="form-check-label" for="chkLotes">
+                    <span class="legend-badge" style="border: 1px solid #C89D3C; background: rgba(200, 157, 60, 0.25);"></span>
+                    Lotes Catastrales
+                </label>
+            </div>
+            
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="chkVias" checked />
+                <label class="form-check-label" for="chkVias">
+                    <span class="legend-badge" style="height: 3px; background: #3B3D38; border-radius: 0;"></span>
+                    Red Vial (578)
+                </label>
+            </div>
+            
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="chkCodigosFijos" checked />
+                <label class="form-check-label" for="chkCodigosFijos">
+                    <span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span>
+                    Códigos Fijos
+                </label>
+            </div>
 
-        <div class="fw-bold mt-3 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
-            Estados de Suministro
-        </div>
-        <div class="small text-muted">
-            <div><span class="legend-badge" style="background: #5E7A4A; border-radius: 50%;"></span> Normal (1)</div>
-            <div><span class="legend-badge" style="background: #C27D38; border-radius: 50%;"></span> Para Corte (2)</div>
-            <div><span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span> Cortado (3)</div>
-        </div>
+            <div class="fw-bold mt-3 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
+                Estados de Suministro
+            </div>
+            <div class="small text-muted mb-2">
+                <div><span class="legend-badge" style="background: #5E7A4A; border-radius: 50%;"></span> Normal (1)</div>
+                <div><span class="legend-badge" style="background: #C27D38; border-radius: 50%;"></span> Para Corte (2)</div>
+                <div><span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span> Cortado (3)</div>
+            </div>
 
-        <div class="fw-bold mt-3 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
-            Mapa Base
+            <div class="fw-bold mt-2 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
+                Mapa Base
+            </div>
+            <select id="selMapaBase" class="form-select form-select-sm" style="background: #FAF9F5; border-color: #C9C5B9; font-size: 0.8rem;">
+                <option value="osm">OpenStreetMap Estándar</option>
+                <option value="topo">OpenTopoMap (Relieve)</option>
+                <option value="esri">Esri Satelital HD</option>
+            </select>
         </div>
-        <select id="selMapaBase" class="form-select form-select-sm" style="background: #FAF9F5; border-color: #C9C5B9; font-size: 0.8rem;">
-            <option value="osm">OpenStreetMap</option>
-            <option value="topo">OpenTopoMap</option>
-            <option value="esri">Esri World Imagery (Satélite)</option>
-        </select>
     </div>
 
     <!-- Panel Inspector de Entidad Seleccionada (Derecha) -->
@@ -88,7 +91,7 @@
 
     <!-- Barra inferior de Coordenadas y Escala -->
     <div class="position-absolute bottom-0 end-0 m-2 px-2 py-1 bg-white border rounded shadow-sm small text-muted" style="z-index: 1000; font-family: monospace;">
-        Coord: <span id="lblCoords">-16.377, -60.963</span> | WGS 84 (SRID 4326)
+        Coord: <span id="lblCoords">-16.377, -60.963</span> | Zoom: <span id="lblZoom">14</span> | WGS 84 (SRID 4326)
     </div>
 </div>
 
@@ -105,33 +108,39 @@
         initMap();
         cargarCapas();
         setupEvents();
+        verificarParametrosURL();
     });
 
     function initMap() {
+        // Inicializar mapa sin control de zoom en top-left para evitar solapamientos
         map = L.map('mapContainer', {
+            zoomControl: false,
             center: [-16.377, -60.963],
             zoom: 14,
-            maxZoom: 19,
-            minZoom: 11
+            minZoom: 5,   // Ampliado a escala regional / departamental (+5 niveles de alejamiento)
+            maxZoom: 22   // Ampliado a nivel de detalle submétrico
         });
 
-        // Crear paneles con z-index explícito para asegurar apilamiento profesional
+        // Ubicar control de zoom en esquina superior derecha
+        L.control.zoom({ position: 'topright' }).addTo(map);
+
+        // Crear paneles con orden de apilamiento profesional (z-index)
         map.createPane('paneManzanas');
-        map.getPane('paneManzanas').style.zIndex = 400; // fondo
+        map.getPane('paneManzanas').style.zIndex = 400; // Fondo
 
         map.createPane('paneLotes');
-        map.getPane('paneLotes').style.zIndex = 450;    // sobre manzanas
+        map.getPane('paneLotes').style.zIndex = 450;    // Sobre manzanas
 
         map.createPane('paneVias');
-        map.getPane('paneVias').style.zIndex = 500;     // sobre lotes
+        map.getPane('paneVias').style.zIndex = 500;     // Sobre lotes
 
         map.createPane('paneCodigosFijos');
-        map.getPane('paneCodigosFijos').style.zIndex = 600; // puntos arriba de todo
+        map.getPane('paneCodigosFijos').style.zIndex = 600; // Puntos en primer plano
 
-        // Mapas base 100% gratuitos y SIN API KEY
+        // Mosaicos base 100% gratuitos y sin marcas de agua
         baseLayers.osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            maxZoom: 19
+            maxZoom: 22
         });
 
         baseLayers.topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
@@ -140,8 +149,8 @@
         });
 
         baseLayers.esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-            maxZoom: 18
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP',
+            maxZoom: 20
         });
 
         currentBaseLayer = baseLayers.osm;
@@ -153,10 +162,14 @@
             document.getElementById('lblCoords').innerText = 
                 `Lat: ${e.latlng.lat.toFixed(5)}, Lon: ${e.latlng.lng.toFixed(5)}`;
         });
+
+        map.on('zoomend', function () {
+            document.getElementById('lblZoom').innerText = map.getZoom();
+        });
     }
 
     function cargarCapas() {
-        // 1. Manzanas: Delimitación limpia y sutil (outline oliva, relleno muy transparente)
+        // 1. Manzanas
         fetch('/api/capas/manzanas')
             .then(res => res.json())
             .then(data => {
@@ -175,7 +188,7 @@
                 }).addTo(map);
             });
 
-        // 2. Lotes: Parcelas catastrales nítidas y ordenadas
+        // 2. Lotes
         fetch('/api/capas/lotes?limit=5000')
             .then(res => res.json())
             .then(data => {
@@ -193,7 +206,7 @@
                 }).addTo(map);
             });
 
-        // 3. Vías: Ejes de calles visibles y con contraste
+        // 3. Vías
         fetch('/api/capas/vias')
             .then(res => res.json())
             .then(data => {
@@ -210,7 +223,7 @@
                 }).addTo(map);
             });
 
-        // 4. Códigos Fijos: Puntos coloreados por estado
+        // 4. Códigos Fijos
         fetch('/api/capas/codigosfijos?limit=6500')
             .then(res => res.json())
             .then(data => {
@@ -268,6 +281,43 @@
         document.getElementById('txtBusquedaRapida').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') ejecutarBusquedaRapida();
         });
+
+        // Minimizar / Restaurar panel de capas
+        document.getElementById('btnTogglePanel').addEventListener('click', function () {
+            let body = document.getElementById('panelCapasBody');
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                this.innerText = '▲';
+            } else {
+                body.style.display = 'none';
+                this.innerText = '▼';
+            }
+        });
+    }
+
+    function verificarParametrosURL() {
+        let params = new URLSearchParams(window.location.search);
+        let lat = parseFloat(params.get('lat'));
+        let lng = parseFloat(params.get('lng'));
+        let cod = params.get('cod');
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+            setTimeout(() => {
+                map.setView([lat, lng], 18);
+                if (highlightLayer) map.removeLayer(highlightLayer);
+                highlightLayer = L.circleMarker([lat, lng], {
+                    radius: 12,
+                    fillColor: "#C89D3C",
+                    color: "#FFFFFF",
+                    weight: 3,
+                    fillOpacity: 0.8
+                }).addTo(map);
+
+                if (cod) {
+                    mostrarInspector("Inmueble Seleccionado", { "CodFijo": cod, "Latitud": lat, "Longitud": lng });
+                }
+            }, 600);
+        }
     }
 
     function ejecutarBusquedaRapida() {
