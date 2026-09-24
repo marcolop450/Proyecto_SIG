@@ -1,0 +1,107 @@
+﻿@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Gestión de Usuarios y Roles";
+    var roles = ViewBag.Roles as IEnumerable<dynamic>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+        <h4 class="mb-1" style="font-weight: 700; color: #2C2D2A;">Control de Acceso y Perfiles</h4>
+        <p class="text-muted mb-0" style="font-size: 0.88rem;">
+            Matriz de usuarios registrados y catálogo oficial de roles de seguridad
+        </p>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Tabla de Usuarios Registrados -->
+    <div class="col-md-7">
+        <div class="card shadow-sm" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <h6 class="m-0 fw-bold" style="color: #383B34;">Cuentas de Usuario Activas</h6>
+                <span class="badge" style="background-color: #5E7A4A;">PBKDF2 SHA-256</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-custom m-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cuenta (Login)</th>
+                            <th>Nombre</th>
+                            <th>Rol(es) Asignado(s)</th>
+                            <th class="text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model)
+                        {
+                            <tr>
+                                <td>@u.IdUsuario</td>
+                                <td><code>@u.Login</code></td>
+                                <td><strong>@u.Nombre</strong></td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(u.RolesAsignados))
+                                    {
+                                        foreach (var rol in ((string)u.RolesAsignados).Split(','))
+                                        {
+                                            var rolTrim = rol.Trim();
+                                            var badgeColor = rolTrim switch {
+                                                "Administrador" => "#2B2D29",
+                                                "Lecturador" => "#5E7A4A",
+                                                "Cortador" => "#B84A39",
+                                                "Catastro" => "#C89D3C",
+                                                "Reconexion" => "#5F7482",
+                                                _ => "#6B6D66"
+                                            };
+                                            <span class="badge me-1" style="background-color: @badgeColor;">@rolTrim</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Sin rol</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (u.Activo == true)
+                                    {
+                                        <span class="badge bg-success">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactivo</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Catálogo de Roles Oficiales -->
+    <div class="col-md-5">
+        <div class="card shadow-sm" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
+            <div class="card-header py-3" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <h6 class="m-0 fw-bold" style="color: #383B34;">Catálogo de Roles del Sistema (5 Roles)</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush" style="font-size: 0.88rem;">
+                    @if (roles != null)
+                    {
+                        foreach (var r in roles)
+                        {
+                            <div class="list-group-item p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong style="color: #2D302B;">@r.NombreRol</strong>
+                                    <span class="badge" style="background-color: #EDE8DC; color: #4B4E47; border: 1px solid #D5D1C6;">ID: @r.IdRol</span>
+                                </div>
+                                <div class="text-muted small">@(r.Descripcion ?? "Sin descripción")</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

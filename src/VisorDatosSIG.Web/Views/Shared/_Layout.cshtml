@@ -54,6 +54,11 @@
                 {
                     <div class="sidebar-heading mt-3">Administración</div>
                     <ul class="sidebar-menu">
+                        <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Usuarios" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="Usuarios">
+                                <span>👥</span> Usuarios y Roles
+                            </a>
+                        </li>
                         <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Configuracion" ? "active" : "")">
                             <a asp-controller="Admin" asp-action="Configuracion">
                                 <span>⚙</span> Configuración

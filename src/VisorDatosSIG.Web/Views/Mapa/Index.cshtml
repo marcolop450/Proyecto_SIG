@@ -8,9 +8,9 @@
     </div>
     <div class="col-md-7">
         <div class="input-group">
-            <input type="text" id="txtBusquedaRapida" class="form-control" placeholder="Buscar por código, nombre, UV, MZA o lote..." style="background: #FFFFFF; border-color: #C9C5B9;" />
+            <input type="text" id="txtBusquedaRapida" class="form-control" placeholder="Buscar por código, titular, UV, MZA o lote..." style="background: #FFFFFF; border-color: #C9C5B9;" />
             <button id="btnBuscarRapido" class="btn btn-olive" type="button">Buscar</button>
-            <button id="btnResetZoom" class="btn btn-sand" type="button" title="Extensión General">⛶ Extensión General</button>
+            <button id="btnResetZoom" class="btn btn-sand" type="button" title="Extensión General">⛶ Extensión</button>
         </div>
     </div>
 </div>
@@ -20,9 +20,9 @@
     <div id="mapContainer"></div>
 
     <!-- Panel Flotante de Capas y Leyenda (Izquierda) -->
-    <div id="panelCapas" class="position-absolute top-0 start-0 m-3 layer-panel" style="z-index: 1000; width: 245px; font-size: 0.85rem;">
+    <div id="panelCapas" class="position-absolute top-0 start-0 m-3 layer-panel" style="z-index: 1000; width: 250px; font-size: 0.85rem;">
         <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
-            <span class="fw-bold">Capas y Leyenda</span>
+            <span class="fw-bold">Capas y Filtros</span>
             <button type="button" id="btnTogglePanel" class="btn btn-sm btn-outline-secondary py-0 px-1" style="font-size: 0.75rem;" title="Minimizar panel">▲</button>
         </div>
         
@@ -35,12 +35,21 @@
                 </label>
             </div>
             
-            <div class="form-check mb-2">
+            <div class="form-check mb-1">
                 <input class="form-check-input" type="checkbox" id="chkLotes" checked />
                 <label class="form-check-label" for="chkLotes">
                     <span class="legend-badge" style="border: 1px solid #C89D3C; background: rgba(200, 157, 60, 0.25);"></span>
                     Lotes Catastrales
                 </label>
+            </div>
+
+            <!-- Control de Opacidad de Lotes para ver fondo -->
+            <div class="mb-2 ps-4">
+                <div class="d-flex justify-content-between text-muted" style="font-size: 0.72rem;">
+                    <span>Opacidad:</span>
+                    <span id="lblOpacidadLotes">25%</span>
+                </div>
+                <input type="range" class="form-range" id="rngOpacidadLotes" min="0" max="100" value="25" style="height: 4px;" />
             </div>
             
             <div class="form-check mb-2">
@@ -59,16 +68,32 @@
                 </label>
             </div>
 
-            <div class="fw-bold mt-3 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
-                Estados de Suministro
+            <!-- Filtros por Estado de Suministro -->
+            <div class="fw-bold mt-2 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47; font-size: 0.78rem;">
+                Filtrar Estados de Código
             </div>
-            <div class="small text-muted mb-2">
-                <div><span class="legend-badge" style="background: #5E7A4A; border-radius: 50%;"></span> Normal (1)</div>
-                <div><span class="legend-badge" style="background: #C27D38; border-radius: 50%;"></span> Para Corte (2)</div>
-                <div><span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span> Cortado (3)</div>
+            <div class="small ps-1 mb-2">
+                <div class="form-check mb-1">
+                    <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoNormal" value="1" checked />
+                    <label class="form-check-label" for="chkEstadoNormal">
+                        <span class="legend-badge" style="background: #5E7A4A; border-radius: 50%;"></span> Normal (1)
+                    </label>
+                </div>
+                <div class="form-check mb-1">
+                    <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoCorte" value="2" checked />
+                    <label class="form-check-label" for="chkEstadoCorte">
+                        <span class="legend-badge" style="background: #C27D38; border-radius: 50%;"></span> Para Corte (2)
+                    </label>
+                </div>
+                <div class="form-check mb-1">
+                    <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoCortado" value="3" checked />
+                    <label class="form-check-label" for="chkEstadoCortado">
+                        <span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span> Cortado (3)
+                    </label>
+                </div>
             </div>
 
-            <div class="fw-bold mt-2 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
+            <div class="fw-bold mt-2 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47; font-size: 0.78rem;">
                 Mapa Base
             </div>
             <select id="selMapaBase" class="form-select form-select-sm" style="background: #FAF9F5; border-color: #C9C5B9; font-size: 0.8rem;">
@@ -80,9 +105,9 @@
     </div>
 
     <!-- Panel Inspector de Entidad Seleccionada (Derecha) -->
-    <div id="inspectorPanel" class="position-absolute top-0 end-0 m-3 p-3 shadow-md" style="z-index: 1000; width: 300px; background: rgba(255, 255, 255, 0.97); border: 1px solid #C9C5B9; border-radius: 4px; display: none;">
+    <div id="inspectorPanel" class="position-absolute top-0 end-0 m-3 p-3 shadow-md" style="z-index: 1000; width: 310px; background: rgba(255, 255, 255, 0.97); border: 1px solid #C9C5B9; border-radius: 4px; display: none;">
         <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
-            <strong id="inspectorTitle" style="color: #2D302B;">Detalle</strong>
+            <strong id="inspectorTitle" style="color: #2D302B;">Ficha Técnica</strong>
             <button type="button" class="btn-close btn-sm" onclick="cerrarInspector()"></button>
         </div>
         <div id="inspectorContent" style="font-size: 0.85rem; max-height: 380px; overflow-y: auto;">
@@ -101,6 +126,7 @@
     let baseLayers = {};
     let currentBaseLayer;
     let layerManzanas, layerLotes, layerVias, layerCodigosFijos;
+    let rawCodigosFijosData = null;
     let initialBounds = L.latLngBounds([[-16.440, -61.007], [-16.321, -60.919]]);
     let highlightLayer;
 
@@ -112,44 +138,41 @@
     });
 
     function initMap() {
-        // Inicializar mapa sin control de zoom en top-left para evitar solapamientos
         map = L.map('mapContainer', {
             zoomControl: false,
             center: [-16.377, -60.963],
             zoom: 14,
-            minZoom: 5,   // Ampliado a escala regional / departamental (+5 niveles de alejamiento)
-            maxZoom: 22   // Ampliado a nivel de detalle submétrico
+            minZoom: 5,   // Permite alejar hasta ver todo el departamento (+5 niveles)
+            maxZoom: 22   // Precisión métrica
         });
 
-        // Ubicar control de zoom en esquina superior derecha
+        // Zoom en esquina superior derecha para evitar solapar con las capas
         L.control.zoom({ position: 'topright' }).addTo(map);
 
-        // Crear paneles con orden de apilamiento profesional (z-index)
         map.createPane('paneManzanas');
-        map.getPane('paneManzanas').style.zIndex = 400; // Fondo
+        map.getPane('paneManzanas').style.zIndex = 400;
 
         map.createPane('paneLotes');
-        map.getPane('paneLotes').style.zIndex = 450;    // Sobre manzanas
+        map.getPane('paneLotes').style.zIndex = 450;
 
         map.createPane('paneVias');
-        map.getPane('paneVias').style.zIndex = 500;     // Sobre lotes
+        map.getPane('paneVias').style.zIndex = 500;
 
         map.createPane('paneCodigosFijos');
-        map.getPane('paneCodigosFijos').style.zIndex = 600; // Puntos en primer plano
+        map.getPane('paneCodigosFijos').style.zIndex = 600;
 
-        // Mosaicos base 100% gratuitos y sin marcas de agua
         baseLayers.osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            attribution: '&copy; OpenStreetMap',
             maxZoom: 22
         });
 
         baseLayers.topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap, SRTM | &copy; OpenTopoMap',
+            attribution: '&copy; OpenTopoMap',
             maxZoom: 17
         });
 
         baseLayers.esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP',
+            attribution: 'Tiles &copy; Esri &mdash; Satélite',
             maxZoom: 20
         });
 
@@ -198,7 +221,7 @@
                         color: "#C29845",
                         weight: 1,
                         fillColor: "#F5E9CE",
-                        fillOpacity: 0.22
+                        fillOpacity: 0.25
                     },
                     onEachFeature: function (f, l) {
                         l.on('click', () => mostrarInspector("Lote Catastral", f.properties));
@@ -223,31 +246,51 @@
                 }).addTo(map);
             });
 
-        // 4. Códigos Fijos
+        // 4. Códigos Fijos con filtrado dinámico
         fetch('/api/capas/codigosfijos?limit=6500')
             .then(res => res.json())
             .then(data => {
-                layerCodigosFijos = L.geoJSON(data, {
-                    pane: 'paneCodigosFijos',
-                    pointToLayer: function (feature, latlng) {
-                        let color = '#5E7A4A';
-                        if (feature.properties.estado == 2) color = '#C27D38';
-                        if (feature.properties.estado == 3) color = '#B84A39';
-
-                        return L.circleMarker(latlng, {
-                            radius: 3.5,
-                            fillColor: color,
-                            color: '#FFFFFF',
-                            weight: 1,
-                            opacity: 1,
-                            fillOpacity: 0.95
-                        });
-                    },
-                    onEachFeature: function (f, l) {
-                        l.on('click', () => mostrarInspector("Código Fijo (Medidor)", f.properties));
-                    }
-                }).addTo(map);
+                rawCodigosFijosData = data;
+                renderizarCodigosFijos();
             });
+    }
+
+    function renderizarCodigosFijos() {
+        if (!rawCodigosFijosData) return;
+        if (layerCodigosFijos) map.removeLayer(layerCodigosFijos);
+
+        let estadosActivos = [];
+        document.querySelectorAll('.filtro-estado:checked').forEach(cb => {
+            estadosActivos.push(parseInt(cb.value));
+        });
+
+        layerCodigosFijos = L.geoJSON(rawCodigosFijosData, {
+            pane: 'paneCodigosFijos',
+            filter: function (f) {
+                return estadosActivos.includes(f.properties.estado);
+            },
+            pointToLayer: function (feature, latlng) {
+                let color = '#5E7A4A';
+                if (feature.properties.estado == 2) color = '#C27D38';
+                if (feature.properties.estado == 3) color = '#B84A39';
+
+                return L.circleMarker(latlng, {
+                    radius: 3.5,
+                    fillColor: color,
+                    color: '#FFFFFF',
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.95
+                });
+            },
+            onEachFeature: function (f, l) {
+                l.on('click', () => mostrarInspector("Código Fijo (Medidor)", f.properties));
+            }
+        });
+
+        if (document.getElementById('chkCodigosFijos').checked) {
+            layerCodigosFijos.addTo(map);
+        }
     }
 
     function setupEvents() {
@@ -267,6 +310,19 @@
             if (this.checked) map.addLayer(layerCodigosFijos); else map.removeLayer(layerCodigosFijos);
         });
 
+        document.querySelectorAll('.filtro-estado').forEach(cb => {
+            cb.addEventListener('change', renderizarCodigosFijos);
+        });
+
+        // Opacidad de lotes interactiva
+        document.getElementById('rngOpacidadLotes').addEventListener('input', function () {
+            let val = parseInt(this.value) / 100;
+            document.getElementById('lblOpacidadLotes').innerText = this.value + '%';
+            if (layerLotes) {
+                layerLotes.setStyle({ fillOpacity: val });
+            }
+        });
+
         document.getElementById('selMapaBase').addEventListener('change', function () {
             map.removeLayer(currentBaseLayer);
             currentBaseLayer = baseLayers[this.value];
@@ -282,7 +338,6 @@
             if (e.key === 'Enter') ejecutarBusquedaRapida();
         });
 
-        // Minimizar / Restaurar panel de capas
         document.getElementById('btnTogglePanel').addEventListener('click', function () {
             let body = document.getElementById('panelCapasBody');
             if (body.style.display === 'none') {
