@@ -1,10 +1,10 @@
-﻿# Guía de Instalación y Despliegue Local — VisorDatosSIG 2026
+# Guía de Instalación y Despliegue Local — VisorDatosSIG 2026
 
-Esta guía detalla los pasos para clonar, configurar e iniciar el proyecto desde cero en cualquier equipo con Windows.
+Esta guía detalla los pasos para clonar, configurar e iniciar el proyecto desde cero en cualquier equipo con sistema operativo Windows.
 
 ---
 
-## 1. Requisitos Previos
+## 1. Requisitos Previos del Sistema
 
 Antes de comenzar, asegúrate de tener instaladas las siguientes herramientas en tu sistema:
 
@@ -32,7 +32,7 @@ cd "Proyecto_SIG"
 
 ### Paso 3.1: Ejecutar el script maestro DDL
 Abre SSMS, conéctate a tu servidor local (`localhost`) y abre el archivo:
-📁 `ScriptDatabaseV13\01_CrearBD.sql`
+`ScriptDatabaseV13\01_CrearBD.sql`
 
 Ejecuta el script completo (presiona `F5`).  
 Esto creará:
@@ -59,7 +59,7 @@ dotnet run --project "src/VisorDatosSIG.Migrador/VisorDatosSIG.Migrador.csproj"
 * Lotes: **15,280** insertados.
 * Códigos Fijos: **6,271** insertados.
 * Vías: **578** insertadas.
-* Relaciones espaciales: Lotes y Códigos Fijos asociados automáticamente.
+* Relaciones espaciales: **5,118** Códigos Fijos asociados a sus respectivos Lotes y **9,276** Lotes asociados a sus Manzanas.
 * Se genera el archivo de auditoría `bitacora_migracion.txt`.
 
 ---
@@ -73,7 +73,7 @@ dotnet run --project "src/VisorDatosSIG.Web/VisorDatosSIG.Web.csproj" --urls "ht
 ```
 
 Abre tu navegador e ingresa a:
-👉 **`http://localhost:5000`**
+**`http://localhost:5000`**
 
 ---
 
@@ -82,6 +82,8 @@ Abre tu navegador e ingresa a:
 | Perfil | Cuenta de Usuario | Contraseña | Permisos |
 | :--- | :--- | :--- | :--- |
 | **Administrador** | `admin` | `Admin123!` | Acceso completo (Panel, Visor, Consultas, Configuración y Bitácora). |
+| **Consultor** | `consultor` | `Admin123!` | Visualización, búsqueda temática, análisis cartográfico y descarga CSV. |
+| **Operador** | `operador` | `Admin123!` | Visor cartográfico y actualización de estados de suministro. |
 | **Lecturador** | `Juan` | `Admin123!` | Visor cartográfico y consulta temática de inmuebles. |
 | **Cortador** | `Pedro` | `Admin123!` | Visor cartográfico y monitoreo operativo. |
 

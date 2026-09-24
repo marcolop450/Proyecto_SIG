@@ -1,4 +1,4 @@
-﻿@model IEnumerable<VisorDatosSIG.Application.DTOs.InmuebleSearchResultDto>
+@model IEnumerable<VisorDatosSIG.Application.DTOs.InmuebleSearchResultDto>
 @{
     ViewData["Title"] = "Consulta Temática";
 }
@@ -122,7 +122,7 @@
                             <td class="text-center">
                                 @if (item.Latitud.HasValue && item.Longitud.HasValue)
                                 {
-                                    <a href="/Mapa?lat=@item.Latitud&lng=@item.Longitud&cod=@item.CodFijo" class="btn btn-sm btn-olive py-0 px-2 d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;" title="Ver en visor cartográfico">
+                                    <a href="/Mapa?lat=@(item.Latitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))&lng=@(item.Longitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))&cod=@item.CodFijo" class="btn btn-sm btn-olive py-0 px-2 d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;" title="Ver en visor cartográfico">
                                         <i class="bi bi-geo-alt"></i>
                                         Ver en Mapa
                                     </a>

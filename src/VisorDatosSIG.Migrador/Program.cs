@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -78,6 +78,9 @@ class Program
 
         var swTotal = Stopwatch.StartNew();
 
+        Console.WriteLine("\n[2.5/5] Limpiando tablas anteriores respetando integridad referencial...");
+        LimpiarTablasExistentes();
+
         Console.WriteLine("\n[3/5] Migrando capas geográficas con transacciones...");
         MigrarManzanas(Path.Combine(dataDir, "Exp_MapaBase_MZA_4326.shp"));
         MigrarLotes(Path.Combine(dataDir, "Exp_MapaBase_LOTES_4326.shp"));
@@ -104,6 +107,23 @@ class Program
         Console.ResetColor();
     }
 
+    static void LimpiarTablasExistentes()
+    {
+        using var conn = new SqlConnection(ConnectionString);
+        conn.Open();
+        using var cmd = new SqlCommand(@"
+            DELETE FROM dbo.CodigosFijos;
+            DELETE FROM dbo.Lotes;
+            DELETE FROM dbo.Manzanas;
+            DELETE FROM dbo.Vias;
+            DBCC CHECKIDENT ('dbo.CodigosFijos', RESEED, 0);
+            DBCC CHECKIDENT ('dbo.Lotes', RESEED, 0);
+            DBCC CHECKIDENT ('dbo.Manzanas', RESEED, 0);
+            DBCC CHECKIDENT ('dbo.Vias', RESEED, 0);", conn);
+        cmd.ExecuteNonQuery();
+        Console.WriteLine("  ✓ Tablas anteriores limpiadas en cascada correctamente.");
+    }
+
     static void Registrar(string mensaje)
     {
         _bitacora.AppendLine($"[{DateTime.Now:HH:mm:ss}] {mensaje}");
@@ -117,11 +137,6 @@ class Program
 
         using var conn = new SqlConnection(ConnectionString);
         conn.Open();
-
-        using (var cmdClear = new SqlCommand("DELETE FROM dbo.Manzanas; DBCC CHECKIDENT ('dbo.Manzanas', RESEED, 0);", conn))
-        {
-            cmdClear.ExecuteNonQuery();
-        }
 
         using var tx = conn.BeginTransaction();
         const string insertSql = @"
@@ -173,11 +188,6 @@ class Program
         using var conn = new SqlConnection(ConnectionString);
         conn.Open();
 
-        using (var cmdClear = new SqlCommand("DELETE FROM dbo.CodigosFijos; DELETE FROM dbo.Lotes; DBCC CHECKIDENT ('dbo.Lotes', RESEED, 0);", conn))
-        {
-            cmdClear.ExecuteNonQuery();
-        }
-
         using var tx = conn.BeginTransaction();
         const string insertSql = @"
             INSERT INTO dbo.Lotes (IdOrigen, NroLote, Geom)
@@ -225,11 +235,6 @@ class Program
         using var conn = new SqlConnection(ConnectionString);
         conn.Open();
 
-        using (var cmdClear = new SqlCommand("DELETE FROM dbo.CodigosFijos; DBCC CHECKIDENT ('dbo.CodigosFijos', RESEED, 0);", conn))
-        {
-            cmdClear.ExecuteNonQuery();
-        }
-
         using var tx = conn.BeginTransaction();
         const string insertSql = @"
             INSERT INTO dbo.CodigosFijos (CodF_SQL, CodF_SIG, CodFijo, Nombre, Estado, FechaCambioEstado, Longitud, Latitud, Geom)
@@ -262,8 +267,10 @@ class Program
                 var fNombre = reader.Fields["Nombre"].Value;
                 pNombre.Value = fNombre?.ToString() ?? (object)DBNull.Value;
 
-                double longi = Convert.ToDouble(reader.Fields["Longi"].Value);
-                double latid = Convert.ToDouble(reader.Fields["Latid"].Value);
+                // Coordenadas reales extraídas directamente de la geometría del Shapefile (.shp)
+                // Soluciona el problema de origen donde el .dbf tenía Longi copiado en Latid.
+                double longi = reader.Geometry.Coordinate.X;
+                double latid = reader.Geometry.Coordinate.Y;
                 pLongi.Value = longi;
                 pLatid.Value = latid;
 
@@ -292,11 +299,6 @@ class Program
 
         using var conn = new SqlConnection(ConnectionString);
         conn.Open();
-
-        using (var cmdClear = new SqlCommand("DELETE FROM dbo.Vias; DBCC CHECKIDENT ('dbo.Vias', RESEED, 0);", conn))
-        {
-            cmdClear.ExecuteNonQuery();
-        }
 
         using var tx = conn.BeginTransaction();
         const string insertSql = @"
@@ -410,3 +412,5 @@ class Program
         }
     }
 }
+
+

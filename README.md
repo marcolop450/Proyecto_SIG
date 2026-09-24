@@ -1,4 +1,4 @@
-﻿# VisorDatosSIG 2026 — Geo Visor de Información Geográfica
+# VisorDatosSIG 2026 — Geo Visor de Información Geográfica
 
 Sistema integral de información geográfica para la gestión territorial, catastral y de servicios de la ciudad de **San Ignacio de Velasco** (Santa Cruz, Bolivia).
 
@@ -6,46 +6,79 @@ Desarrollado bajo una arquitectura limpia en capas sobre **.NET 8.0 C#**, **Micr
 
 ---
 
-## 📌 Características Principales
+## 1. Presentación y Arquitectura del Sistema
 
-* **Arquitectura Limpia en Capas**: Desacoplamiento estricto en 5 proyectos (`Domain`, `Application`, `Infrastructure`, `Migrador`, `Web`).
-* **Motor Espacial Robusto**: Almacenamiento nativo en SQL Server 2022 con tipo `geometry`, 4 índices espaciales `GEOMETRY_GRID` y procedimientos almacenados optimizados.
-* **Migrador Automatizado**: Lector transaccional de shapefiles ESRI que valida componentes obligatorios (`.shp`, `.shx`, `.dbf`, `.prj`), depura geometrías 2D y calcula relaciones espaciales entre capas.
-* **Visor Cartográfico Interactivo**:
-  * Mosaicos base 100% libres y sin marcas de agua (**OpenStreetMap**, **OpenTopoMap** y **Esri Satelital**).
-  * Control independiente de capas temáticas con leyenda dinámica por estados de servicio.
-  * Niveles de zoom ampliados desde escala regional departamental hasta nivel predial submétrico.
-  * Inspector lateral de atributos al hacer clic sobre cualquier elemento.
-  * Búsqueda ágil por código fijo, titular, UV, manzana o lote con centrado automático y resaltado.
-* **Seguridad y Auditoría**: Autenticación mediante derivación de claves PBKDF2 (HMAC-SHA256 con 100,000 iteraciones y sal de 32 bytes), control de acceso por roles y registro de bitácora en tiempo real.
+El proyecto VisorDatosSIG es una plataforma empresarial diseñada para modernizar y centralizar el catastro municipal y la gestión de suministros de servicios básicos. Permite la visualización de capas cartográficas, la consulta multicriterio de predios y códigos fijos de medidores, la edición controlada del estado operativo de los suministros y la trazabilidad integral de eventos.
 
----
-
-## 📊 Métricas de Geodatos Migrados
-
-| Capa | Entidad | Registros | Tipo Geométrico | SRID Oficial |
-| :--- | :--- | :---: | :---: | :---: |
-| **Manzanas** | `dbo.Manzanas` | **863** | MultiPolygon | 4326 (WGS 84) |
-| **Lotes** | `dbo.Lotes` | **15,280** | MultiPolygon | 4326 (WGS 84) |
-| **Códigos Fijos** | `dbo.CodigosFijos` | **6,271** | Point | 4326 (WGS 84) |
-| **Red Vial** | `dbo.Vias` | **578** | PolyLine | 4326 (WGS 84) |
-
-* **Relaciones Espaciales**: `9,276 lotes` asociados automáticamente a sus manzanas y códigos fijos vinculados a sus respectivos predios mediante `sp_ActualizarLoteCodigosFijos`.
+### Principios Arquitectónicos
+* **Arquitectura Limpia (Clean Architecture)**: Desacoplamiento estricto en 5 capas:
+  * `VisorDatosSIG.Domain`: Entidades de dominio puras (`Manzana`, `Lote`, `CodigoFijo`, `Via`, `Usuario`, `Rol`).
+  * `VisorDatosSIG.Application`: Interfaces de servicio, DTOs de transporte y contratos de negocio.
+  * `VisorDatosSIG.Infrastructure`: Implementación con Dapper, NetTopologySuite, Microsoft SQL Server 2022 Spatial y autenticación PBKDF2 (HMAC-SHA256).
+  * `VisorDatosSIG.Migrador`: Módulo de consola transaccional para la carga masiva y validación de shapefiles ESRI.
+  * `VisorDatosSIG.Web`: Aplicación web ASP.NET Core MVC con API GeoJSON y cliente Leaflet.js.
+* **Seguridad Criptográfica**: Derivación de contraseñas con `Rfc2898DeriveBytes` (PBKDF2 SHA-256, 100,000 iteraciones y sal criptográfica de 32 bytes).
+* **Ausencia Total de Emojis**: Interfaz profesional utilizando tipografías distinguidas (`Space Grotesk`, `Plus Jakarta Sans`, `JetBrains Mono`) e iconografía vectorial normalizada con **Bootstrap Icons** (`bi`).
 
 ---
 
-## 🛠️ Guía Rápida de Instalación y Despliegue
+## 2. Métricas de Geodatos Migrados
 
-### 1. Requisitos del Sistema
-* Sistema Operativo: Windows 10 / 11 (x64).
-* **Git**: [git-scm.com](https://git-scm.com/)
-* **.NET 8.0 SDK**: [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-* **Microsoft SQL Server 2022** (Developer o Express Edition en `localhost`).
-* **SQL Server Management Studio (SSMS)**.
+| Capa | Entidad | Registros | Tipo Geométrico | SRID Oficial | Relación Espacial |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **Manzanas** | `dbo.Manzanas` | **863** | MultiPolygon | 4326 (WGS 84) | Polígonos base urbanos |
+| **Lotes** | `dbo.Lotes` | **15,280** | MultiPolygon | 4326 (WGS 84) | 9,276 lotes asociados a su Manzana |
+| **Códigos Fijos** | `dbo.CodigosFijos` | **6,271** | Point | 4326 (WGS 84) | 5,118 códigos fijos vinculados a su Lote |
+| **Red Vial** | `dbo.Vias` | **578** | PolyLine | 4326 (WGS 84) | Ejes de calles y avenidas |
 
 ---
 
-### 2. Clonar el Repositorio
+## 3. Modelo de Roles y Control de Acceso (RBAC)
+
+El sistema implementa control de acceso basado en roles con el principio de mínimo privilegio:
+
+| Rol | Perfil de Usuario | Alcance y Permisos |
+| :--- | :--- | :--- |
+| **Administrador** | `admin` | **Control Total**: Gestión de cuentas de usuario, asignación de roles, configuración global de parámetros de visualización, auditoría de bitácora y edición de suministros. |
+| **Operador** | `operador` | **Gestión Operativa de Campo**: Consulta cartográfica y actualización del estado de suministros (Normal -> Para Corte -> Cortado -> Baja). Sin acceso a configuración ni gestión de usuarios. |
+| **Consultor / Auditor** | `consultor` | **Análisis y Fiscalización**: Acceso completo de solo lectura al mapa interactivo, búsqueda multicriterio de predios, inspección de fichas técnicas y exportación de reportes tabulares a formato CSV. |
+
+### Credenciales Semilla Predeterminadas
+* **Administrador**: Usuario `admin` | Contraseña `Admin123!`
+* **Operador**: Usuario `operador` | Contraseña `Admin123!`
+* **Consultor**: Usuario `consultor` | Contraseña `Admin123!`
+* **Lecturador**: Usuario `Juan` | Contraseña `Admin123!`
+* **Cortador**: Usuario `Pedro` | Contraseña `Admin123!`
+
+---
+
+## 4. ¿Qué es el Servicio GeoJSON en VisorDatosSIG?
+
+**GeoJSON** es un estándar abierto de intercambio de datos geoespaciales basado en JSON (especificación RFC 7946). Permite estructurar entidades geográficas combinando:
+1. **Geometría espacial**: Puntos (`Point`), cadenas de líneas (`LineString`) o polígonos (`Polygon` / `MultiPolygon`) codificados en coordenadas latitud/longitud en WGS 84.
+2. **Propiedades alfanuméricas**: Atributos asociados al elemento (ej. código fijo, nombre del titular, UV, manzana, estado de suministro).
+
+### Implementación Técnica en VisorDatosSIG
+En la aplicación, los endpoints ubicados en `/api/capas/*`:
+* Consultan las geometrías almacenadas nativamente en SQL Server 2022 mediante `Geom.STAsText()`.
+* Utilizan **NetTopologySuite** y serializadores JSON de alto rendimiento para generar un objeto `FeatureCollection`.
+* Transmiten el payload bajo el MIME type oficial `application/geo+json`.
+* El cliente web en **Leaflet.js** consume directamente este servicio, permitiendo renderizado vectorial acelerado por hardware, resaltado dinámico, clústeres y capas interactivas.
+
+---
+
+## 5. Guía de Instalación y Puesta en Marcha
+
+### Requisitos Previos
+1. **Windows 10 / 11 (x64)**.
+2. **Git**: Instalado y disponible en el PATH ([git-scm.com](https://git-scm.com/)).
+3. **.NET 8.0 SDK**: Instalado ([dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/8.0)).
+4. **Microsoft SQL Server 2022** (Developer o Express Edition en `localhost`).
+5. **SQL Server Management Studio (SSMS)**.
+
+---
+
+### Paso 1: Clonar el Repositorio
 ```powershell
 git clone https://github.com/marcolop450/Proyecto_SIG.git
 cd "Proyecto_SIG"
@@ -53,77 +86,63 @@ cd "Proyecto_SIG"
 
 ---
 
-### 3. Crear la Base de Datos en SQL Server
+### Paso 2: Crear la Base de Datos en SQL Server
 1. Abre **SSMS** y conéctate a tu instancia local (`localhost`).
-2. Abre y ejecuta el script maestro DDL ubicado en:
-   📁 `ScriptDatabaseV13\01_CrearBD.sql` (Presiona `F5`).
-3. Esto creará la base de datos `VisorDatosSIG` con sus 9 tablas, índices espaciales, roles y procedimientos almacenados.
+2. Abre y ejecuta el script principal:
+   `ScriptDatabaseV13\01_CrearBD.sql` (Presiona `F5`).
+3. Ejecuta los scripts complementarios de roles y vistas si requieres ajustes específicos:
+   * `ScriptDatabaseV13\04_Actualizar_CodigosFijos_Estado.sql`
+   * `ScriptDatabaseV13\05_Optimizar_Relacion_CodigoFijo_Lote.sql`
+   * `ScriptDatabaseV13\06_Agregar_Nombre_Vias.sql`
+   * `ScriptDatabaseV13\07_Roles_Usuarios_Menu.sql`
 
 ---
 
-### 4. Ejecutar la Migración de Shapefiles
+### Paso 3: Ejecutar la Migración de Shapefiles
 Desde la raíz del proyecto, ejecuta el migrador de consola:
 
 ```powershell
 dotnet run --project "src/VisorDatosSIG.Migrador/VisorDatosSIG.Migrador.csproj"
 ```
 
-El proceso leerá las 4 capas desde `DatosSIG_Reproj/`, insertará las geometrías en SQL Server, ejecutará la actualización de relaciones espaciales y generará la auditoría en `bitacora_migracion.txt`.
+El proceso realizará automáticamente:
+1. Verificación de archivos ESRI obligatorios (`.shp`, `.shx`, `.dbf`, `.prj`) en WGS 84.
+2. Limpieza y resecuenciación en cascada de tablas preexistentes.
+3. Inserción transaccional de 863 Manzanas, 15,280 Lotes, 6,271 Códigos Fijos y 578 Vías.
+4. Extracción de coordenadas geométricas reales `(X=Longitud, Y=Latitud)` directamente de los binarios SHP.
+5. Ejecución del procedimiento `sp_ActualizarLoteCodigosFijos` para vincular lotes a manzanas y medidores a lotes.
+6. Validación formal de geometrías según el Anexo C del Pliego.
 
 ---
 
-### 5. Iniciar la Aplicación Web
-Para levantar el servidor web:
+### Paso 4: Iniciar la Aplicación Web
+Para iniciar el servidor web:
 
 ```powershell
 dotnet run --project "src/VisorDatosSIG.Web/VisorDatosSIG.Web.csproj" --urls "http://localhost:5000"
 ```
 
 Abre tu navegador e ingresa a:
-👉 **`http://localhost:5000`**
+**`http://localhost:5000`**
 
 ---
 
-## 🔑 Credenciales de Acceso
+## 6. Pruebas de Verificación y Calidad
 
-| Perfil de Usuario | Cuenta | Contraseña | Alcance y Permisos |
-| :--- | :--- | :--- | :--- |
-| **Administrador** | `admin` | `Admin123!` | Acceso total: Panel, Visor, Consultas, Configuración y Bitácora. |
-| **Lecturador** | `Juan` | `Admin123!` | Visor cartográfico y consulta temática de medidores. |
-| **Cortador** | `Pedro` | `Admin123!` | Visor cartográfico y seguimiento de órdenes de corte. |
-
----
-
-## 📁 Estructura del Proyecto
-
+### Prueba 1: Búsqueda del Código Fijo 1001 (Validación de Coordenadas)
+Para verificar que el punto 1001 se encuentra ubicado en San Ignacio de Velasco y no en coordenadas erróneas:
+```sql
+USE VisorDatosSIG;
+GO
+EXEC dbo.sp_BuscarInmueble @Texto = '1001';
 ```
-Proyecto_SIG/
-├── 04_Documentacion/               # Documentación formal de hitos y diagnóstico
-│   ├── 01_Acta_Inicio_Tablero.md
-│   ├── 02_Informe_Diagnostico_Geodatos.md
-│   ├── 03_Matriz_Mapeo_SHP_SQL.md
-│   └── 04_Diseno_Tecnico_Arquitectura.md
-├── DatosSIG_Reproj/                # Shapefiles originales en WGS 84
-├── ScriptDatabaseV13/              # Scripts SQL oficiales (DDL, usuarios, roles)
-├── DOCUMENTACION_TECNICA.md        # Documentación técnica exhaustiva de clases y métodos
-├── INSTRUCCIONES_DE_INSTALACION.md # Guía detallada de instalación
-├── bitacora_migracion.txt          # Registro histórico de la carga de datos
-│
-└── src/                            # Solución C# .NET 8 en Capas
-    ├── VisorDatosSIG.sln
-    ├── VisorDatosSIG.Domain/       # Entidades Manzana, Lote, CodigoFijo, Via, Usuario
-    ├── VisorDatosSIG.Application/  # Interfaces, servicios y DTOs
-    ├── VisorDatosSIG.Infrastructure/# Implementación SQL Server, NTS y AuthService
-    ├── VisorDatosSIG.Migrador/     # Módulo transaccional de ingesta cartográfica
-    └── VisorDatosSIG.Web/          # Controladores MVC, API GeoJSON y Visor Leaflet
-```
+**Resultado esperado**:
+* `CodFijo`: 1001
+* `Nombre`: DORADO GREGORIA MONTERO de
+* `UV`: U.V. 04 | `MZA`: Mz. 14 | `NroLote`: L50
+* `Latitud`: -16.384380 | `Longitud`: -60.959624
 
----
-
-## 🧪 Pruebas de Persistencia y Calidad (Anexo C)
-
-Para verificar la integridad de la base de datos en SSMS:
-
+### Prueba 2: Validación OGC de Geometrías (Anexo C)
 ```sql
 USE VisorDatosSIG;
 GO
@@ -148,5 +167,30 @@ SELECT 'Vias', COUNT(*), SUM(CASE WHEN Geom IS NULL THEN 1 ELSE 0 END),
        SUM(CASE WHEN Geom.STIsValid() = 0 THEN 1 ELSE 0 END)
 FROM dbo.Vias;
 ```
+**Resultado esperado**: 0 geometrías nulas, 0 SRID inválidos y 0 geometrías inválidas en todas las capas.
 
-**Resultado esperado**: 0 geometrías nulas, 0 SRID inválidos y 0 geometrías corruptas en todas las tablas.
+---
+
+## 7. Estructura del Repositorio
+
+```
+Proyecto_SIG/
+|-- 04_Documentacion/               # Documentación formal de hitos y diagnóstico
+|   |-- 01_Acta_Inicio_Tablero.md
+|   |-- 02_Informe_Diagnostico_Geodatos.md
+|   |-- 03_Matriz_Mapeo_SHP_SQL.md
+|   `-- 04_Diseno_Tecnico_Arquitectura.md
+|-- DatosSIG_Reproj/                # Shapefiles originales en WGS 84
+|-- ScriptDatabaseV13/              # Scripts DDL, índices y procedimientos almacenados
+|-- DOCUMENTACION_TECNICA.md        # Especificación detallada de clases y métodos
+|-- INSTRUCCIONES_DE_INSTALACION.md # Guía paso a paso para despliegue
+|-- bitacora_migracion.txt          # Registro histórico de ingesta cartográfica
+|
+`-- src/                            # Solución .NET 8 en Capas
+    |-- VisorDatosSIG.sln
+    |-- VisorDatosSIG.Domain/       # Modelos y entidades del dominio
+    |-- VisorDatosSIG.Application/  # DTOs, interfaces de repositorio y servicios
+    |-- VisorDatosSIG.Infrastructure/# Implementación SQL Server 2022 Spatial y Auth
+    |-- VisorDatosSIG.Migrador/     # Herramienta CLI de carga transaccional
+    `-- VisorDatosSIG.Web/          # Controladores MVC, API GeoJSON y Visor Leaflet
+```

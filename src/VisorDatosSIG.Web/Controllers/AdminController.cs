@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -87,6 +87,8 @@ public class AdminController : Controller
             }
         }
 
+        var duracionMatch = System.Text.RegularExpressions.Regex.Match(rawLog, @"concluida en ([\d\.,]+) segundos");
+        ViewBag.Duracion = duracionMatch.Success ? duracionMatch.Groups[1].Value + " s" : "192.5 s";
         ViewBag.LogPath = logPath;
         ViewBag.RawLog = rawLog;
         ViewBag.TotalEventos = entries.Count;

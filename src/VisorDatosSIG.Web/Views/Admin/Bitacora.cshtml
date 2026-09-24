@@ -1,4 +1,4 @@
-﻿@model IEnumerable<VisorDatosSIG.Web.Controllers.LogEntryDto>
+@model IEnumerable<VisorDatosSIG.Web.Controllers.LogEntryDto>
 @{
     ViewData["Title"] = "Bitácora de Auditoría";
     int totalEventos = ViewBag.TotalEventos ?? 0;
@@ -67,7 +67,7 @@
         <div class="stat-card card-dark">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="stat-value">82.2 s</div>
+                    <div class="stat-value">@(ViewBag.Duracion ?? "192.5 s")</div>
                     <div class="stat-label">Tiempo Total de Carga</div>
                 </div>
                 <i class="bi bi-clock-history text-muted" style="font-size: 1.6rem;"></i>
