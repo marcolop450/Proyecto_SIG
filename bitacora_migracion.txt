@@ -1,0 +1,15 @@
+﻿[23:47:21] Inicio de migración: 2026-09-23 23:47:21
+[23:47:21] Directorio de datos: D:\Proyecto SIG\DatosSIG_Reproj
+[23:47:22] Manzanas: 863 insertadas, 0 omitidos en 504 ms.
+[23:47:24] Lotes - Advertencia en registro 4916: Invalid polygon geometry.
+[23:47:27] Lotes - Advertencia en registro 15282: Corrupted shapefile data. The dBASE table must contain feature attributes with one record per feature. There must be one-to-one relationship between geometry and attributes.
+[23:47:27] Lotes: 15280 insertados, 2 omitidos en 5,7 s.
+[23:47:29] CodigosFijos: 6271 insertados, 0 omitidos en 1,6 s.
+[23:47:29] Vias: 578 insertadas, 0 omitidos en 199 ms.
+[23:48:43] Relación Códigos Fijos -> Lotes: 6 asociados.
+[23:48:43] Relación Lotes -> Manzanas: 9276 asociados.
+[23:48:43] Validación Manzanas: Total=863, GeomNull=0, SridInvalido=0, GeomInvalida=0
+[23:48:43] Validación Lotes: Total=15280, GeomNull=0, SridInvalido=0, GeomInvalida=0
+[23:48:43] Validación CodigosFijos: Total=6271, GeomNull=0, SridInvalido=0, GeomInvalida=0
+[23:48:43] Validación Vias: Total=578, GeomNull=0, SridInvalido=0, GeomInvalida=0
+[23:48:43] Migración concluida en 82,2 segundos.

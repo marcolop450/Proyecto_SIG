@@ -1,0 +1,60 @@
+﻿@model VisorDatosSIG.Application.DTOs.LoginDto
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "_Layout";
+}
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 100vh; background: #EFECE6;">
+    <div class="card shadow-md" style="width: 100%; max-width: 440px; border: 1px solid #D5D1C6; border-radius: 6px; overflow: hidden; background: #FFFFFF;">
+        <!-- Cabecera Institucional Cálida -->
+        <div style="background: linear-gradient(180deg, #2D302B 0%, #222420 100%); color: #F7F5F0; padding: 2rem 1.5rem; text-align: center; border-bottom: 3px solid #C89D3C;">
+            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: #C89D3C; margin-bottom: 0.25rem;">
+                UAGRM · FICCT · SIG 2026
+            </div>
+            <h3 style="margin: 0; font-weight: 700; letter-spacing: 0.5px;">VisorDatosSIG</h3>
+            <p style="margin: 0.5rem 0 0; font-size: 0.85rem; color: #C2BFB4;">
+                Consulta territorial y administración geográfica
+            </p>
+        </div>
+
+        <div class="card-body p-4">
+            <h5 class="card-title text-center mb-4" style="color: #2C2D2A; font-weight: 600;">Autenticación de Usuario</h5>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger py-2 px-3 mb-3" style="font-size: 0.85rem; background-color: #F8E7E4; border-color: #E2B6AE; color: #8F2D1F;">
+                    @Html.ValidationSummary(true, "")
+                </div>
+            }
+
+            <form asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+                <div class="mb-3">
+                    <label asp-for="Usuario" class="form-label" style="font-size: 0.85rem; font-weight: 600; color: #4F524C;">Cuenta de Acceso</label>
+                    <input asp-for="Usuario" class="form-control" placeholder="Ej. admin" style="background: #FDFCF9; border-color: #C9C5B9;" autofocus required />
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label" style="font-size: 0.85rem; font-weight: 600; color: #4F524C;">Contraseña</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" style="background: #FDFCF9; border-color: #C9C5B9;" required />
+                </div>
+
+                <button type="submit" class="btn btn-olive w-100 py-2 mb-3" style="letter-spacing: 0.5px;">
+                    INGRESAR AL SISTEMA
+                </button>
+            </form>
+
+            <div class="p-2 text-center" style="background: #F7F5EF; border-radius: 4px; border: 1px dashed #D5D1C6; font-size: 0.78rem; color: #6B6D66;">
+                <strong>Credenciales autorizadas de prueba:</strong><br />
+                Administrador: <code>admin</code> / <code>Admin123!</code><br />
+                Lecturador: <code>Juan</code> / <code>Admin123!</code>
+            </div>
+        </div>
+
+        <div class="card-footer text-center py-2" style="background: #F0EDE4; border-top: 1px solid #E2DFD6; font-size: 0.75rem; color: #7A7C75;">
+            Acceso restringido a usuarios autorizados del proyecto
+        </div>
+    </div>
+</div>

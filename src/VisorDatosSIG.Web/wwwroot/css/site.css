@@ -1,0 +1,254 @@
+﻿:root {
+  --bg-main: #F7F6F2;
+  --bg-card: #FFFFFF;
+  --bg-card-alt: #FDFCF9;
+  --bg-sidebar: #2B2D29;
+  --bg-sidebar-hover: #383B35;
+  --bg-sidebar-active: #444740;
+  --text-main: #2C2D2A;
+  --text-muted: #6B6D66;
+  --text-sidebar: #E5E2D8;
+  --border-color: #E2DFD6;
+  --border-dark: #C9C5B9;
+  
+  --primary: #5E7A4A;          /* Verde Oliva Profesional */
+  --primary-hover: #4D663B;
+  --accent-gold: #C89D3C;        /* Ámbar / Bronce Cálido */
+  --accent-warm: #A86B32;        /* Terracota */
+  --status-normal: #5E7A4A;
+  --status-corte: #C27D38;
+  --status-cortado: #B84A39;
+  
+  --shadow-sm: 0 1px 3px rgba(40, 35, 30, 0.06);
+  --shadow-md: 0 4px 10px rgba(40, 35, 30, 0.08);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Header superior corporativo */
+.app-header {
+  background: linear-gradient(180deg, #2D302B 0%, #232521 100%);
+  border-bottom: 3px solid var(--accent-gold);
+  color: #FFFFFF;
+  padding: 0.6rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.app-brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #F5F2EB;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app-brand span {
+  color: var(--accent-gold);
+  font-weight: 300;
+}
+
+/* Layout general con Sidebar */
+.app-layout {
+  display: flex;
+  min-height: calc(100vh - 54px);
+}
+
+.app-sidebar {
+  width: 250px;
+  background-color: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  flex-shrink: 0;
+  border-right: 1px solid #1E201C;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-heading {
+  padding: 1rem 1.2rem 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9C9A8E;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu li a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.2rem;
+  color: var(--text-sidebar);
+  text-decoration: none;
+  font-size: 0.92rem;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease-in-out;
+}
+
+.sidebar-menu li a:hover {
+  background-color: var(--bg-sidebar-hover);
+  color: #FFFFFF;
+  border-left-color: var(--accent-gold);
+}
+
+.sidebar-menu li.active a {
+  background-color: var(--bg-sidebar-active);
+  color: #FFFFFF;
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+
+.app-content {
+  flex-grow: 1;
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+}
+
+/* Tarjetas métricas profesionales */
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary);
+}
+
+.stat-card.card-amber::before { background: var(--accent-gold); }
+.stat-card.card-terracota::before { background: var(--accent-warm); }
+.stat-card.card-dark::before { background: #4F524C; }
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-top: 0.25rem;
+}
+
+/* Botones con estilo corporativo clásico */
+.btn-olive {
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border: 1px solid #4D663B;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.btn-olive:hover {
+  background-color: var(--primary-hover);
+  color: #FFFFFF;
+}
+
+.btn-sand {
+  background-color: #EDE9DF;
+  color: var(--text-main);
+  border: 1px solid var(--border-dark);
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.btn-sand:hover {
+  background-color: #E2DDD0;
+  color: var(--text-main);
+}
+
+/* Contenedor del Mapa */
+#mapContainer {
+  height: calc(100vh - 170px);
+  min-height: 520px;
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  box-shadow: var(--shadow-sm);
+  background-color: #EFECE6;
+}
+
+.map-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.75rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Panel flotante de capas y leyenda */
+.layer-panel {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  box-shadow: var(--shadow-md);
+}
+
+.legend-badge {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border-radius: 2px;
+}
+
+/* Tablas estilizadas limpias */
+.table-custom {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.table-custom th {
+  background-color: #EFECE4;
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--border-dark);
+}
+
+.table-custom td {
+  font-size: 0.9rem;
+  vertical-align: middle;
+}

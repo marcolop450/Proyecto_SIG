@@ -1,0 +1,150 @@
+﻿@model IEnumerable<VisorDatosSIG.Application.DTOs.InmuebleSearchResultDto>
+@{
+    ViewData["Title"] = "Consulta Temática de Inmuebles";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+    <div>
+        <h4 class="mb-1" style="font-weight: 700; color: #2C2D2A;">Consulta Temática y Búsqueda Alfanumérica</h4>
+        <p class="text-muted mb-0" style="font-size: 0.88rem;">
+            Filtre por código fijo, nombre de abonado, unidad vecinal (UV), manzana o número de lote
+        </p>
+    </div>
+</div>
+
+<!-- Formulario de Filtros en tonos cálidos -->
+<div class="card shadow-sm mb-4" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
+    <div class="card-body p-3">
+        <form method="get" asp-action="Index">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-muted">Texto (Código Fijo o Nombre)</label>
+                    <input type="text" name="texto" value="@ViewBag.Texto" class="form-control form-control-sm" placeholder="Ej. 1001 o Juan..." style="background: #FAF9F5; border-color: #C9C5B9;" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted">UV</label>
+                    <input type="text" name="uv" value="@ViewBag.UV" class="form-control form-control-sm" placeholder="Ej. UV-1" style="background: #FAF9F5; border-color: #C9C5B9;" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted">Manzana</label>
+                    <input type="text" name="mza" value="@ViewBag.Mza" class="form-control form-control-sm" placeholder="Ej. MZA-5" style="background: #FAF9F5; border-color: #C9C5B9;" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-muted">Lote</label>
+                    <input type="text" name="lote" value="@ViewBag.Lote" class="form-control form-control-sm" placeholder="Ej. 12" style="background: #FAF9F5; border-color: #C9C5B9;" />
+                </div>
+                <div class="col-md-2 d-flex gap-1">
+                    <button type="submit" class="btn btn-olive btn-sm w-100 py-1">Buscar</button>
+                    <a asp-action="Index" class="btn btn-sand btn-sm py-1">Limpiar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabla de Resultados -->
+@if (Model != null && Model.Any())
+{
+    <div class="card shadow-sm" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
+        <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+            <span class="fw-bold small" style="color: #4B4E47;">Resultados encontrados: @Model.Count()</span>
+            <button class="btn btn-outline-secondary btn-sm py-0" onclick="exportarCSV()">Exportar CSV</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-custom m-0" id="tablaResultados">
+                <thead>
+                    <tr>
+                        <th>Código Fijo</th>
+                        <th>Nombre / Titular</th>
+                        <th>UV</th>
+                        <th>Manzana</th>
+                        <th>Lote</th>
+                        <th>Estado</th>
+                        <th>Fecha Estado</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>@item.CodFijo</strong></td>
+                            <td>@(item.Nombre ?? "-")</td>
+                            <td>@(item.UV ?? "-")</td>
+                            <td>@(item.MZA ?? "-")</td>
+                            <td>@(item.NroLote ?? "-")</td>
+                            <td>
+                                @if (item.Estado == 1)
+                                {
+                                    <span class="badge" style="background-color: #5E7A4A;">Normal</span>
+                                }
+                                else if (item.Estado == 2)
+                                {
+                                    <span class="badge" style="background-color: #C27D38;">Para Corte</span>
+                                }
+                                else if (item.Estado == 3)
+                                {
+                                    <span class="badge" style="background-color: #B84A39;">Cortado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@item.EstadoDesc</span>
+                                }
+                            </td>
+                            <td class="small text-muted">@item.FechaCambioEstado.ToString("yyyy-MM-dd")</td>
+                            <td class="text-center">
+                                @if (item.Latitud.HasValue && item.Longitud.HasValue)
+                                {
+                                    <a asp-controller="Mapa" asp-action="Index" class="btn btn-sm btn-sand py-0 px-2" style="font-size: 0.8rem;" title="Ver en mapa">
+                                        Ver en Mapa
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Sin geom</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else if (ViewBag.Texto != null || ViewBag.UV != null || ViewBag.Mza != null || ViewBag.Lote != null)
+{
+    <div class="alert alert-warning text-center py-4 shadow-sm" style="background: #FDF9F0; border-color: #F0E3C7; color: #8A6818;">
+        <h6 class="fw-bold mb-1">Sin Resultados</h6>
+        <p class="mb-0 small">No se encontraron predios o códigos fijos con los criterios de búsqueda especificados.</p>
+    </div>
+}
+else
+{
+    <div class="text-center py-5 text-muted">
+        <div style="font-size: 2.5rem; color: #C9C5B9;">🔍</div>
+        <p class="mt-2">Ingrese uno o más criterios de búsqueda arriba y haga clic en <strong>Buscar</strong> para visualizar los datos.</p>
+    </div>
+}
+
+@section Scripts {
+<script>
+    function exportarCSV() {
+        let tabla = document.getElementById("tablaResultados");
+        if (!tabla) return;
+        let csv = [];
+        for (let row of tabla.rows) {
+            let cols = [];
+            for (let cell of row.cells) {
+                cols.push('"' + cell.innerText.replace(/"/g, '""').trim() + '"');
+            }
+            csv.push(cols.join(","));
+        }
+        let blob = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Resultados_Inmuebles_SIG.csv");
+        link.click();
+    }
+</script>
+}
