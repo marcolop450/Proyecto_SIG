@@ -68,10 +68,82 @@
             position: fixed;
             inset: 0;
             z-index: 0;
-            width: 100%;
+            width: 120%;
             height: 100%;
-            opacity: 0.35;
+            left: -10%;
+            opacity: 0.42;
             pointer-events: none;
+            overflow: visible;
+        }
+
+        .wave-line {
+            transform-origin: 50% 50%;
+            vector-effect: non-scaling-stroke;
+            will-change: transform;
+        }
+
+        .wave-1 {
+            animation: waveMotion1 11s ease-in-out infinite alternate;
+        }
+        .wave-2 {
+            animation: waveMotion2 15s ease-in-out infinite alternate;
+        }
+        .wave-3 {
+            animation: waveMotion3 13s ease-in-out infinite alternate;
+        }
+        .wave-4 {
+            animation: waveMotion1 17s ease-in-out infinite alternate-reverse;
+        }
+        .wave-5 {
+            animation: waveMotion2 12s ease-in-out infinite alternate-reverse;
+        }
+        .wave-6 {
+            animation: waveMotion3 14s ease-in-out infinite alternate-reverse;
+        }
+
+        .wave-dashed {
+            animation: waveDashFlow 24s linear infinite;
+        }
+
+        @@keyframes waveDashFlow {
+            from { stroke-dashoffset: 0; }
+            to { stroke-dashoffset: 240; }
+        }
+
+        @@keyframes waveMotion1 {
+            0% {
+                transform: translateY(0px) scaleY(1) skewX(0deg);
+            }
+            50% {
+                transform: translateY(-28px) scaleY(1.15) skewX(1.5deg);
+            }
+            100% {
+                transform: translateY(22px) scaleY(0.90) skewX(-1.5deg);
+            }
+        }
+
+        @@keyframes waveMotion2 {
+            0% {
+                transform: translateY(0px) scaleY(1) skewX(0deg);
+            }
+            50% {
+                transform: translateY(26px) scaleY(0.88) skewX(-2deg);
+            }
+            100% {
+                transform: translateY(-24px) scaleY(1.12) skewX(1.8deg);
+            }
+        }
+
+        @@keyframes waveMotion3 {
+            0% {
+                transform: translateY(0px) scaleY(1);
+            }
+            50% {
+                transform: translateY(-20px) scaleY(1.2) skewX(1deg);
+            }
+            100% {
+                transform: translateY(30px) scaleY(0.85) skewX(-1deg);
+            }
         }
 
         /* Login Card */
@@ -352,13 +424,14 @@
     <!-- Background Grid -->
     <div class="carto-grid"></div>
 
-    <!-- Topographic Contour Lines SVG (Light Tones) -->
-    <svg class="topo-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M-200,200 C150,100 350,300 700,150 C950,50 1100,250 1300,150" fill="none" stroke="#C89D3C" stroke-width="1.2" stroke-dasharray="6,4"/>
-        <path d="M-200,340 C100,240 400,440 750,290 C1000,190 1150,370 1300,290" fill="none" stroke="#C89D3C" stroke-width="0.8"/>
-        <path d="M-200,480 C200,380 450,580 820,430 C1050,330 1200,530 1300,430" fill="none" stroke="#44644B" stroke-width="1.2" stroke-dasharray="4,4"/>
-        <path d="M-200,620 C150,520 500,720 880,560 C1100,460 1250,660 1300,570" fill="none" stroke="#C89D3C" stroke-width="0.8"/>
-        <path d="M-200,760 C250,640 550,840 920,690 C1150,590 1220,790 1300,720" fill="none" stroke="#44644B" stroke-width="1.2"/>
+    <!-- Topographic Contour Lines SVG with Wave Motion (Light Tones) -->
+    <svg class="topo-svg" viewBox="0 0 1200 1000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="wave-line wave-1 wave-dashed" d="M-200,180 C150,90 350,270 700,130 C950,40 1150,230 1400,130" fill="none" stroke="#C89D3C" stroke-width="1.3" stroke-dasharray="8,6"/>
+        <path class="wave-line wave-2" d="M-200,320 C100,220 420,410 780,260 C1020,160 1180,330 1400,260" fill="none" stroke="#C89D3C" stroke-width="0.9"/>
+        <path class="wave-line wave-3 wave-dashed" d="M-200,460 C200,360 460,550 840,400 C1080,290 1220,490 1400,390" fill="none" stroke="#44644B" stroke-width="1.3" stroke-dasharray="6,5"/>
+        <path class="wave-line wave-4" d="M-200,600 C150,500 520,690 900,530 C1120,430 1260,630 1400,540" fill="none" stroke="#C89D3C" stroke-width="0.9"/>
+        <path class="wave-line wave-5" d="M-200,740 C260,620 560,820 940,660 C1180,560 1240,760 1400,690" fill="none" stroke="#44644B" stroke-width="1.3"/>
+        <path class="wave-line wave-6 wave-dashed" d="M-200,880 C180,780 620,950 1000,810 C1200,710 1300,900 1400,840" fill="none" stroke="#C89D3C" stroke-width="1.1" stroke-dasharray="7,5"/>
     </svg>
 
     <!-- Card -->
