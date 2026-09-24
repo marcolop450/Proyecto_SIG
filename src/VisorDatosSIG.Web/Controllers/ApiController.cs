@@ -63,9 +63,9 @@ public class ApiController : ControllerBase
     }
 
     [HttpGet("filtros")]
-    public async Task<IActionResult> GetFiltros()
+    public async Task<IActionResult> GetFiltros([FromQuery] string? uv)
     {
-        var filtros = await _geoDataService.ObtenerFiltrosDisponiblesAsync();
+        var filtros = await _geoDataService.ObtenerFiltrosDisponiblesAsync(uv);
         return Ok(filtros);
     }
 

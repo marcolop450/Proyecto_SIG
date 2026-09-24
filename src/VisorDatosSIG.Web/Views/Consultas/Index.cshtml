@@ -34,7 +34,7 @@
             Criterios de Filtrado
         </span>
         <span class="small text-muted" id="lblContadorResultados">
-            Mostrando <strong id="lblCantRegistros">@Model.Count()</strong> predios
+            Total filtrados: <strong id="lblCantRegistros">@Model.Count()</strong> predios
             <span id="spinnerBusqueda" class="spinner-border spinner-border-sm text-primary ms-1" style="display: none;" role="status"></span>
         </span>
     </div>
@@ -72,7 +72,7 @@
                 </select>
             </div>
 
-            <!-- MANZANA - COMBOBOX CON LISTA DE LO QUE EXISTE -->
+            <!-- MANZANA - COMBOBOX DINÁMICO QUE SÓLO CONTIENE PREDIOS REALES -->
             <div class="col-md-3">
                 <label for="filtroMZA" class="form-label small fw-bold text-muted mb-1">
                     Manzana (MZA)
@@ -93,7 +93,7 @@
                 </select>
             </div>
 
-            <!-- LOTE - COMBOBOX / DATALIST CON LO QUE EXISTE -->
+            <!-- LOTE - DATALIST -->
             <div class="col-md-2">
                 <label for="filtroLote" class="form-label small fw-bold text-muted mb-1">
                     Lote
@@ -110,16 +110,16 @@
     </div>
 </div>
 
-<!-- Tabla de Resultados -->
-<div class="card shadow-sm" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
-    <div class="table-responsive" style="max-height: 620px; overflow-y: auto;">
+<!-- Tabla de Resultados con Paginación de a 20 -->
+<div class="card shadow-sm mb-3" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
+    <div class="table-responsive">
         <table class="table table-hover table-custom m-0" id="tablaResultados">
-            <thead class="sticky-top bg-light" style="z-index: 5;">
+            <thead class="bg-light">
                 <tr>
                     <th style="width: 100px;">Código</th>
                     <th>Titular del Servicio</th>
-                    <th style="width: 90px;">UV</th>
-                    <th style="width: 100px;">Manzana</th>
+                    <th style="width: 100px;">UV</th>
+                    <th style="width: 110px;">Manzana</th>
                     <th style="width: 90px;">Lote</th>
                     <th style="width: 130px;">Estado</th>
                     <th style="width: 110px;">Fecha</th>
@@ -127,68 +127,21 @@
                 </tr>
             </thead>
             <tbody id="cuerpoTabla">
-                @if (Model != null && Model.Any())
-                {
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td class="fw-bold font-monospace" style="color: #2D302B;">@item.CodFijo</td>
-                            <td>@item.Nombre</td>
-                            <td><span class="badge bg-light text-dark border">@(item.UV ?? "-")</span></td>
-                            <td><span class="badge bg-light text-dark border">@(item.MZA ?? "-")</span></td>
-                            <td><span class="badge bg-light text-dark border">@(item.NroLote ?? "-")</span></td>
-                            <td>
-                                @if (item.Estado == 1)
-                                {
-                                    <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #5E7A4A;">
-                                        <i class="bi bi-check-circle"></i> Normal
-                                    </span>
-                                }
-                                else if (item.Estado == 2)
-                                {
-                                    <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #C27D38;">
-                                        <i class="bi bi-exclamation-circle"></i> Para Corte
-                                    </span>
-                                }
-                                else if (item.Estado == 3)
-                                {
-                                    <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #B84A39;">
-                                        <i class="bi bi-slash-circle"></i> Cortado
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">@item.EstadoDesc</span>
-                                }
-                            </td>
-                            <td class="small text-muted font-monospace">@item.FechaCambioEstado.ToString("yyyy-MM-dd")</td>
-                            <td class="text-center">
-                                @if (item.Latitud.HasValue && item.Longitud.HasValue)
-                                {
-                                    <a href="/Mapa?lat=@(item.Latitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))&lng=@(item.Longitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))&cod=@item.CodFijo" class="btn btn-sm btn-olive py-0 px-2 d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;" title="Ver en visor cartográfico">
-                                        <i class="bi bi-geo-alt"></i>
-                                        Ver en Mapa
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="text-muted small">-</span>
-                                }
-                            </td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr id="filaSinResultados">
-                        <td colspan="8" class="text-center py-4 text-muted">
-                            <i class="bi bi-inbox fs-3 d-block mb-1 text-muted"></i>
-                            No se encontraron predios que coincidan con los criterios seleccionados.
-                        </td>
-                    </tr>
-                }
+                <!-- Se llena dinámicamente con paginación de a 20 -->
             </tbody>
         </table>
+    </div>
+
+    <!-- Barra de Paginación de a 20 -->
+    <div class="card-footer py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2" style="background: #FAF9F5; border-top: 1px solid #E2DFD6;">
+        <div class="small text-muted" id="lblInfoPaginacion">
+            Cargando registros...
+        </div>
+        <nav aria-label="Navegación de resultados">
+            <ul class="pagination pagination-sm m-0" id="paginadorUI">
+                <!-- Botones de página inyectados por JavaScript -->
+            </ul>
+        </nav>
     </div>
 </div>
 
@@ -196,34 +149,81 @@
 <script>
     let debounceTimer = null;
     let datosActuales = [];
+    let paginaActual = 1;
+    const tamanoPagina = 20;
+
+    // Datos iniciales precargados desde el servidor
+    const datosInicialesDelServidor = [
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <text>{
+                    codFijo: @(item.CodFijo.HasValue ? item.CodFijo.Value.ToString() : "null"),
+                    nombre: "@Html.Raw(item.Nombre?.Replace("\"", "\\\"") ?? "")",
+                    uv: "@Html.Raw(item.UV ?? "-")",
+                    mza: "@Html.Raw(item.MZA ?? "-")",
+                    nroLote: "@Html.Raw(item.NroLote ?? "-")",
+                    estado: @item.Estado,
+                    estadoDesc: "@Html.Raw(item.EstadoDesc)",
+                    fechaCambioEstado: "@item.FechaCambioEstado.ToString("yyyy-MM-dd")",
+                    latitud: @(item.Latitud.HasValue ? item.Latitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null"),
+                    longitud: @(item.Longitud.HasValue ? item.Longitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null")
+                },</text>
+            }
+        }
+    ];
 
     document.addEventListener("DOMContentLoaded", function () {
-        // Inicializar datos actuales a partir del DOM si existen
-        extraerDatosDeTablaInicial();
+        datosActuales = datosInicialesDelServidor;
+        paginaActual = 1;
+        renderizarPaginaActual();
 
-        // 1. Escuchar escritura en Texto (Código o Titular) con debounce de 220ms
+        // 1. Escuchar escritura en Texto (Código o Titular) con debounce de 200ms
         const inputTexto = document.getElementById('filtroTexto');
         inputTexto.addEventListener('input', function () {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(ejecutarBusquedaAsincrona, 220);
+            debounceTimer = setTimeout(ejecutarBusquedaAsincrona, 200);
         });
 
-        // 2. Escuchar cambio en Combobox UV
+        // 2. Escuchar cambio en Combobox UV -> Actualiza Manzanas disponibles de esa UV y busca
         document.getElementById('filtroUV').addEventListener('change', function () {
+            const uvSel = this.value;
+            actualizarComboboxManzanasPorUV(uvSel);
             ejecutarBusquedaAsincrona();
         });
 
-        // 3. Escuchar cambio en Combobox Manzana
+        // 3. Escuchar cambio en Combobox Manzana -> Filtra al instante
         document.getElementById('filtroMZA').addEventListener('change', function () {
             ejecutarBusquedaAsincrona();
         });
 
-        // 4. Escuchar cambio en Combobox / Input Lote
+        // 4. Escuchar cambio en Lote
         document.getElementById('filtroLote').addEventListener('input', function () {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(ejecutarBusquedaAsincrona, 220);
+            debounceTimer = setTimeout(ejecutarBusquedaAsincrona, 200);
         });
     });
+
+    // Cascada de UV -> Manzanas (Sólo muestra manzanas con predios existentes)
+    function actualizarComboboxManzanasPorUV(uv) {
+        const selectMZA = document.getElementById('filtroMZA');
+        const valorMzaActual = selectMZA.value;
+
+        fetch('/api/filtros' + (uv ? '?uv=' + encodeURIComponent(uv) : ''))
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.listaMZA) {
+                    let html = '<option value="">[ Todas las Manzanas ]</option>';
+                    data.listaMZA.forEach(m => {
+                        const sel = (m === valorMzaActual) ? ' selected' : '';
+                        html += `<option value="${m}"${sel}>${m}</option>`;
+                    });
+                    selectMZA.innerHTML = html;
+                }
+            })
+            .catch(err => console.error("Error al actualizar manzanas por UV:", err));
+    }
 
     function ejecutarBusquedaAsincrona() {
         const texto = document.getElementById('filtroTexto').value.trim();
@@ -245,7 +245,8 @@
             .then(data => {
                 spinner.style.display = 'none';
                 datosActuales = data || [];
-                renderizarTabla(datosActuales);
+                paginaActual = 1; // Reiniciar a la primera página tras nuevo filtro
+                renderizarPaginaActual();
             })
             .catch(err => {
                 spinner.style.display = 'none';
@@ -253,24 +254,35 @@
             });
     }
 
-    function renderizarTabla(items) {
+    function renderizarPaginaActual() {
         const tbody = document.getElementById('cuerpoTabla');
-        document.getElementById('lblCantRegistros').innerText = items.length;
+        const totalRegistros = datosActuales.length;
+        document.getElementById('lblCantRegistros').innerText = totalRegistros;
 
-        if (!items || items.length === 0) {
+        if (!datosActuales || totalRegistros === 0) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="8" class="text-center py-4 text-muted">
                         <i class="bi bi-inbox fs-3 d-block mb-1 text-muted"></i>
-                        No se encontraron predios con los criterios especificados.
+                        No se encontraron predios con los criterios seleccionados.
                     </td>
                 </tr>`;
+            document.getElementById('lblInfoPaginacion').innerText = '0 registros encontrados';
+            document.getElementById('paginadorUI').innerHTML = '';
             return;
         }
 
+        const totalPaginas = Math.ceil(totalRegistros / tamanoPagina) || 1;
+        if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+        if (paginaActual < 1) paginaActual = 1;
+
+        const inicio = (paginaActual - 1) * tamanoPagina;
+        const fin = Math.min(inicio + tamanoPagina, totalRegistros);
+        const itemsPagina = datosActuales.slice(inicio, fin);
+
         let html = '';
-        for (let i = 0; i < items.length; i++) {
-            const it = items[i];
+        for (let i = 0; i < itemsPagina.length; i++) {
+            const it = itemsPagina[i];
             const cod = it.codFijo || '-';
             const nom = it.nombre || '-';
             const uv = it.uv || '-';
@@ -293,7 +305,7 @@
             if (it.latitud && it.longitud) {
                 const latStr = Number(it.latitud).toFixed(6);
                 const lngStr = Number(it.longitud).toFixed(6);
-                botonMapa = `<a href="/Mapa?lat=${latStr}&lng=${lngStr}&cod=${cod}" class="btn btn-sm btn-olive py-0 px-2 d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;" title="Ver en visor cartográfico"><i class="bi bi-geo-alt"></i> Ver en Mapa</a>`;
+                botonMapa = `<a href="/Mapa?lat=${latStr}&lng=${lngStr}&cod=${cod}" class="btn btn-sm btn-olive py-0 px-2 d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;" title="Ver en mapa"><i class="bi bi-geo-alt"></i> Ver en Mapa</a>`;
             }
 
             html += `
@@ -310,57 +322,107 @@
         }
 
         tbody.innerHTML = html;
+        document.getElementById('lblInfoPaginacion').innerText = 
+            `Mostrando registros ${inicio + 1} - ${fin} de ${totalRegistros} predios (Página ${paginaActual} de ${totalPaginas})`;
+
+        renderizarBotonesPaginador(totalPaginas);
+    }
+
+    function renderizarBotonesPaginador(totalPaginas) {
+        const ul = document.getElementById('paginadorUI');
+        if (totalPaginas <= 1) {
+            ul.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+
+        // Botón Anterior
+        const deshabAnt = (paginaActual === 1) ? ' disabled' : '';
+        html += `<li class="page-item${deshabAnt}"><button class="page-link" onclick="cambiarPagina(${paginaActual - 1})"><i class="bi bi-chevron-left"></i></button></li>`;
+
+        // Rango de páginas visibles (máximo 7 botones)
+        let inicioPag = Math.max(1, paginaActual - 3);
+        let finPag = Math.min(totalPaginas, inicioPag + 6);
+        if (finPag - inicioPag < 6) {
+            inicioPag = Math.max(1, finPag - 6);
+        }
+
+        if (inicioPag > 1) {
+            html += `<li class="page-item"><button class="page-link" onclick="cambiarPagina(1)">1</button></li>`;
+            if (inicioPag > 2) {
+                html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+            }
+        }
+
+        for (let p = inicioPag; p <= finPag; p++) {
+            const activa = (p === paginaActual) ? ' active' : '';
+            html += `<li class="page-item${activa}"><button class="page-link" onclick="cambiarPagina(${p})">${p}</button></li>`;
+        }
+
+        if (finPag < totalPaginas) {
+            if (finPag < totalPaginas - 1) {
+                html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+            }
+            html += `<li class="page-item"><button class="page-link" onclick="cambiarPagina(${totalPaginas})">${totalPaginas}</button></li>`;
+        }
+
+        // Botón Siguiente
+        const deshabSig = (paginaActual === totalPaginas) ? ' disabled' : '';
+        html += `<li class="page-item${deshabSig}"><button class="page-link" onclick="cambiarPagina(${paginaActual + 1})"><i class="bi bi-chevron-right"></i></button></li>`;
+
+        ul.innerHTML = html;
+    }
+
+    function cambiarPagina(nuevaPagina) {
+        paginaActual = nuevaPagina;
+        renderizarPaginaActual();
+        // Desplazamiento suave al inicio de la tabla
+        document.getElementById('tablaResultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function limpiarFiltros() {
         document.getElementById('filtroTexto').value = '';
         document.getElementById('filtroUV').value = '';
-        document.getElementById('filtroMZA').value = '';
         document.getElementById('filtroLote').value = '';
+        actualizarComboboxManzanasPorUV('');
+        document.getElementById('filtroMZA').value = '';
         ejecutarBusquedaAsincrona();
     }
 
-    function extraerDatosDeTablaInicial() {
-        const rows = document.querySelectorAll('#cuerpoTabla tr');
-        datosActuales = [];
-        rows.forEach(r => {
-            const cells = r.querySelectorAll('td');
-            if (cells.length >= 7) {
-                datosActuales.push({
-                    codFijo: cells[0].innerText.trim(),
-                    nombre: cells[1].innerText.trim(),
-                    uv: cells[2].innerText.trim(),
-                    mza: cells[3].innerText.trim(),
-                    nroLote: cells[4].innerText.trim(),
-                    estadoDesc: cells[5].innerText.trim(),
-                    fechaCambioEstado: cells[6].innerText.trim()
-                });
-            }
-        });
-    }
-
+    // Exportación CSV: EXPORTA TODOS LOS REGISTROS FILTRADOS (no sólo la página visible de 20)
     function exportarCSV() {
-        const rows = document.querySelectorAll("#tablaResultados tr");
-        if (!rows || rows.length <= 1) {
-            alert("No hay datos para exportar.");
+        if (!datosActuales || datosActuales.length === 0) {
+            alert("No hay registros para exportar con los filtros actuales.");
             return;
         }
 
-        let csv = [];
-        for (let i = 0; i < rows.length; i++) {
-            let row = [], cols = rows[i].querySelectorAll("td, th");
-            for (let j = 0; j < cols.length - 1; j++) {
-                let texto = cols[j].innerText.replace(/"/g, '""').trim();
-                row.push('"' + texto + '"');
-            }
-            csv.push(row.join(";"));
+        let lineas = [];
+        // Encabezados
+        lineas.push(["Código Fijo", "Titular", "UV", "Manzana", "Lote", "Estado", "Fecha Último Estado", "Latitud", "Longitud"].map(h => `"${h}"`).join(";"));
+
+        // Datos completos del filtro activo
+        for (let i = 0; i < datosActuales.length; i++) {
+            const it = datosActuales[i];
+            const cod = it.codFijo || '';
+            const nom = (it.nombre || '').replace(/"/g, '""');
+            const uv = (it.uv || '').replace(/"/g, '""');
+            const mza = (it.mza || '').replace(/"/g, '""');
+            const lote = (it.nroLote || '').replace(/"/g, '""');
+            const estado = it.estadoDesc || '';
+            const fecha = it.fechaCambioEstado ? it.fechaCambioEstado.substring(0, 10) : '';
+            const lat = it.latitud ? Number(it.latitud).toFixed(6) : '';
+            const lng = it.longitud ? Number(it.longitud).toFixed(6) : '';
+
+            lineas.push([`"${cod}"`, `"${nom}"`, `"${uv}"`, `"${mza}"`, `"${lote}"`, `"${estado}"`, `"${fecha}"`, `"${lat}"`, `"${lng}"`].join(";"));
         }
 
-        const blob = new Blob(["\uFEFF" + csv.join("\r\n")], { type: "text/csv;charset=utf-8;" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `Inmuebles_Filtro_${new Date().toISOString().substring(0, 10)}.csv`;
-        link.click();
+        const csvContent = "\uFEFF" + lineas.join("\r\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const enlace = document.createElement("a");
+        enlace.href = URL.createObjectURL(blob);
+        enlace.download = `Inmuebles_Export_${new Date().toISOString().substring(0, 10)}.csv`;
+        enlace.click();
     }
 </script>
 }

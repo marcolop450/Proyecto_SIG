@@ -22,7 +22,7 @@ public class ConsultasController : Controller
         ViewBag.Mza = mza;
         ViewBag.Lote = lote;
 
-        var filtros = await _geoDataService.ObtenerFiltrosDisponiblesAsync();
+        var filtros = await _geoDataService.ObtenerFiltrosDisponiblesAsync(uv);
         ViewBag.ListaUV = filtros.ListaUV;
         ViewBag.ListaMZA = filtros.ListaMZA;
         ViewBag.ListaLotes = filtros.ListaLotes;

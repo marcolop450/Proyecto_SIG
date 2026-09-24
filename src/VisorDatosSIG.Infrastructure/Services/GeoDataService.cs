@@ -149,31 +149,40 @@ public class GeoDataService : IGeoDataService
         );
     }
 
-    public async Task<FiltrosDisponiblesDto> ObtenerFiltrosDisponiblesAsync()
+    public async Task<FiltrosDisponiblesDto> ObtenerFiltrosDisponiblesAsync(string? uv = null)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
 
-        const string sql = @"
-            SELECT DISTINCT LTRIM(RTRIM(UV)) AS UV 
-            FROM dbo.Manzanas 
-            WHERE UV IS NOT NULL AND LTRIM(RTRIM(UV)) <> '' 
-            ORDER BY UV;
+        string? uvNormal = string.IsNullOrWhiteSpace(uv) ? null : uv.Trim();
 
-            SELECT DISTINCT LTRIM(RTRIM(MZA)) AS MZA 
-            FROM dbo.Manzanas 
-            WHERE MZA IS NOT NULL AND LTRIM(RTRIM(MZA)) <> '' 
-            ORDER BY MZA;
+        const string sqlUV = @"
+            SELECT DISTINCT LTRIM(RTRIM(m.UV)) AS UV 
+            FROM dbo.CodigosFijos c
+            JOIN dbo.Lotes l ON l.IdLote = c.IdLote
+            JOIN dbo.Manzanas m ON m.IdManzana = l.IdManzana
+            WHERE m.UV IS NOT NULL AND LTRIM(RTRIM(m.UV)) <> '' 
+            ORDER BY UV;";
 
-            SELECT DISTINCT TOP 100 LTRIM(RTRIM(NroLote)) AS NroLote 
-            FROM dbo.Lotes 
-            WHERE NroLote IS NOT NULL AND LTRIM(RTRIM(NroLote)) <> '' 
+        const string sqlMZA = @"
+            SELECT DISTINCT LTRIM(RTRIM(m.MZA)) AS MZA 
+            FROM dbo.CodigosFijos c
+            JOIN dbo.Lotes l ON l.IdLote = c.IdLote
+            JOIN dbo.Manzanas m ON m.IdManzana = l.IdManzana
+            WHERE m.MZA IS NOT NULL AND LTRIM(RTRIM(m.MZA)) <> ''
+              AND (@UV IS NULL OR m.UV = @UV OR m.UV LIKE '%' + @UV + '%')
+            ORDER BY MZA;";
+
+        const string sqlLotes = @"
+            SELECT DISTINCT TOP 100 LTRIM(RTRIM(l.NroLote)) AS NroLote 
+            FROM dbo.CodigosFijos c
+            JOIN dbo.Lotes l ON l.IdLote = c.IdLote
+            WHERE l.NroLote IS NOT NULL AND LTRIM(RTRIM(l.NroLote)) <> '' 
             ORDER BY NroLote;";
 
-        using var multi = await conn.QueryMultipleAsync(sql);
-        var uvs = (await multi.ReadAsync<string>()).ToList();
-        var mzas = (await multi.ReadAsync<string>()).ToList();
-        var lotes = (await multi.ReadAsync<string>()).ToList();
+        var uvs = (await conn.QueryAsync<string>(sqlUV)).ToList();
+        var mzas = (await conn.QueryAsync<string>(sqlMZA, new { UV = uvNormal })).ToList();
+        var lotes = (await conn.QueryAsync<string>(sqlLotes)).ToList();
 
         return new FiltrosDisponiblesDto
         {
