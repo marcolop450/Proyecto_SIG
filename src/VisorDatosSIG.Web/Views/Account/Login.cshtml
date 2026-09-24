@@ -11,6 +11,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - VisorDatosSIG</title>
     
+    <!-- Favicon / Logo -->
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+    <link rel="shortcut icon" href="~/favicon.svg" />
+
     <!-- Google Fonts: Space Grotesk + Plus Jakarta Sans + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,26 +87,26 @@
         }
 
         .wave-1 {
-            animation: waveMotion1 11s ease-in-out infinite alternate;
+            animation: waveMotion1 4.5s ease-in-out infinite alternate;
         }
         .wave-2 {
-            animation: waveMotion2 15s ease-in-out infinite alternate;
+            animation: waveMotion2 6s ease-in-out infinite alternate;
         }
         .wave-3 {
-            animation: waveMotion3 13s ease-in-out infinite alternate;
+            animation: waveMotion3 5s ease-in-out infinite alternate;
         }
         .wave-4 {
-            animation: waveMotion1 17s ease-in-out infinite alternate-reverse;
+            animation: waveMotion1 6.5s ease-in-out infinite alternate-reverse;
         }
         .wave-5 {
-            animation: waveMotion2 12s ease-in-out infinite alternate-reverse;
+            animation: waveMotion2 4.8s ease-in-out infinite alternate-reverse;
         }
         .wave-6 {
-            animation: waveMotion3 14s ease-in-out infinite alternate-reverse;
+            animation: waveMotion3 5.2s ease-in-out infinite alternate-reverse;
         }
 
         .wave-dashed {
-            animation: waveDashFlow 24s linear infinite;
+            animation: waveDashFlow 8s linear infinite;
         }
 
         @@keyframes waveDashFlow {
@@ -219,27 +223,6 @@
             letter-spacing: 1px;
             color: var(--text-muted);
             font-weight: 600;
-        }
-
-        .coord-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 0.65rem;
-            padding: 0.22rem 0.65rem;
-            background: #ECE8DE;
-            border: 1px solid #DBD6C9;
-            border-radius: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: #4A5046;
-        }
-
-        .coord-badge .pulse-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: #388E3C;
         }
 
         /* Body */
@@ -439,15 +422,9 @@
         <div class="card-accent-bar"></div>
 
         <div class="card-header-custom">
-            <div class="sig-emblem">
-                <i class="bi bi-compass"></i>
-            </div>
+            <img src="~/logo.svg" alt="VisorDatosSIG Logo" style="width: 58px; height: 58px; margin: 0 auto 0.9rem; display: block;" />
             <h1 class="brand-title">VisorDatos<span>SIG</span></h1>
             <p class="brand-subtitle">Catastro y Territorio Municipal</p>
-            <div class="coord-badge">
-                <span class="pulse-dot"></span>
-                <span>16°22'28"S  60°57'35"W  •  SRID 4326</span>
-            </div>
         </div>
 
         <div class="card-body-custom">

@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Visor Cartográfico";
 }
 
@@ -11,9 +11,12 @@
     </div>
     <div class="col-md-7">
         <div class="input-group">
-            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <span class="input-group-text bg-white border-end-0">
+                <img src="~/logo.svg" alt="SIG" style="width: 20px; height: 20px; vertical-align: middle;" />
+            </span>
             <input type="text" id="txtBusquedaRapida" class="form-control border-start-0" placeholder="Buscar por código, titular, UV, MZA o lote..." style="background: #FFFFFF; border-color: #C9C5B9;" />
             <button id="btnBuscarRapido" class="btn btn-olive d-flex align-items-center gap-1" type="button">
+                <i class="bi bi-search"></i>
                 Buscar
             </button>
             <button id="btnResetZoom" class="btn btn-sand d-flex align-items-center gap-1" type="button" title="Extensión General">
