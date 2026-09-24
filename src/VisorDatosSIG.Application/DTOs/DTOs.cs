@@ -1,4 +1,4 @@
-﻿namespace VisorDatosSIG.Application.DTOs;
+namespace VisorDatosSIG.Application.DTOs;
 
 public class LoginDto
 {
@@ -60,4 +60,11 @@ public class EstadisticasCapasDto
     public int TotalLotes { get; set; }
     public int TotalCodigosFijos { get; set; }
     public int TotalVias { get; set; }
+}
+
+public class FiltrosDisponiblesDto
+{
+    public List<string> ListaUV { get; set; } = new();
+    public List<string> ListaMZA { get; set; } = new();
+    public List<string> ListaLotes { get; set; } = new();
 }

@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using Dapper;
 using Microsoft.Data.SqlClient;
@@ -147,6 +147,40 @@ public class GeoDataService : IGeoDataService
             p,
             commandType: System.Data.CommandType.StoredProcedure
         );
+    }
+
+    public async Task<FiltrosDisponiblesDto> ObtenerFiltrosDisponiblesAsync()
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        const string sql = @"
+            SELECT DISTINCT LTRIM(RTRIM(UV)) AS UV 
+            FROM dbo.Manzanas 
+            WHERE UV IS NOT NULL AND LTRIM(RTRIM(UV)) <> '' 
+            ORDER BY UV;
+
+            SELECT DISTINCT LTRIM(RTRIM(MZA)) AS MZA 
+            FROM dbo.Manzanas 
+            WHERE MZA IS NOT NULL AND LTRIM(RTRIM(MZA)) <> '' 
+            ORDER BY MZA;
+
+            SELECT DISTINCT TOP 100 LTRIM(RTRIM(NroLote)) AS NroLote 
+            FROM dbo.Lotes 
+            WHERE NroLote IS NOT NULL AND LTRIM(RTRIM(NroLote)) <> '' 
+            ORDER BY NroLote;";
+
+        using var multi = await conn.QueryMultipleAsync(sql);
+        var uvs = (await multi.ReadAsync<string>()).ToList();
+        var mzas = (await multi.ReadAsync<string>()).ToList();
+        var lotes = (await multi.ReadAsync<string>()).ToList();
+
+        return new FiltrosDisponiblesDto
+        {
+            ListaUV = uvs,
+            ListaMZA = mzas,
+            ListaLotes = lotes
+        };
     }
 
     public async Task<object?> ObtenerDetalleEntidadAsync(string capa, int id)

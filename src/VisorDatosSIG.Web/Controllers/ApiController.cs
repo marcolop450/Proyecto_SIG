@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VisorDatosSIG.Application.Interfaces;
 
@@ -62,6 +62,13 @@ public class ApiController : ControllerBase
         return Ok(resultados);
     }
 
+    [HttpGet("filtros")]
+    public async Task<IActionResult> GetFiltros()
+    {
+        var filtros = await _geoDataService.ObtenerFiltrosDisponiblesAsync();
+        return Ok(filtros);
+    }
+
     [HttpGet("detalle")]
     public async Task<IActionResult> Detalle([FromQuery] string capa, [FromQuery] int id)
     {
@@ -70,3 +77,4 @@ public class ApiController : ControllerBase
         return Ok(detalle);
     }
 }
+

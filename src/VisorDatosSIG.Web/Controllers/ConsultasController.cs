@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VisorDatosSIG.Application.Interfaces;
 
@@ -22,11 +22,10 @@ public class ConsultasController : Controller
         ViewBag.Mza = mza;
         ViewBag.Lote = lote;
 
-        if (string.IsNullOrWhiteSpace(texto) && string.IsNullOrWhiteSpace(uv) && 
-            string.IsNullOrWhiteSpace(mza) && string.IsNullOrWhiteSpace(lote))
-        {
-            return View(Enumerable.Empty<VisorDatosSIG.Application.DTOs.InmuebleSearchResultDto>());
-        }
+        var filtros = await _geoDataService.ObtenerFiltrosDisponiblesAsync();
+        ViewBag.ListaUV = filtros.ListaUV;
+        ViewBag.ListaMZA = filtros.ListaMZA;
+        ViewBag.ListaLotes = filtros.ListaLotes;
 
         var results = await _geoDataService.BuscarInmueblesAsync(texto, uv, mza, lote);
         return View(results);

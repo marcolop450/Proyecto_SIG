@@ -1,7 +1,7 @@
 @model VisorDatosSIG.Application.DTOs.LoginDto
 @{
-    ViewData["Title"] = "Acceso Seguro al Sistema SIG";
-    Layout = null; // Autocontenido con estética inmersiva personalizada
+    ViewData["Title"] = "Acceso Seguro";
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -14,7 +14,7 @@
     <!-- Google Fonts: Space Grotesk + Plus Jakarta Sans + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     
     <!-- Bootstrap 5.3 & Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
@@ -22,17 +22,15 @@
 
     <style>
         :root {
-            --bg-deep: #0D110F;
-            --bg-surface: #141A16;
-            --bg-card: rgba(20, 26, 22, 0.88);
-            --gold-primary: #C89D3C;
-            --gold-hover: #DFB453;
-            --gold-glow: rgba(200, 157, 60, 0.25);
-            --emerald-accent: #3E6349;
-            --text-main: #EDEDE8;
-            --text-muted: #959C94;
-            --border-subtle: rgba(200, 157, 60, 0.22);
-            --border-hover: rgba(200, 157, 60, 0.55);
+            --bg-page: #F5F3EC;
+            --bg-card: #FFFFFF;
+            --border-subtle: #DFDBD1;
+            --border-focus: #C89D3C;
+            --gold-primary: #B88B2A;
+            --gold-gradient: linear-gradient(135deg, #C89D3C 0%, #A97E25 100%);
+            --text-dark: #242722;
+            --text-muted: #6F756C;
+            --olive-accent: #44644B;
         }
 
         * {
@@ -43,8 +41,8 @@
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
+            background-color: var(--bg-page);
+            color: var(--text-dark);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -54,134 +52,89 @@
             padding: 1.5rem 1rem;
         }
 
-        /* Topographic Contour Lines Animated SVG Background */
-        .carto-bg {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            opacity: 0.18;
-            pointer-events: none;
-            background-image: radial-gradient(circle at 50% 30%, rgba(62, 99, 73, 0.4) 0%, transparent 70%),
-                              radial-gradient(circle at 80% 80%, rgba(200, 157, 60, 0.2) 0%, transparent 60%);
-            background-repeat: no-repeat;
-        }
-
+        /* Cartographic Grid & Topo Background (Light Palette) */
         .carto-grid {
             position: fixed;
             inset: 0;
             z-index: 1;
             pointer-events: none;
-            background-size: 60px 60px;
+            background-size: 50px 50px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                linear-gradient(to right, rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
         }
 
-        /* Cartographic SVG Topo Pattern */
         .topo-svg {
             position: fixed;
             inset: 0;
             z-index: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.12;
+            opacity: 0.35;
             pointer-events: none;
         }
 
-        /* Main Card */
+        /* Login Card */
         .login-card {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 460px;
+            max-width: 440px;
             background: var(--bg-card);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--border-subtle);
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 
-                0 30px 60px -15px rgba(0, 0, 0, 0.75),
-                0 0 40px -10px var(--gold-glow),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+                0 20px 45px rgba(0, 0, 0, 0.07),
+                0 2px 10px rgba(0, 0, 0, 0.03);
             overflow: hidden;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .login-card:hover {
-            border-color: var(--border-hover);
-            box-shadow: 
-                0 35px 70px -15px rgba(0, 0, 0, 0.85),
-                0 0 50px -5px rgba(200, 157, 60, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            animation: cardAppear 0.5s ease-out forwards;
         }
 
         @@keyframes cardAppear {
-            0% {
-                opacity: 0;
-                transform: translateY(24px) scale(0.97);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(16px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* Top Accent Banner */
+        /* Top Accent Bar */
         .card-accent-bar {
             height: 4px;
-            background: linear-gradient(90deg, #3E6349 0%, #C89D3C 50%, #E4C06A 75%, #3E6349 100%);
-            background-size: 200% auto;
-            animation: shimmerBar 4s linear infinite;
+            background: linear-gradient(90deg, #44644B 0%, #C89D3C 50%, #44644B 100%);
         }
 
-        @@keyframes shimmerBar {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
-
-        /* Card Header */
+        /* Header */
         .card-header-custom {
-            padding: 2.2rem 2.2rem 1.4rem;
+            padding: 2rem 2rem 1.2rem;
             text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            position: relative;
+            background: #FAF9F6;
+            border-bottom: 1px solid #EFECE4;
         }
 
         .sig-emblem {
-            width: 58px;
-            height: 58px;
-            margin: 0 auto 1.2rem;
-            background: linear-gradient(135deg, rgba(200, 157, 60, 0.2) 0%, rgba(62, 99, 73, 0.25) 100%);
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 0.9rem;
+            background: #F4F2EC;
             border: 1.5px solid var(--gold-primary);
-            border-radius: 14px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(200, 157, 60, 0.25);
-            position: relative;
             transform: rotate(45deg);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
 
         .sig-emblem i {
             transform: rotate(-45deg);
-            font-size: 1.6rem;
+            font-size: 1.45rem;
             color: var(--gold-primary);
-        }
-
-        .login-card:hover .sig-emblem {
-            transform: rotate(45deg) scale(1.05);
-            box-shadow: 0 0 30px rgba(200, 157, 60, 0.4);
         }
 
         .brand-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.55rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #FFFFFF;
-            margin-bottom: 0.3rem;
+            color: var(--text-dark);
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.3px;
         }
 
         .brand-title span {
@@ -189,161 +142,144 @@
         }
 
         .brand-subtitle {
-            font-size: 0.78rem;
+            font-size: 0.74rem;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
             color: var(--text-muted);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .coord-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            margin-top: 0.8rem;
-            padding: 0.28rem 0.75rem;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
+            margin-top: 0.65rem;
+            padding: 0.22rem 0.65rem;
+            background: #ECE8DE;
+            border: 1px solid #DBD6C9;
+            border-radius: 16px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            color: #C5CCC3;
+            font-size: 0.7rem;
+            color: #4A5046;
         }
 
         .coord-badge .pulse-dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background-color: #4CAF50;
-            box-shadow: 0 0 8px #4CAF50;
-            animation: pulseDot 2s infinite;
+            background-color: #388E3C;
         }
 
-        @@keyframes pulseDot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.8); }
-        }
-
-        /* Card Body */
+        /* Body */
         .card-body-custom {
-            padding: 1.8rem 2.2rem 2.2rem;
+            padding: 1.8rem 2rem;
         }
 
         .form-label-custom {
-            font-size: 0.78rem;
-            font-weight: 600;
+            font-size: 0.76rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: #B5BAB2;
-            margin-bottom: 0.45rem;
+            letter-spacing: 0.6px;
+            color: #494E45;
+            margin-bottom: 0.35rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .input-group-custom {
-            position: relative;
             display: flex;
             align-items: center;
-            background: rgba(12, 16, 14, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 8px;
-            transition: all 0.25s ease;
+            background: #FAF9F6;
+            border: 1px solid #D5D0C3;
+            border-radius: 6px;
+            transition: all 0.2s ease;
         }
 
         .input-group-custom:focus-within {
-            border-color: var(--gold-primary);
-            box-shadow: 0 0 0 3px var(--gold-glow);
-            background: rgba(15, 20, 17, 0.95);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(200, 157, 60, 0.2);
+            background: #FFFFFF;
         }
 
         .input-icon {
-            padding: 0 0.9rem;
+            padding: 0 0.8rem;
             color: var(--gold-primary);
-            font-size: 1.05rem;
+            font-size: 0.95rem;
         }
 
         .form-control-custom {
             width: 100%;
             background: transparent;
             border: none;
-            color: #FFFFFF;
-            padding: 0.72rem 0.9rem 0.72rem 0;
-            font-size: 0.92rem;
+            color: var(--text-dark);
+            padding: 0.65rem 0.8rem 0.65rem 0;
+            font-size: 0.9rem;
             font-family: 'Plus Jakarta Sans', sans-serif;
             outline: none;
         }
 
         .form-control-custom::placeholder {
-            color: #5D635C;
-            font-size: 0.86rem;
+            color: #A0A59D;
+            font-size: 0.84rem;
         }
 
         .btn-toggle-pwd {
             background: none;
             border: none;
-            color: #798076;
-            padding: 0 0.9rem;
-            font-size: 1rem;
+            color: #8C9188;
+            padding: 0 0.8rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: color 0.2s ease;
         }
 
         .btn-toggle-pwd:hover {
-            color: var(--text-main);
+            color: var(--text-dark);
         }
 
         /* Submit Button */
         .btn-submit {
-            position: relative;
-            overflow: hidden;
             width: 100%;
-            padding: 0.85rem 1.5rem;
-            margin-top: 1.4rem;
-            background: linear-gradient(135deg, #C89D3C 0%, #A9802A 100%);
-            color: #111413;
+            padding: 0.75rem 1.2rem;
+            margin-top: 1.2rem;
+            background: var(--gold-gradient);
+            color: #FFFFFF;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 0.92rem;
-            letter-spacing: 1px;
+            font-size: 0.88rem;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(200, 157, 60, 0.35);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 3px 10px rgba(184, 139, 42, 0.25);
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 7px;
         }
 
         .btn-submit:hover {
-            background: linear-gradient(135deg, #DFB453 0%, #BA8F33 100%);
-            box-shadow: 0 6px 25px rgba(200, 157, 60, 0.55);
+            opacity: 0.94;
             transform: translateY(-1px);
-            color: #0A0D0B;
+            box-shadow: 0 5px 15px rgba(184, 139, 42, 0.35);
         }
 
-        .btn-submit:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 10px rgba(200, 157, 60, 0.3);
-        }
-
-        /* Quick Roles Selector */
+        /* Quick Roles */
         .roles-section {
-            margin-top: 1.8rem;
-            padding-top: 1.4rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 1.5rem;
+            padding-top: 1.1rem;
+            border-top: 1px solid #ECE9E1;
         }
 
         .roles-label {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.6px;
             color: var(--text-muted);
             text-align: center;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.6rem;
             font-weight: 600;
         }
 
@@ -354,56 +290,54 @@
         }
 
         .role-pill {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #FAF9F6;
+            border: 1px solid #E0DCD2;
             border-radius: 6px;
-            padding: 0.45rem 0.3rem;
-            color: #BAC2B8;
+            padding: 0.45rem 0.25rem;
+            color: #494E45;
             font-size: 0.74rem;
-            font-weight: 500;
+            font-weight: 600;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 2px;
-            user-select: none;
         }
 
         .role-pill i {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--gold-primary);
         }
 
         .role-pill:hover {
-            background: rgba(200, 157, 60, 0.12);
-            border-color: rgba(200, 157, 60, 0.35);
-            color: #FFFFFF;
-            transform: translateY(-1px);
+            background: #ECE8DE;
+            border-color: var(--border-focus);
+            color: var(--text-dark);
         }
 
         /* Alert */
         .alert-error-custom {
-            background: rgba(184, 74, 57, 0.15);
-            border: 1px solid rgba(184, 74, 57, 0.4);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            margin-bottom: 1.2rem;
-            color: #FFA596;
-            font-size: 0.82rem;
+            background: #FDF3F2;
+            border: 1px solid #F0C4C0;
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            margin-bottom: 1rem;
+            color: #9C2E24;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
         }
 
         /* Footer */
         .card-footer-custom {
-            padding: 0.9rem 1.5rem;
-            background: rgba(10, 13, 11, 0.6);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.72rem;
-            color: #6C726A;
+            padding: 0.75rem 1.2rem;
+            background: #FAF9F6;
+            border-top: 1px solid #EFECE4;
+            font-size: 0.7rem;
+            color: #798075;
             text-align: center;
             display: flex;
             align-items: center;
@@ -415,26 +349,22 @@
 </head>
 <body>
 
-    <!-- Atmospheric Layers -->
-    <div class="carto-bg"></div>
+    <!-- Background Grid -->
     <div class="carto-grid"></div>
 
-    <!-- Topographic Contour Lines Overlay (Pure SVG) -->
+    <!-- Topographic Contour Lines SVG (Light Tones) -->
     <svg class="topo-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M-200,200 C150,100 350,300 700,150 C950,50 1100,250 1300,150" fill="none" stroke="#C89D3C" stroke-width="1.2" stroke-dasharray="6,4"/>
-        <path d="M-200,320 C100,220 400,420 750,270 C1000,170 1150,350 1300,270" fill="none" stroke="#C89D3C" stroke-width="0.8"/>
-        <path d="M-200,450 C200,350 450,550 820,400 C1050,300 1200,500 1300,400" fill="none" stroke="#3E6349" stroke-width="1.2" stroke-dasharray="4,4"/>
-        <path d="M-200,580 C150,480 500,680 880,520 C1100,420 1250,620 1300,530" fill="none" stroke="#C89D3C" stroke-width="0.8"/>
-        <path d="M-200,720 C250,600 550,800 920,650 C1150,550 1220,750 1300,680" fill="none" stroke="#3E6349" stroke-width="1.2"/>
-        <path d="M-200,850 C200,750 600,920 980,780 C1180,680 1280,880 1300,820" fill="none" stroke="#C89D3C" stroke-width="0.8" stroke-dasharray="6,4"/>
+        <path d="M-200,340 C100,240 400,440 750,290 C1000,190 1150,370 1300,290" fill="none" stroke="#C89D3C" stroke-width="0.8"/>
+        <path d="M-200,480 C200,380 450,580 820,430 C1050,330 1200,530 1300,430" fill="none" stroke="#44644B" stroke-width="1.2" stroke-dasharray="4,4"/>
+        <path d="M-200,620 C150,520 500,720 880,560 C1100,460 1250,660 1300,570" fill="none" stroke="#C89D3C" stroke-width="0.8"/>
+        <path d="M-200,760 C250,640 550,840 920,690 C1150,590 1220,790 1300,720" fill="none" stroke="#44644B" stroke-width="1.2"/>
     </svg>
 
-    <!-- Main Login Container -->
+    <!-- Card -->
     <div class="login-card">
-        <!-- Top Shimmer Bar -->
         <div class="card-accent-bar"></div>
 
-        <!-- Header -->
         <div class="card-header-custom">
             <div class="sig-emblem">
                 <i class="bi bi-compass"></i>
@@ -447,16 +377,12 @@
             </div>
         </div>
 
-        <!-- Body Form -->
         <div class="card-body-custom">
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="alert-error-custom">
-                    <i class="bi bi-shield-slash fs-5"></i>
-                    <div>
-                        <strong>Credenciales inválidas</strong>
-                        <div style="font-size: 0.76rem; opacity: 0.85;">Verifique el usuario y contraseña e intente nuevamente.</div>
-                    </div>
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <span>Usuario o contraseña incorrectos.</span>
                 </div>
             }
 
@@ -464,11 +390,10 @@
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
 
-                <!-- Usuario -->
                 <div class="mb-3">
                     <label asp-for="Usuario" class="form-label-custom">
                         <i class="bi bi-person"></i>
-                        Usuario del Sistema
+                        Usuario
                     </label>
                     <div class="input-group-custom">
                         <span class="input-icon"><i class="bi bi-person-badge"></i></span>
@@ -476,7 +401,6 @@
                     </div>
                 </div>
 
-                <!-- Contraseña -->
                 <div class="mb-3">
                     <label asp-for="Password" class="form-label-custom">
                         <i class="bi bi-key"></i>
@@ -485,67 +409,47 @@
                     <div class="input-group-custom">
                         <span class="input-icon"><i class="bi bi-shield-lock"></i></span>
                         <input asp-for="Password" id="inputPassword" type="password" class="form-control-custom" placeholder="••••••••••••" required autocomplete="current-password" />
-                        <button type="button" class="btn-toggle-pwd" id="btnTogglePassword" title="Mostrar/Ocultar contraseña" tabindex="-1">
+                        <button type="button" class="btn-toggle-pwd" id="btnTogglePassword" title="Mostrar/Ocultar" tabindex="-1">
                             <i class="bi bi-eye" id="iconEye"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Botón de Envío -->
                 <button type="submit" class="btn-submit" id="btnIngresar">
                     <i class="bi bi-box-arrow-in-right"></i>
-                    <span>Ingresar al Sistema</span>
+                    <span>Ingresar</span>
                 </button>
             </form>
 
-            <!-- Acceso Rápido por Perfiles (Demostración y Auditoría) -->
             <div class="roles-section">
-                <div class="roles-label">
-                    <i class="bi bi-lightning-charge me-1" style="color: var(--gold-primary);"></i>
-                    Carga Rápida por Perfil Autorizado
-                </div>
+                <div class="roles-label">Carga Rápida de Perfiles</div>
                 <div class="roles-pills">
-                    <div class="role-pill" onclick="cargarCredenciales('consultor', 'Admin123!')" title="Acceso de Consultor (Mapas, Consultas, Reportes, CSV)">
+                    <div class="role-pill" onclick="cargarCredenciales('consultor', 'Admin123!')" title="Consultor (Solo Lectura, Consultas, CSV)">
                         <i class="bi bi-search"></i>
                         <span>Consultor</span>
-                        <span style="font-size: 0.65rem; color: #8F968D;">Solo Lectura</span>
                     </div>
-                    <div class="role-pill" onclick="cargarCredenciales('operador', 'Admin123!')" title="Acceso de Operador (Edición de Estado de Suministros)">
+                    <div class="role-pill" onclick="cargarCredenciales('operador', 'Admin123!')" title="Operador (Actualización de Suministros)">
                         <i class="bi bi-pencil-square"></i>
                         <span>Operador</span>
-                        <span style="font-size: 0.65rem; color: #8F968D;">Edición</span>
                     </div>
-                    <div class="role-pill" onclick="cargarCredenciales('admin', 'Admin123!')" title="Acceso de Administrador (Total: Usuarios, Bitácora, Config)">
+                    <div class="role-pill" onclick="cargarCredenciales('admin', 'Admin123!')" title="Administrador (Total)">
                         <i class="bi bi-shield-check"></i>
-                        <span>Administrador</span>
-                        <span style="font-size: 0.65rem; color: #8F968D;">Total</span>
+                        <span>Admin</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="card-footer-custom">
-            <i class="bi bi-lock-fill" style="color: var(--gold-primary);"></i>
-            <span>CONEXIÓN SEGURA TLS • SAN IGNACIO DE VELASCO</span>
+            <i class="bi bi-shield-lock" style="color: var(--gold-primary);"></i>
+            <span>SAN IGNACIO DE VELASCO • GOBIERNO MUNICIPAL</span>
         </div>
     </div>
 
-    <!-- Micro-interacción: Llenado de credenciales y toggle de contraseña -->
     <script>
         function cargarCredenciales(usr, pwd) {
-            const inUser = document.getElementById('inputUsuario');
-            const inPass = document.getElementById('inputPassword');
-            inUser.value = usr;
-            inPass.value = pwd;
-
-            // Micro-feedback visual
-            inUser.style.transform = 'scale(1.02)';
-            inPass.style.transform = 'scale(1.02)';
-            setTimeout(() => {
-                inUser.style.transform = 'none';
-                inPass.style.transform = 'none';
-            }, 180);
+            document.getElementById('inputUsuario').value = usr;
+            document.getElementById('inputPassword').value = pwd;
         }
 
         document.getElementById('btnTogglePassword').addEventListener('click', function () {
@@ -562,7 +466,7 @@
 
         document.getElementById('formLogin').addEventListener('submit', function () {
             const btn = document.getElementById('btnIngresar');
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Validando...';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Ingresando...';
             btn.style.opacity = '0.85';
             btn.style.pointerEvents = 'none';
         });

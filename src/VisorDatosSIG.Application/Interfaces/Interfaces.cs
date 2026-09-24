@@ -1,4 +1,4 @@
-﻿using VisorDatosSIG.Application.DTOs;
+using VisorDatosSIG.Application.DTOs;
 using VisorDatosSIG.Domain.Entities;
 
 namespace VisorDatosSIG.Application.Interfaces;
@@ -17,5 +17,6 @@ public interface IGeoDataService
     Task<string> ObtenerViasGeoJsonAsync(string? bbox = null);
     Task<string> ObtenerCodigosFijosGeoJsonAsync(string? bbox = null, int limit = 3000);
     Task<IEnumerable<InmuebleSearchResultDto>> BuscarInmueblesAsync(string? texto, string? uv, string? mza, string? lote);
+    Task<FiltrosDisponiblesDto> ObtenerFiltrosDisponiblesAsync();
     Task<object?> ObtenerDetalleEntidadAsync(string capa, int id);
 }
