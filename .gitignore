@@ -1,4 +1,4 @@
-﻿## Build and IDE temporary files
+## Build and IDE temporary files
 bin/
 obj/
 .vs/
@@ -22,3 +22,7 @@ Desktop.ini
 
 ## Logs
 *.log
+
+## AI and Agents
+.agents/
+.agents

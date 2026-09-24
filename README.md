@@ -6,6 +6,21 @@ Desarrollado bajo una arquitectura limpia en capas sobre **.NET 8.0 C#**, **Micr
 
 ---
 
+### Información Académica
+* **Materia**: `[2-2026] SISTEMAS DE INFORM.GEOGRAFICA - DI INF442`
+* **Docente**: Ing. PEREZ FERREIRA UBALDO
+* **Semestre**: Semestre 2 - 2026
+
+### Integrantes del Proyecto
+| # | Integrante (Orden Alfabético por Apellido) | Registro |
+| :-: | :--- | :---: |
+| 1 | **Guzman Justiniano**, Nohelia | 222049367 |
+| 2 | **Jimenez Duarte**, Nils Jonathan | 222008741 |
+| 3 | **López Velásquez**, Marco Alejandro | 222008891 |
+| 4 | **Quispe Tito**, Jorge Gabriel | 222009527 |
+
+---
+
 ## 1. Presentación y Arquitectura del Sistema
 
 El proyecto VisorDatosSIG es una plataforma empresarial diseñada para modernizar y centralizar el catastro municipal y la gestión de suministros de servicios básicos. Permite la visualización de capas cartográficas, la consulta multicriterio de predios y códigos fijos de medidores, la edición controlada del estado operativo de los suministros y la trazabilidad integral de eventos.

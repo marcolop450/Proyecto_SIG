@@ -1,10 +1,18 @@
-﻿# Documentación Técnica del Proyecto Integrador: VisorDatosSIG 2026
+# Documentación Técnica del Proyecto Integrador: VisorDatosSIG 2026
 
-**Materia**: Sistemas de Información Geográfica  
+**Materia**: `[2-2026] SISTEMAS DE INFORM.GEOGRAFICA - DI INF442`  
 **Institución**: Universidad Autónoma Gabriel René Moreno (UAGRM) — FICCT  
-**Docente**: Ing. Ubaldo Pérez Ferreira  
-**Modalidad**: Individual  
+**Docente**: Ing. PEREZ FERREIRA UBALDO  
+**Semestre**: 2 - 2026  
 **Entorno Tecnológico**: .NET 8.0 C#, Visual Studio Community 2026, Microsoft SQL Server 2022 (Developer Edition, SRID 4326), Leaflet.js, Bootstrap 5.
+
+### Integrantes del Proyecto
+| # | Integrante (Orden Alfabético por Apellido) | Registro |
+| :-: | :--- | :---: |
+| 1 | **Guzman Justiniano**, Nohelia | 222049367 |
+| 2 | **Jimenez Duarte**, Nils Jonathan | 222008741 |
+| 3 | **López Velásquez**, Marco Alejandro | 222008891 |
+| 4 | **Quispe Tito**, Jorge Gabriel | 222009527 |
 
 ---
 
