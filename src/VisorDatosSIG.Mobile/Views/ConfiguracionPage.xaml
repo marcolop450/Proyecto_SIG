@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VisorDatosSIG.Mobile.Views.ConfiguracionPage"
+             Title="Configuración"
+             BackgroundColor="#F5F5F5">
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="15">
+            <!-- Header -->
+            <Label Text="Configuración y Parámetros del Sistema" FontSize="20" FontAttributes="Bold" TextColor="#333" />
+            <Label Text="Diagnóstico de conectividad, parámetros espaciales OGC y catálogo de persistencia" FontSize="13" TextColor="Gray" Margin="0,-15,0,0" />
+
+            <!-- Motor de Base de Datos Espacial -->
+            <Frame BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="True" BorderColor="Transparent">
+                <VerticalStackLayout Spacing="15">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Motor de Base de Datos Espacial" FontAttributes="Bold" TextColor="#333" FontSize="15" VerticalOptions="Center"/>
+                        <Frame Grid.Column="1" BackgroundColor="#27AE60" Padding="8,4" CornerRadius="3" HasShadow="False" BorderColor="Transparent">
+                            <Label Text="En Línea" TextColor="White" FontSize="10" FontAttributes="Bold" />
+                        </Frame>
+                    </Grid>
+                    
+                    <BoxView HeightRequest="1" Color="#EEEEEE" />
+
+                    <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="12">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Motor RDBMS:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="Microsoft SQL Server 2022" TextColor="#333" FontAttributes="Bold" FontSize="13" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Instancia:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="localhost (MSSQLSERVER)" TextColor="#C9557C" FontSize="13" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Base de Datos:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="VisorDatosSIG" TextColor="#C9557C" FontSize="13" />
+
+                        <Label Grid.Row="3" Grid.Column="0" Text="Tipo Geométrico:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="3" Grid.Column="1" Text="geometry (Plano Cartesiano OGC)" TextColor="#C9557C" FontSize="13" />
+
+                        <Label Grid.Row="4" Grid.Column="0" Text="SRID de Referencia:" TextColor="Gray" FontSize="13" VerticalOptions="Center" />
+                        <Frame Grid.Row="4" Grid.Column="1" BackgroundColor="#27AE60" Padding="5,2" CornerRadius="3" HasShadow="False" HorizontalOptions="Start" BorderColor="Transparent">
+                            <Label Text="EPSG:4326 (WGS 84)" TextColor="White" FontSize="11" FontAttributes="Bold" />
+                        </Frame>
+
+                        <Label Grid.Row="5" Grid.Column="0" Text="Índices Espaciales:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="5" Grid.Column="1" Text="GEOMETRY_GRID (SIX_*)" TextColor="#C9557C" FontSize="13" />
+
+                        <Label Grid.Row="6" Grid.Column="0" Text="Autenticación BD:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="6" Grid.Column="1" Text="Windows Integrated Security" TextColor="#C9557C" FontSize="13" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Capas Cartográficas Publicadas -->
+            <Frame BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="True" BorderColor="Transparent">
+                <VerticalStackLayout Spacing="15">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Capas Cartográficas Publicadas" FontAttributes="Bold" TextColor="#333" FontSize="15" VerticalOptions="Center"/>
+                        <Frame Grid.Column="1" BackgroundColor="#5A834B" Padding="8,4" CornerRadius="3" HasShadow="False" BorderColor="Transparent">
+                            <Label Text="4 Capas Validadas" TextColor="White" FontSize="10" FontAttributes="Bold" />
+                        </Frame>
+                    </Grid>
+                    
+                    <BoxView HeightRequest="1" Color="#EEEEEE" />
+
+                    <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="12">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Manzanas Urbanas:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="0 polígonos" TextColor="#333" FontAttributes="Bold" FontSize="13" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Lotes Catastrales:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="0 parcelas" TextColor="#333" FontAttributes="Bold" FontSize="13" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Códigos Fijos:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="0 puntos" TextColor="#333" FontAttributes="Bold" FontSize="13" />
+
+                        <Label Grid.Row="3" Grid.Column="0" Text="Red Vial / Ejes:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="3" Grid.Column="1" Text="0 vías" TextColor="#333" FontAttributes="Bold" FontSize="13" />
+
+                        <Label Grid.Row="4" Grid.Column="0" Text="Protocolo de Servicio:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="4" Grid.Column="1" Text="REST GeoJSON (RFC 7946)" TextColor="#C9557C" FontSize="13" />
+
+                        <Label Grid.Row="5" Grid.Column="0" Text="Proveedores Base:" TextColor="Gray" FontSize="13" />
+                        <Label Grid.Row="5" Grid.Column="1" Text="OpenStreetMap / OpenTopoMap / Esri" TextColor="#333" FontSize="13" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

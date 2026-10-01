@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="VisorDatosSIG.Mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisorDatosSIG.Mobile"
+    xmlns:views="clr-namespace:VisorDatosSIG.Mobile.Views"
+    Title="VisorDatosSIG"
+    FlyoutBackgroundColor="#333333">
+
+    <Shell.Resources>
+        <Style TargetType="FlyoutItem">
+            <Setter Property="Shell.BackgroundColor" Value="#333333" />
+            <Setter Property="Shell.ForegroundColor" Value="White" />
+            <Setter Property="Shell.TitleColor" Value="White" />
+        </Style>
+        <!-- Estilo para los títulos de sección -->
+        <Style TargetType="MenuItem">
+            <Setter Property="Shell.TitleColor" Value="#888888" />
+        </Style>
+    </Shell.Resources>
+
+    <!-- Header del Menú Lateral -->
+    <Shell.FlyoutHeader>
+        <Grid HeightRequest="80" BackgroundColor="#222222" Padding="20,0,20,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="2" />
+            </Grid.RowDefinitions>
+
+            <HorizontalStackLayout Grid.Row="0" VerticalOptions="Center" Spacing="10">
+                <Image Source="dotnet_bot.png" WidthRequest="24" HeightRequest="24" />
+                <Label Text="VisorDatosSIG" TextColor="White" FontSize="20" FontAttributes="Bold" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            
+            <BoxView Grid.Row="1" Color="#C6A664" /> <!-- Línea Dorada -->
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <!-- Ocultamos el Login -->
+    <ShellItem Route="LoginPage" FlyoutItemIsVisible="False">
+        <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" />
+    </ShellItem>
+
+    <!-- MÓDULOS DEL SISTEMA -->
+    <MenuItem Text="MÓDULOS DEL SISTEMA" IsEnabled="False" />
+
+    <FlyoutItem Title="Panel Principal" Icon="dotnet_bot.png">
+        <ShellContent Route="DashboardPage" ContentTemplate="{DataTemplate views:DashboardPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Visor Cartográfico" Icon="dotnet_bot.png">
+        <ShellContent Route="MapPage" ContentTemplate="{DataTemplate views:MapPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Consulta Temática" Icon="dotnet_bot.png">
+        <ShellContent Route="ConsultaPage" ContentTemplate="{DataTemplate views:ConsultaPage}" />
+    </FlyoutItem>
+
+    <!-- ADMINISTRACIÓN -->
+    <MenuItem Text="ADMINISTRACIÓN" IsEnabled="False" />
+
+    <FlyoutItem Title="Usuarios y Roles" Icon="dotnet_bot.png">
+        <ShellContent Route="UsuariosRolesPage" ContentTemplate="{DataTemplate views:UsuariosRolesPage}" />
+    </FlyoutItem>
+    
+    <FlyoutItem Title="Configuración" Icon="dotnet_bot.png">
+        <ShellContent Route="ConfiguracionPage" ContentTemplate="{DataTemplate views:ConfiguracionPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Bitácora" Icon="dotnet_bot.png">
+        <ShellContent Route="BitacoraPage" ContentTemplate="{DataTemplate views:BitacoraPage}" />
+    </FlyoutItem>
+
+    <!-- Footer Flotante (Se añade con un template en MAUI, o lo dejamos estático por ahora) -->
+    
+    <!-- Botón de Cerrar Sesión -->
+    <MenuItem Text="Cerrar Sesión" Clicked="OnLogoutClicked" IconImageSource="dotnet_bot.png" />
+
+</Shell>

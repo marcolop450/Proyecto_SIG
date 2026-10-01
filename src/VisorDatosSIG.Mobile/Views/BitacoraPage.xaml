@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VisorDatosSIG.Mobile.Views.BitacoraPage"
+             Title="Bitácora"
+             BackgroundColor="#F5F5F5">
+    <ScrollView>
+        <VerticalStackLayout Spacing="15" Padding="15">
+            <!-- Header -->
+            <Label Text="Bitácora de Auditoría y Migración" FontSize="20" FontAttributes="Bold" TextColor="#333" />
+            <Label Text="Trazabilidad detallada de eventos de ingesta espacial, transacciones y validaciones OGC" FontSize="12" TextColor="Gray" Margin="0,-10,0,10" />
+
+            <!-- Buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Grid.Column="0" Text="Actualizar" BackgroundColor="#E0E0E0" TextColor="#333" CornerRadius="5" HeightRequest="40" />
+                <Button Grid.Column="1" Text="Copiar Log" BackgroundColor="#5A834B" TextColor="White" CornerRadius="5" HeightRequest="40" />
+            </Grid>
+
+            <!-- Cards 2x2 Grid -->
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                <!-- Card 1 -->
+                <Frame Grid.Row="0" Grid.Column="0" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="True" BorderColor="Transparent">
+                    <VerticalStackLayout>
+                        <Label Text="15" FontSize="22" FontAttributes="Bold" TextColor="#333" />
+                        <Label Text="EVENTOS REGISTRADOS" FontSize="9" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+                <!-- Card 2 -->
+                <Frame Grid.Row="0" Grid.Column="1" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="True" BorderColor="Transparent">
+                    <VerticalStackLayout>
+                        <Label Text="3" FontSize="22" FontAttributes="Bold" TextColor="#27AE60" />
+                        <Label Text="OPERACIONES EXITOSAS" FontSize="9" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+                <!-- Card 3 -->
+                <Frame Grid.Row="1" Grid.Column="0" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="True" BorderColor="Transparent">
+                    <VerticalStackLayout>
+                        <Label Text="6" FontSize="22" FontAttributes="Bold" TextColor="#D35400" />
+                        <Label Text="ADVERTENCIAS CAPTURADAS" FontSize="9" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+                <!-- Card 4 -->
+                <Frame Grid.Row="1" Grid.Column="1" BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="True" BorderColor="Transparent">
+                    <VerticalStackLayout>
+                        <Label Text="192,5 s" FontSize="22" FontAttributes="Bold" TextColor="#333" />
+                        <Label Text="TIEMPO TOTAL DE CARGA" FontSize="9" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
+
+            <!-- Registro de Operaciones -->
+            <Frame BackgroundColor="White" CornerRadius="8" Padding="15" HasShadow="True" BorderColor="Transparent" Margin="0,5,0,0">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="REGISTRO DE OPERACIONES" FontAttributes="Bold" TextColor="#333" FontSize="14" VerticalOptions="Center"/>
+                        <Frame Grid.Column="1" BackgroundColor="#E0E0E0" Padding="8,4" CornerRadius="3" HasShadow="False" BorderColor="Transparent">
+                            <Label Text="15 Registros" TextColor="#555" FontSize="10" FontAttributes="Bold" />
+                        </Frame>
+                    </Grid>
+
+                    <!-- Filtros -->
+                    <Frame BorderColor="#DDDDDD" BackgroundColor="#FAFAFA" Padding="10,0" CornerRadius="5" HasShadow="False" HeightRequest="40">
+                        <Entry Placeholder="Filtrar por texto..." TextColor="#333" VerticalOptions="Center" />
+                    </Frame>
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="Todos" BackgroundColor="#7F8C8D" TextColor="White" CornerRadius="3" HeightRequest="30" Padding="10,0" FontSize="11" />
+                        <Button Text="Éxitos" BackgroundColor="Transparent" BorderColor="#27AE60" BorderWidth="1" TextColor="#27AE60" CornerRadius="3" HeightRequest="30" Padding="10,0" FontSize="11" />
+                        <Button Text="Advertencias" BackgroundColor="Transparent" BorderColor="#D35400" BorderWidth="1" TextColor="#D35400" CornerRadius="3" HeightRequest="30" Padding="10,0" FontSize="11" />
+                    </HorizontalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="#EEEEEE" Margin="0,5" />
+
+                    <!-- Lista de Logs (Adaptación móvil de la tabla) -->
+                    
+                    <!-- Log 1 -->
+                    <VerticalStackLayout Spacing="5">
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="00:37:06" TextColor="#C9557C" FontSize="11" FontFamily="Consolas" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Sistema" TextColor="#333" FontSize="12" FontAttributes="Bold" Margin="10,0,0,0" VerticalOptions="Center" />
+                            <Frame Grid.Column="2" BackgroundColor="#7F8C8D" Padding="8,2" CornerRadius="3" HasShadow="False" BorderColor="Transparent">
+                                <Label Text="Info" TextColor="White" FontSize="10" />
+                            </Frame>
+                        </Grid>
+                        <Label Text="Inicio de migración: 2026-09-24 00:37:06" TextColor="#555" FontSize="12" LineBreakMode="WordWrap" />
+                        <BoxView HeightRequest="1" Color="#F5F5F5" Margin="0,5" />
+                    </VerticalStackLayout>
+
+                    <!-- Log 2 -->
+                    <VerticalStackLayout Spacing="5">
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="00:37:06" TextColor="#C9557C" FontSize="11" FontFamily="Consolas" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Sistema" TextColor="#333" FontSize="12" FontAttributes="Bold" Margin="10,0,0,0" VerticalOptions="Center" />
+                            <Frame Grid.Column="2" BackgroundColor="#7F8C8D" Padding="8,2" CornerRadius="3" HasShadow="False" BorderColor="Transparent">
+                                <Label Text="Info" TextColor="White" FontSize="10" />
+                            </Frame>
+                        </Grid>
+                        <Label Text="Directorio de datos: D:\Proyecto SIG\DatosSIG_Reproj" TextColor="#555" FontSize="12" LineBreakMode="WordWrap" />
+                        <BoxView HeightRequest="1" Color="#F5F5F5" Margin="0,5" />
+                    </VerticalStackLayout>
+
+                    <!-- Log 3 -->
+                    <VerticalStackLayout Spacing="5">
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="00:37:07" TextColor="#C9557C" FontSize="11" FontFamily="Consolas" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Manzanas" TextColor="#333" FontSize="12" FontAttributes="Bold" Margin="10,0,0,0" VerticalOptions="Center" />
+                            <Frame Grid.Column="2" BackgroundColor="#D35400" Padding="8,2" CornerRadius="3" HasShadow="False" BorderColor="Transparent">
+                                <Label Text="Advertencia" TextColor="White" FontSize="10" />
+                            </Frame>
+                        </Grid>
+                        <Label Text="Manzanas: 863 insertadas, 0 omitidos en 474 ms." TextColor="#555" FontSize="12" LineBreakMode="WordWrap" />
+                        <BoxView HeightRequest="1" Color="#F5F5F5" Margin="0,5" />
+                    </VerticalStackLayout>
+
+                    <!-- Log 4 -->
+                    <VerticalStackLayout Spacing="5">
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="00:37:09" TextColor="#C9557C" FontSize="11" FontFamily="Consolas" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Lotes" TextColor="#333" FontSize="12" FontAttributes="Bold" Margin="10,0,0,0" VerticalOptions="Center" />
+                            <Frame Grid.Column="2" BackgroundColor="#D35400" Padding="8,2" CornerRadius="3" HasShadow="False" BorderColor="Transparent">
+                                <Label Text="Advertencia" TextColor="White" FontSize="10" />
+                            </Frame>
+                        </Grid>
+                        <Label Text="Lotes - Advertencia en registro 4916: Invalid polygon geometry." TextColor="#555" FontSize="12" LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

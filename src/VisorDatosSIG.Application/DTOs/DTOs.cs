@@ -1,5 +1,11 @@
 namespace VisorDatosSIG.Application.DTOs;
 
+public class LoginMobileRequest
+{
+    public string Username { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
+
 public class LoginDto
 {
     public string Usuario { get; set; } = string.Empty;

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VisorDatosSIG.Mobile.Views.DashboardPage"
+             Title="Panel Principal"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            
+            <Label Text="Panel Principal" FontSize="24" FontAttributes="Bold" TextColor="#333" />
+            <Label Text="Métricas de las capas cartográficas consolidadas" FontSize="14" TextColor="Gray" Margin="0,-10,0,10" />
+
+            <!-- Tarjetas de Métricas -->
+            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="15" ColumnSpacing="15">
+                
+                <!-- Manzanas -->
+                <Frame Grid.Row="0" Grid.Column="0" BackgroundColor="White" CornerRadius="8" HasShadow="True" Padding="15" BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="0" FontSize="32" FontAttributes="Bold" TextColor="#333" />
+                        <Label Text="MANZANAS" FontSize="12" TextColor="Gray" />
+                        <Label Text="Delimitaciones Urbanas" FontSize="10" TextColor="LightGray" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Lotes -->
+                <Frame Grid.Row="0" Grid.Column="1" BackgroundColor="White" CornerRadius="8" HasShadow="True" Padding="15" BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="0" FontSize="32" FontAttributes="Bold" TextColor="#333" />
+                        <Label Text="LOTES CATASTRALES" FontSize="12" TextColor="Gray" />
+                        <Label Text="Parcelas Urbanas" FontSize="10" TextColor="LightGray" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Códigos Fijos -->
+                <Frame Grid.Row="1" Grid.Column="0" BackgroundColor="White" CornerRadius="8" HasShadow="True" Padding="15" BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="0" FontSize="32" FontAttributes="Bold" TextColor="#333" />
+                        <Label Text="CÓDIGOS FIJOS" FontSize="12" TextColor="Gray" />
+                        <Label Text="Puntos de Medición" FontSize="10" TextColor="LightGray" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Red Vial -->
+                <Frame Grid.Row="1" Grid.Column="1" BackgroundColor="White" CornerRadius="8" HasShadow="True" Padding="15" BorderColor="Transparent">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="0" FontSize="32" FontAttributes="Bold" TextColor="#333" />
+                        <Label Text="RED VIAL" FontSize="12" TextColor="Gray" />
+                        <Label Text="Ejes Viales" FontSize="10" TextColor="LightGray" />
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
+
+            <!-- Accesos Directos -->
+            <Frame BackgroundColor="White" CornerRadius="8" HasShadow="True" Padding="20" BorderColor="Transparent" Margin="0,10,0,0">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Accesos Directos" FontAttributes="Bold" TextColor="#333" FontSize="16" />
+                    <Label Text="Seleccione un módulo operativo para comenzar la navegación cartográfica:" TextColor="Gray" FontSize="14" />
+                    
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                        <Button Grid.Column="0" Text="Explorar Mapa" BackgroundColor="#5A834B" TextColor="White" CornerRadius="5" Clicked="OnOpenMapClicked" />
+                        <Button Grid.Column="1" Text="Consulta Temática" BackgroundColor="#F0F0F0" TextColor="#333" CornerRadius="5" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VisorDatosSIG.Mobile.Views.LoginPage"
+             Title="Iniciar Sesión"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#121215">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="30,60" VerticalOptions="Center">
+            
+            <Image Source="dotnet_bot.png"
+                   HeightRequest="80"
+                   HorizontalOptions="Center" 
+                   Margin="0,0,0,10"/>
+            
+            <Label Text="VISOR DATOS SIG"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="White" 
+                   CharacterSpacing="1.5"/>
+
+            <BoxView HeightRequest="3" WidthRequest="60" BackgroundColor="#9B51E0" HorizontalOptions="Center" CornerRadius="1.5" Margin="0,5"/>
+
+            <Label Text="Plataforma Cartográfica"
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   TextColor="#888888" 
+                   Margin="0,0,0,30"/>
+
+            <Label Text="NOMBRE DE USUARIO"
+                   FontSize="11"
+                   FontAttributes="Bold"
+                   TextColor="#AAAAAA"
+                   Margin="0,0,0,-10"/>
+                   
+            <Frame BorderColor="Transparent" BackgroundColor="#1E1E24" CornerRadius="8" Padding="10,0" HasShadow="False" HeightRequest="50">
+                <Entry x:Name="UserEntry"
+                       TextColor="White"
+                       ClearButtonVisibility="WhileEditing"
+                       VerticalOptions="Center"/>
+            </Frame>
+
+            <Label Text="CONTRASEÑA"
+                   FontSize="11"
+                   FontAttributes="Bold"
+                   TextColor="#AAAAAA"
+                   Margin="0,10,0,-10"/>
+
+            <Frame BorderColor="Transparent" BackgroundColor="#1E1E24" CornerRadius="8" Padding="10,0" HasShadow="False" HeightRequest="50">
+                <Entry x:Name="PasswordEntry"
+                       TextColor="White"
+                       IsPassword="True"
+                       ClearButtonVisibility="WhileEditing"
+                       VerticalOptions="Center"/>
+            </Frame>
+
+            <Label Text="¿Olvidaste tu contraseña?"
+                   FontSize="12"
+                   TextColor="#AAAAAA"
+                   HorizontalOptions="End"
+                   Margin="0,5,0,20">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Button x:Name="LoginButton"
+                    Text="INICIAR SESIÓN"
+                    FontAttributes="Bold"
+                    CornerRadius="8"
+                    HeightRequest="55"
+                    Clicked="OnLoginClicked"
+                    BackgroundColor="#9B51E0"
+                    TextColor="White"/>
+
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               IsRunning="False"
+                               IsVisible="False"
+                               Color="{StaticResource Primary}"
+                               HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

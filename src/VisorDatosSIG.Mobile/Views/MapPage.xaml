@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mapsui="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
+             x:Class="VisorDatosSIG.Mobile.Views.MapPage"
+             Title="Visor Cartográfico"
+             BackgroundColor="#121215">
+    
+    <Grid>
+        <!-- 1. El Mapa en el fondo -->
+        <mapsui:MapView x:Name="mapView" VerticalOptions="Fill" HorizontalOptions="Fill" />
+        
+        <!-- 2. Barra de Búsqueda Flotante (Arriba) -->
+        <Frame Margin="10" Padding="5" CornerRadius="8" BackgroundColor="White" HorizontalOptions="Fill" VerticalOptions="Start" HasShadow="True" BorderColor="Transparent">
+            <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="5">
+                <Entry x:Name="SearchEntry" Grid.Column="0" Placeholder="Buscar MZA, lote..." PlaceholderColor="Gray" TextColor="Black" VerticalOptions="Center" Margin="5,0"/>
+                <Button Grid.Column="1" Text="Buscar" Clicked="OnSearchClicked" BackgroundColor="#5A834B" TextColor="White" CornerRadius="5" HeightRequest="40"/>
+                <Button Grid.Column="2" Text="Capas" Clicked="OnToggleFiltersClicked" BackgroundColor="#9B51E0" TextColor="White" CornerRadius="5" HeightRequest="40"/>
+            </Grid>
+        </Frame>
+
+        <!-- 3. Panel de Capas y Filtros Flotante (Desplegable) -->
+        <Frame x:Name="FiltersPanel" IsVisible="False" Margin="10,70,10,10" Padding="15" CornerRadius="8" BackgroundColor="White" HorizontalOptions="Start" VerticalOptions="Start" WidthRequest="260" MaximumHeightRequest="350" HasShadow="True" BorderColor="Transparent" Opacity="0.95">
+            <ScrollView>
+                <VerticalStackLayout Spacing="8">
+                    <!-- Título del panel -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="CAPAS Y FILTROS" FontAttributes="Bold" TextColor="#333" VerticalOptions="Center"/>
+                    </Grid>
+                    
+                    <BoxView HeightRequest="1" Color="#EEEEEE" Margin="0,5"/>
+                    
+                    <!-- Capas Principales -->
+                    <HorizontalStackLayout Spacing="5">
+                        <CheckBox IsChecked="True" Color="#3498db" />
+                        <Label Text="Manzanas (863)" VerticalOptions="Center" TextColor="#333"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="5">
+                        <CheckBox IsChecked="True" Color="#3498db" />
+                        <Label Text="Lotes Catastrales" VerticalOptions="Center" TextColor="#333"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Control de Opacidad -->
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,5,0,0">
+                        <Label Grid.Column="0" Text="Opacidad Relleno:" FontSize="12" TextColor="Gray" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="25%" FontSize="12" TextColor="#3498db" VerticalOptions="Center"/>
+                    </Grid>
+                    <Slider Minimum="0" Maximum="100" Value="25" MinimumTrackColor="#3498db" MaximumTrackColor="#E0E0E0" />
+
+                    <BoxView HeightRequest="1" Color="#EEEEEE" Margin="0,5"/>
+
+                    <!-- Otras Capas -->
+                    <HorizontalStackLayout Spacing="5">
+                        <CheckBox IsChecked="True" Color="#3498db" />
+                        <Label Text="Red Vial (578)" VerticalOptions="Center" TextColor="#333"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="5">
+                        <CheckBox IsChecked="True" Color="#3498db" />
+                        <Label Text="Códigos Fijos" VerticalOptions="Center" TextColor="#333"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Filtro de Estados -->
+                    <Label Text="FILTRAR ESTADOS" FontAttributes="Bold" TextColor="#333" Margin="0,10,0,0" FontSize="12"/>
+                    <HorizontalStackLayout Spacing="5">
+                        <CheckBox IsChecked="True" Color="#27ae60"/>
+                        <Label Text="Normal (1)" VerticalOptions="Center" TextColor="#333"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="5">
+                        <CheckBox IsChecked="True" Color="#f39c12"/>
+                        <Label Text="Para Corte (2)" VerticalOptions="Center" TextColor="#333"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="5">
+                        <CheckBox IsChecked="True" Color="#e74c3c"/>
+                        <Label Text="Cortado (3)" VerticalOptions="Center" TextColor="#333"/>
+                    </HorizontalStackLayout>
+                    
+                    <!-- Selector de Mapa Base -->
+                    <Label Text="MAPA BASE" FontAttributes="Bold" TextColor="#333" Margin="0,10,0,0" FontSize="12"/>
+                    <Frame BorderColor="#DDDDDD" BackgroundColor="White" Padding="0" CornerRadius="5" HasShadow="False" HeightRequest="40">
+                        <Picker Title="Seleccionar..." TextColor="#333" Margin="5,0" VerticalOptions="Center">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>OpenStreetMap Estándar</x:String>
+                                    <x:String>Satélite</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                            <Picker.SelectedIndex>0</Picker.SelectedIndex>
+                        </Picker>
+                    </Frame>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Frame>
+
+        <!-- 4. Coordenadas Flotantes (Abajo Derecha) -->
+        <Frame Margin="15" Padding="10,5" CornerRadius="5" BackgroundColor="White" HorizontalOptions="End" VerticalOptions="End" HasShadow="True" BorderColor="Transparent" Opacity="0.9">
+            <Label Text="Coord: Lat: -16.37234, Lon: -60.96845 | Zoom: 14 | WGS 84 (SRID 4326)" FontSize="10" TextColor="#333"/>
+        </Frame>
+
+        <!-- 5. Indicador de Carga -->
+        <ActivityIndicator x:Name="LoadingIndicator"
+                           IsRunning="False"
+                           IsVisible="False"
+                           Color="#9B51E0"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+    </Grid>
+
+</ContentPage>
