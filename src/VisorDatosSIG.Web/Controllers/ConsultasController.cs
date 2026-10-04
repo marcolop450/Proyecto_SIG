@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VisorDatosSIG.Application.DTOs;
 using VisorDatosSIG.Application.Interfaces;
 
 namespace VisorDatosSIG.Web.Controllers;
@@ -28,7 +29,6 @@ public class ConsultasController : Controller
         ViewBag.ListaMZA = filtros.ListaMZA;
         ViewBag.ListaLotes = filtros.ListaLotes;
 
-        var results = await _geoDataService.BuscarInmueblesAsync(texto, uv, mza, lote, tipoPredio);
-        return View(results);
+        return View(Enumerable.Empty<InmuebleSearchResultDto>());
     }
 }

@@ -73,11 +73,15 @@ class _SearchScreenState extends State<SearchScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildChip('TODOS', 'Todos los Predios (15,280)'),
+                      _buildChip('TODOS', 'Todos (15,280)'),
                       const SizedBox(width: 6),
-                      _buildChip('CON_SUMINISTRO', 'Con Suministro (5,118)'),
+                      _buildChip('CON_SUMINISTRO', 'Con Suministro'),
                       const SizedBox(width: 6),
-                      _buildChip('SIN_SUMINISTRO', 'Sin Medidor / Baldíos (11,333)'),
+                      _buildChip('SIN_SUMINISTRO', 'Baldíos'),
+                      const SizedBox(width: 6),
+                      _buildChip('PARA_CORTE', 'Para Corte'),
+                      const SizedBox(width: 6),
+                      _buildChip('CORTADO', 'Cortados'),
                     ],
                   ),
                 ),

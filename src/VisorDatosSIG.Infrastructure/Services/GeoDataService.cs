@@ -103,7 +103,7 @@ public class GeoDataService : IGeoDataService
 
         string sql = @$"
             SELECT TOP ({limit}) 
-                c.IdCodigo, c.CodFijo, c.Nombre, c.Estado, c.FechaCambioEstado,
+                c.IdCodigo, c.CodFijo, c.CodF_SIG, c.Nombre, c.Estado, c.FechaCambioEstado,
                 c.Longitud, c.Latitud, c.IdLote, l.NroLote, m.UV, m.MZA,
                 c.Geom.STAsText() AS Wkt
             FROM dbo.CodigosFijos c
@@ -117,6 +117,7 @@ public class GeoDataService : IGeoDataService
             props["codFijo"] = (int?)r.CodFijo;
             props["nombre"] = (string?)r.Nombre;
             props["estado"] = (byte)r.Estado;
+            props["fechaCambioEstado"] = ((DateTime)r.FechaCambioEstado).ToString("yyyy-MM-dd");
             props["estadoDesc"] = ((byte)r.Estado) switch {
                 1 => "Normal",
                 2 => "Para Corte",
@@ -125,9 +126,24 @@ public class GeoDataService : IGeoDataService
                 5 => "Baja Total",
                 _ => "Otro"
             };
-            props["nroLote"] = (string?)r.NroLote;
-            props["uv"] = (string?)r.UV;
-            props["mza"] = (string?)r.MZA;
+
+            string? codSig = (string?)r.CodF_SIG;
+            string? uv = (string?)r.UV;
+            string? mza = (string?)r.MZA;
+            string? nroLote = (string?)r.NroLote;
+            if (string.IsNullOrWhiteSpace(uv) && !string.IsNullOrWhiteSpace(codSig))
+            {
+                var parts = codSig.Split('.');
+                if (parts.Length == 3)
+                {
+                    uv = "UV " + parts[0];
+                    mza = "Mz. " + parts[1];
+                    nroLote = "L" + parts[2];
+                }
+            }
+            props["nroLote"] = nroLote;
+            props["uv"] = uv;
+            props["mza"] = mza;
         });
     }
 
@@ -262,5 +278,25 @@ public class GeoDataService : IGeoDataService
 
         sb.Append("]}");
         return sb.ToString();
+    }
+
+    public async Task<bool> CambiarEstadoSuministroAsync(int codFijo, byte nuevoEstado, string usuario, string? motivo)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var p = new DynamicParameters();
+        p.Add("@CodFijo", codFijo);
+        p.Add("@NuevoEstado", nuevoEstado);
+        p.Add("@Usuario", usuario);
+        p.Add("@Motivo", motivo);
+
+        var res = await conn.QueryFirstOrDefaultAsync<dynamic>(
+            "dbo.sp_CambiarEstadoSuministro",
+            p,
+            commandType: System.Data.CommandType.StoredProcedure
+        );
+
+        return res != null;
     }
 }

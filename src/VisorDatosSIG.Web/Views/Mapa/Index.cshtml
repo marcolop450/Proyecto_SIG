@@ -14,7 +14,7 @@
             <span class="input-group-text bg-white border-end-0">
                 <img src="~/logo.svg" alt="SIG" style="width: 20px; height: 20px; vertical-align: middle;" />
             </span>
-            <input type="text" id="txtBusquedaRapida" class="form-control border-start-0" placeholder="Buscar por código, titular, UV, MZA o lote..." style="background: #FFFFFF; border-color: #C9C5B9;" />
+            <input type="text" id="txtBusquedaRapida" class="form-control border-start-0" placeholder="Buscar por código (ej. 4936), titular, UV, MZA o lote..." style="background: #FFFFFF; border-color: #C9C5B9;" />
             <button id="btnBuscarRapido" class="btn btn-olive d-flex align-items-center gap-1" type="button">
                 <i class="bi bi-search"></i>
                 Buscar
@@ -36,7 +36,7 @@
     <div id="mapContainer"></div>
 
     <!-- Panel Flotante de Capas y Leyenda (Izquierda) -->
-    <div id="panelCapas" class="position-absolute top-0 start-0 m-3 layer-panel" style="z-index: 1000; width: 250px; font-size: 0.85rem;">
+    <div id="panelCapas" class="position-absolute top-0 start-0 m-3 layer-panel" style="z-index: 1000; width: 260px; font-size: 0.85rem;">
         <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
             <span class="fw-bold d-flex align-items-center gap-1">
                 <i class="bi bi-layers"></i>
@@ -84,35 +84,53 @@
             <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" id="chkCodigosFijos" checked />
                 <label class="form-check-label" for="chkCodigosFijos">
-                    <span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span>
-                    Códigos Fijos
+                    <span class="legend-badge" style="background: #5E7A4A; border-radius: 50%;"></span>
+                    Códigos Fijos (<span id="lblTotalCodigos">6,271</span>)
                 </label>
             </div>
 
-            <!-- Filtros por Estado de Suministro -->
-            <div class="fw-bold mt-2 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47; font-size: 0.78rem;">
-                Filtrar Estados
+            <!-- FILTRAR ESTADOS DE SUMINISTRO (PUNTOS DE CORTE) -->
+            <div class="d-flex justify-content-between align-items-center mt-2 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47; font-size: 0.78rem;">
+                <span class="fw-bold"><i class="bi bi-funnel me-1"></i>Filtrar Estados</span>
+                <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size: 0.72rem;" onclick="seleccionarTodosEstados(true)">Todos</button>
             </div>
+
             <div class="small ps-1 mb-2">
                 <div class="form-check mb-1">
                     <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoNormal" value="1" checked />
-                    <label class="form-check-label" for="chkEstadoNormal">
-                        <span class="legend-badge" style="background: #5E7A4A; border-radius: 50%;"></span> Normal (1)
+                    <label class="form-check-label d-flex justify-content-between pe-1" for="chkEstadoNormal">
+                        <span><span class="legend-badge" style="background: #5E7A4A; border-radius: 50%;"></span> Normal</span>
+                        <strong class="text-muted font-monospace" id="lblCantNormal">-</strong>
                     </label>
                 </div>
                 <div class="form-check mb-1">
                     <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoCorte" value="2" checked />
-                    <label class="form-check-label" for="chkEstadoCorte">
-                        <span class="legend-badge" style="background: #C27D38; border-radius: 50%;"></span> Para Corte (2)
+                    <label class="form-check-label d-flex justify-content-between pe-1" for="chkEstadoCorte">
+                        <span><span class="legend-badge" style="background: #C27D38; border-radius: 50%;"></span> Para Corte</span>
+                        <strong class="text-warning font-monospace" id="lblCantCorte">-</strong>
                     </label>
                 </div>
                 <div class="form-check mb-1">
                     <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoCortado" value="3" checked />
-                    <label class="form-check-label" for="chkEstadoCortado">
-                        <span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span> Cortado (3)
+                    <label class="form-check-label d-flex justify-content-between pe-1" for="chkEstadoCortado">
+                        <span><span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span> Cortado</span>
+                        <strong class="text-danger font-monospace" id="lblCantCortado">-</strong>
+                    </label>
+                </div>
+                <div class="form-check mb-1">
+                    <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoBaja" value="4" checked />
+                    <label class="form-check-label d-flex justify-content-between pe-1" for="chkEstadoBaja">
+                        <span><span class="legend-badge" style="background: #6B7280; border-radius: 50%;"></span> Baja</span>
+                        <strong class="text-muted font-monospace" id="lblCantBaja">-</strong>
                     </label>
                 </div>
             </div>
+
+            <!-- Botón Rápido: Ver solo Puntos de Corte -->
+            <button type="button" class="btn btn-sm btn-outline-warning w-100 py-1 mb-2 d-flex align-items-center justify-content-center gap-1" style="font-size: 0.76rem;" onclick="filtrarSoloPuntosCorte()">
+                <i class="bi bi-lightning-charge-fill"></i>
+                Ver solo Puntos de Corte
+            </button>
 
             <div class="fw-bold mt-2 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47; font-size: 0.78rem;">
                 Mapa Base
@@ -126,7 +144,7 @@
     </div>
 
     <!-- Panel Inspector de Entidad Seleccionada (Derecha) -->
-    <div id="inspectorPanel" class="position-absolute top-0 end-0 m-3 p-3 shadow-md" style="z-index: 1000; width: 310px; background: rgba(255, 255, 255, 0.97); border: 1px solid #C9C5B9; border-radius: 4px; display: none;">
+    <div id="inspectorPanel" class="position-absolute top-0 end-0 m-3 p-3 shadow-md" style="z-index: 1000; width: 330px; background: rgba(255, 255, 255, 0.98); border: 1px solid #C9C5B9; border-radius: 6px; display: none;">
         <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
             <strong id="inspectorTitle" class="d-flex align-items-center gap-1" style="color: #2D302B;">
                 <i class="bi bi-info-circle text-primary"></i>
@@ -134,13 +152,70 @@
             </strong>
             <button type="button" class="btn-close btn-sm" onclick="cerrarInspector()"></button>
         </div>
-        <div id="inspectorContent" style="font-size: 0.85rem; max-height: 380px; overflow-y: auto;">
+        <div id="inspectorContent" style="font-size: 0.85rem; max-height: 400px; overflow-y: auto;">
+        </div>
+        <div id="inspectorActions" class="mt-2 pt-2 border-top text-end" style="display: none;">
+            <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 ms-auto" style="font-size: 0.78rem;" id="btnInspectorModificarEstado">
+                <i class="bi bi-toggles"></i> Modificar Estado
+            </button>
         </div>
     </div>
 
     <!-- Barra inferior de Coordenadas y Escala -->
     <div class="position-absolute bottom-0 end-0 m-2 px-2 py-1 bg-white border rounded shadow-sm small text-muted" style="z-index: 1000; font-family: monospace;">
         Coord: <span id="lblCoords">-16.377, -60.963</span> | Zoom: <span id="lblZoom">14</span> | WGS 84 (SRID 4326)
+    </div>
+</div>
+
+<!-- Modal para Cambio de Estado de Suministro desde el Mapa -->
+<div class="modal fade" id="modalMapaCambioEstado" tabindex="-1" aria-hidden="true" style="z-index: 1100;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border: 1px solid #C9C5B9;">
+            <div class="modal-header py-2 px-3" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <h6 class="modal-title fw-bold" style="color: #2C2D2A;">
+                    <i class="bi bi-toggles me-1 text-primary"></i>
+                    Modificar Estado de Suministro
+                </h6>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <input type="hidden" id="mapaModalCodFijo" />
+                <div class="mb-2">
+                    <span class="text-muted small">Código Fijo:</span>
+                    <strong id="mapaModalTxtCodFijo" class="font-monospace ms-1">-</strong>
+                </div>
+                <div class="mb-3">
+                    <span class="text-muted small">Titular:</span>
+                    <strong id="mapaModalTxtTitular" class="ms-1">-</strong>
+                </div>
+                <div class="mb-3">
+                    <label for="mapaModalSelEstado" class="form-label small fw-bold text-muted mb-1">
+                        Nuevo Estado Operativo
+                    </label>
+                    <select id="mapaModalSelEstado" class="form-select form-select-sm">
+                        <option value="1">1 - Normal (Servicio Activo)</option>
+                        <option value="2">2 - Para Corte (Notificación de Mora)</option>
+                        <option value="3">3 - Cortado (Suministro Suspendido)</option>
+                        <option value="4">4 - Baja Parcial</option>
+                        <option value="5">5 - Baja Total</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label for="mapaModalTxtMotivo" class="form-label small fw-bold text-muted mb-1">
+                        Motivo / Observación
+                    </label>
+                    <textarea id="mapaModalTxtMotivo" class="form-control form-control-sm" rows="2" placeholder="Ej. Orden de corte ejecutada o Reconexión por regularización de pago..."></textarea>
+                </div>
+                <div id="mapaModalAlertError" class="alert alert-danger py-1 px-2 small mb-0" style="display: none;"></div>
+            </div>
+            <div class="modal-footer py-2 px-3" style="background: #FAF9F5; border-top: 1px solid #E2DFD6;">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-sm btn-olive d-flex align-items-center gap-1" id="btnMapaGuardarEstado" onclick="guardarEstadoDesdeMapa()">
+                    <i class="bi bi-check2-circle"></i>
+                    Guardar Estado
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -155,6 +230,8 @@
     let highlightLayer;
     let gpsMarker = null;
     let gpsAccuracyCircle = null;
+    let modalMapaInstance = null;
+    let entidadInspeccionadaActual = null;
 
     document.addEventListener("DOMContentLoaded", function () {
         initMap();
@@ -172,7 +249,6 @@
             maxZoom: 22
         });
 
-        // Control de zoom en topright para evitar solapamiento
         L.control.zoom({ position: 'topright' }).addTo(map);
 
         map.createPane('paneManzanas');
@@ -185,31 +261,26 @@
         map.getPane('paneVias').style.zIndex = 500;
 
         map.createPane('paneCodigosFijos');
-        map.getPane('paneCodigosFijos').style.zIndex = 600;
+        map.getPane('paneCodigosFijos').style.zIndex = 550;
 
-        baseLayers.osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap',
-            maxZoom: 22
+        // Mapas Base
+        baseLayers.osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
         });
 
         baseLayers.topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenTopoMap',
-            maxZoom: 17
+            attribution: 'Map data: &copy; OpenStreetMap, SRTM | Map style: &copy; OpenTopoMap'
         });
 
         baseLayers.esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri &mdash; Satélite',
-            maxZoom: 20
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         });
 
         currentBaseLayer = baseLayers.osm;
         currentBaseLayer.addTo(map);
 
-        L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
-
         map.on('mousemove', function (e) {
-            document.getElementById('lblCoords').innerText = 
-                `Lat: ${e.latlng.lat.toFixed(5)}, Lon: ${e.latlng.lng.toFixed(5)}`;
+            document.getElementById('lblCoords').innerText = e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5);
         });
 
         map.on('zoomend', function () {
@@ -227,9 +298,8 @@
                     style: {
                         color: "#5E7A4A",
                         weight: 1.5,
-                        dashArray: "4, 4",
                         fillColor: "#5E7A4A",
-                        fillOpacity: 0.04
+                        fillOpacity: 0.1
                     },
                     onEachFeature: function (f, l) {
                         l.on('click', () => mostrarInspector("Manzana", f.properties));
@@ -238,15 +308,15 @@
             });
 
         // 2. Lotes
-        fetch('/api/capas/lotes?limit=5000')
+        fetch('/api/capas/lotes?limit=15300')
             .then(res => res.json())
             .then(data => {
                 layerLotes = L.geoJSON(data, {
                     pane: 'paneLotes',
                     style: {
-                        color: "#C29845",
+                        color: "#B88B2A",
                         weight: 1,
-                        fillColor: "#F5E9CE",
+                        fillColor: "#C89D3C",
                         fillOpacity: 0.25
                     },
                     onEachFeature: function (f, l) {
@@ -272,13 +342,33 @@
                 }).addTo(map);
             });
 
-        // 4. Códigos Fijos con filtrado dinámico
+        // 4. Códigos Fijos con filtrado dinámico y contadores reales
         fetch('/api/capas/codigosfijos?limit=6500')
             .then(res => res.json())
             .then(data => {
                 rawCodigosFijosData = data;
+                actualizarContadoresEstados();
                 renderizarCodigosFijos();
             });
+    }
+
+    function actualizarContadoresEstados() {
+        if (!rawCodigosFijosData || !rawCodigosFijosData.features) return;
+        
+        let cNormal = 0, cCorte = 0, cCortado = 0, cBaja = 0;
+        rawCodigosFijosData.features.forEach(f => {
+            const est = f.properties.estado;
+            if (est === 1) cNormal++;
+            else if (est === 2) cCorte++;
+            else if (est === 3) cCortado++;
+            else if (est === 4 || est === 5) cBaja++;
+        });
+
+        document.getElementById('lblCantNormal').innerText = cNormal;
+        document.getElementById('lblCantCorte').innerText = cCorte;
+        document.getElementById('lblCantCortado').innerText = cCortado;
+        document.getElementById('lblCantBaja').innerText = cBaja;
+        document.getElementById('lblTotalCodigos').innerText = rawCodigosFijosData.features.length;
     }
 
     function renderizarCodigosFijos() {
@@ -293,15 +383,26 @@
         layerCodigosFijos = L.geoJSON(rawCodigosFijosData, {
             pane: 'paneCodigosFijos',
             filter: function (f) {
-                return estadosActivos.includes(f.properties.estado);
+                const est = f.properties.estado;
+                // Agrupar 4 y 5 como baja
+                if (estadosActivos.includes(4) && est === 5) return true;
+                return estadosActivos.includes(est);
             },
             pointToLayer: function (feature, latlng) {
-                let color = '#5E7A4A';
-                if (feature.properties.estado == 2) color = '#C27D38';
-                if (feature.properties.estado == 3) color = '#B84A39';
+                let color = '#5E7A4A'; // 1 = Normal (Verde)
+                let radius = 3.5;
+                if (feature.properties.estado == 2) {
+                    color = '#C27D38'; // 2 = Para Corte (Ámbar / Naranja)
+                    radius = 4.5;
+                } else if (feature.properties.estado == 3) {
+                    color = '#B84A39'; // 3 = Cortado (Rojo)
+                    radius = 4.5;
+                } else if (feature.properties.estado == 4 || feature.properties.estado == 5) {
+                    color = '#6B7280'; // 4, 5 = Baja (Gris)
+                }
 
                 return L.circleMarker(latlng, {
-                    radius: 3.5,
+                    radius: radius,
                     fillColor: color,
                     color: '#FFFFFF',
                     weight: 1,
@@ -317,6 +418,33 @@
         if (document.getElementById('chkCodigosFijos').checked) {
             layerCodigosFijos.addTo(map);
         }
+    }
+
+    function filtrarSoloPuntosCorte() {
+        document.getElementById('chkEstadoNormal').checked = false;
+        document.getElementById('chkEstadoCorte').checked = true;
+        document.getElementById('chkEstadoCortado').checked = true;
+        document.getElementById('chkEstadoBaja').checked = false;
+        document.getElementById('chkCodigosFijos').checked = true;
+
+        renderizarCodigosFijos();
+
+        // Si hay capas de corte, ajustar el zoom para verlas
+        if (layerCodigosFijos && map.hasLayer(layerCodigosFijos)) {
+            try {
+                const bounds = layerCodigosFijos.getBounds();
+                if (bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            } catch (_) {}
+        }
+    }
+
+    function seleccionarTodosEstados(activar) {
+        document.querySelectorAll('.filtro-estado').forEach(cb => {
+            cb.checked = activar;
+        });
+        renderizarCodigosFijos();
     }
 
     function setupEvents() {
@@ -360,21 +488,22 @@
 
         document.getElementById('btnMiUbicacion').addEventListener('click', function () {
             if (!navigator.geolocation) {
-                alert("La geolocalización no es compatible con este dispositivo o navegador.");
+                alert("La geolocalización no es soportada por su navegador.");
                 return;
             }
-            const btn = this;
-            const originalHtml = btn.innerHTML;
+
+            let btn = this;
+            let originalHtml = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Buscando...';
 
             navigator.geolocation.getCurrentPosition(
                 function (pos) {
                     btn.disabled = false;
                     btn.innerHTML = originalHtml;
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    const accuracy = pos.coords.accuracy;
+                    let lat = pos.coords.latitude;
+                    let lng = pos.coords.longitude;
+                    let accuracy = pos.coords.accuracy;
 
                     if (gpsMarker) map.removeLayer(gpsMarker);
                     if (gpsAccuracyCircle) map.removeLayer(gpsAccuracyCircle);
@@ -402,9 +531,9 @@
                     btn.disabled = false;
                     btn.innerHTML = originalHtml;
                     let msg = "No se pudo obtener la ubicación GPS.";
-                    if (err.code === 1) msg = "Permiso de geolocalización denegado por el usuario.";
+                    if (err.code === 1) msg = "Permiso de geolocalización denegado.";
                     else if (err.code === 2) msg = "Posición GPS no disponible.";
-                    else if (err.code === 3) msg = "Tiempo de espera agotado al consultar GPS.";
+                    else if (err.code === 3) msg = "Tiempo agotado al consultar GPS.";
                     alert(msg);
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -425,6 +554,13 @@
             } else {
                 body.style.display = 'none';
                 icon.className = 'bi bi-chevron-down';
+            }
+        });
+
+        // Botón en el inspector para modificar estado
+        document.getElementById('btnInspectorModificarEstado').addEventListener('click', function () {
+            if (entidadInspeccionadaActual && entidadInspeccionadaActual.codFijo) {
+                abrirModalMapaEstado(entidadInspeccionadaActual.codFijo, entidadInspeccionadaActual.nombre, entidadInspeccionadaActual.estado);
             }
         });
     }
@@ -448,7 +584,7 @@
                 }).addTo(map);
 
                 if (cod) {
-                    mostrarInspector("Inmueble Seleccionado", { "CodFijo": cod, "Latitud": lat, "Longitud": lng });
+                    mostrarInspector("Inmueble Seleccionado", { "codFijo": cod, "latitud": lat, "longitud": lng });
                 }
             }, 600);
         }
@@ -458,9 +594,16 @@
         let texto = document.getElementById('txtBusquedaRapida').value.trim();
         if (!texto) return;
 
+        const btn = document.getElementById('btnBuscarRapido');
+        const orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
         fetch(`/api/busqueda?texto=${encodeURIComponent(texto)}`)
             .then(res => res.json())
             .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = orig;
                 if (data && data.length > 0) {
                     let item = data[0];
                     if (item.latitud && item.longitud) {
@@ -472,7 +615,7 @@
                             fillColor: "#C89D3C",
                             color: "#FFFFFF",
                             weight: 3,
-                            fillOpacity: 0.8
+                            fillOpacity: 0.85
                         }).addTo(map);
 
                         mostrarInspector("Resultado de Búsqueda", item);
@@ -480,24 +623,145 @@
                 } else {
                     alert("No se encontraron registros con el término especificado.");
                 }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = orig;
+                alert("Error de conexión al realizar la búsqueda.");
             });
     }
 
     function mostrarInspector(tipo, props) {
         document.getElementById('inspectorTitle').innerText = tipo;
-        let html = '<table class="table table-sm table-borderless m-0">';
-        for (let k in props) {
-            if (k === 'wkt' || k === 'id') continue;
-            let val = props[k] !== null && props[k] !== undefined ? props[k] : '<span class="text-muted">-</span>';
-            html += `<tr><td class="text-muted text-uppercase" style="font-size:0.75rem; width:45%;">${k}:</td><td><strong>${val}</strong></td></tr>`;
+        entidadInspeccionadaActual = props;
+
+        let html = '';
+        const actionsDiv = document.getElementById('inspectorActions');
+
+        // Vista especializada si es un Código Fijo (Medidor)
+        if (props.codFijo || props.CodFijo) {
+            const codFijo = props.codFijo || props.CodFijo;
+            const titular = props.nombre || props.Nombre || 'Sin Titular';
+            const estado = props.estado !== undefined ? props.estado : props.Estado;
+            const uv = props.uv || props.UV || '-';
+            const mza = props.mza || props.MZA || '-';
+            const nroLote = props.nroLote || props.NroLote || '-';
+            const fecha = props.fechaCambioEstado || props.FechaCambioEstado || '-';
+
+            let badgeHtml = '';
+            if (estado == 1) badgeHtml = '<span class="badge" style="background:#5E7A4A;">Normal (Activo)</span>';
+            else if (estado == 2) badgeHtml = '<span class="badge" style="background:#C27D38;">Para Corte (Mora)</span>';
+            else if (estado == 3) badgeHtml = '<span class="badge" style="background:#B84A39;">Cortado (Suspendido)</span>';
+            else if (estado == 4 || estado == 5) badgeHtml = '<span class="badge bg-secondary">Baja</span>';
+            else badgeHtml = '<span class="badge bg-light text-dark border">Sin Medidor</span>';
+
+            html = `
+                <div class="mb-2 p-2 bg-light rounded border">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-muted small">CÓDIGO FIJO:</span>
+                        <span class="badge bg-dark font-monospace fs-6">${codFijo}</span>
+                    </div>
+                    <div class="fw-bold text-dark mb-1">${titular}</div>
+                    <div class="mt-1">${badgeHtml}</div>
+                </div>
+                <table class="table table-sm table-borderless m-0">
+                    <tr><td class="text-muted small" style="width:40%;">UV:</td><td><strong>${uv}</strong></td></tr>
+                    <tr><td class="text-muted small">Manzana:</td><td><strong>${mza}</strong></td></tr>
+                    <tr><td class="text-muted small">Lote:</td><td><strong>${nroLote}</strong></td></tr>
+                    <tr><td class="text-muted small">Fecha Estado:</td><td class="small font-monospace">${fecha.substring(0, 10)}</td></tr>
+                </table>
+            `;
+
+            actionsDiv.style.display = 'block';
+        } else {
+            html = '<table class="table table-sm table-borderless m-0">';
+            for (let k in props) {
+                if (k === 'wkt' || k === 'id') continue;
+                let val = props[k] !== null && props[k] !== undefined ? props[k] : '<span class="text-muted">-</span>';
+                html += `<tr><td class="text-muted text-uppercase" style="font-size:0.75rem; width:45%;">${k}:</td><td><strong>${val}</strong></td></tr>`;
+            }
+            html += '</table>';
+            actionsDiv.style.display = 'none';
         }
-        html += '</table>';
+
         document.getElementById('inspectorContent').innerHTML = html;
         document.getElementById('inspectorPanel').style.display = 'block';
     }
 
     function cerrarInspector() {
         document.getElementById('inspectorPanel').style.display = 'none';
+        entidadInspeccionadaActual = null;
+    }
+
+    function abrirModalMapaEstado(codFijo, titular, estadoActual) {
+        document.getElementById('mapaModalCodFijo').value = codFijo;
+        document.getElementById('mapaModalTxtCodFijo').innerText = codFijo;
+        document.getElementById('mapaModalTxtTitular').innerText = titular || 'Titular';
+        document.getElementById('mapaModalSelEstado').value = estadoActual > 0 ? estadoActual : 1;
+        document.getElementById('mapaModalTxtMotivo').value = '';
+        document.getElementById('mapaModalAlertError').style.display = 'none';
+
+        if (!modalMapaInstance) {
+            modalMapaInstance = new bootstrap.Modal(document.getElementById('modalMapaCambioEstado'));
+        }
+        modalMapaInstance.show();
+    }
+
+    function guardarEstadoDesdeMapa() {
+        const codFijo = parseInt(document.getElementById('mapaModalCodFijo').value);
+        const nuevoEstado = parseInt(document.getElementById('mapaModalSelEstado').value);
+        const motivo = document.getElementById('mapaModalTxtMotivo').value.trim();
+        const alertErr = document.getElementById('mapaModalAlertError');
+        const btn = document.getElementById('btnMapaGuardarEstado');
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Guardando...';
+        alertErr.style.display = 'none';
+
+        fetch('/api/suministros/cambiar-estado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ codFijo: codFijo, nuevoEstado: nuevoEstado, motivo: motivo })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check2-circle"></i> Guardar Estado';
+            if (data && data.success) {
+                modalMapaInstance.hide();
+
+                // 1. Actualizar entidad en rawCodigosFijosData en memoria
+                if (rawCodigosFijosData && rawCodigosFijosData.features) {
+                    const feat = rawCodigosFijosData.features.find(f => f.properties.codFijo === codFijo);
+                    if (feat) {
+                        feat.properties.estado = nuevoEstado;
+                        feat.properties.estadoDesc = data.estadoDesc;
+                        feat.properties.fechaCambioEstado = new Date().toISOString().substring(0, 10);
+                    }
+                }
+
+                // 2. Re-renderizar capa y contadores
+                actualizarContadoresEstados();
+                renderizarCodigosFijos();
+
+                // 3. Actualizar inspector
+                if (entidadInspeccionadaActual) {
+                    entidadInspeccionadaActual.estado = nuevoEstado;
+                    entidadInspeccionadaActual.estadoDesc = data.estadoDesc;
+                    entidadInspeccionadaActual.fechaCambioEstado = new Date().toISOString().substring(0, 10);
+                    mostrarInspector("Código Fijo (Medidor)", entidadInspeccionadaActual);
+                }
+            } else {
+                alertErr.innerText = data.mensaje || 'Error al actualizar el estado.';
+                alertErr.style.display = 'block';
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check2-circle"></i> Guardar Estado';
+            alertErr.innerText = 'Error de conexión con el servidor.';
+            alertErr.style.display = 'block';
+        });
     }
 </script>
 }

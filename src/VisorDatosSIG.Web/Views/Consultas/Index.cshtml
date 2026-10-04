@@ -12,7 +12,7 @@
             <i class="bi bi-search me-2" style="color: var(--primary);"></i>
             Consulta Temática de Inmuebles
         </h4>
-        <span class="badge" style="background-color: #EDE9DE; color: #4B4E47; border: 1px solid #D5D1C6;">Catastro Municipal</span>
+        <span class="badge" style="background-color: #EDE9DE; color: #4B4E47; border: 1px solid #D5D1C6;">Catastro y Suministros</span>
     </div>
     <div class="d-flex align-items-center gap-2">
         <button type="button" class="btn btn-sand btn-sm d-flex align-items-center gap-1" onclick="exportarCSV()">
@@ -29,12 +29,12 @@
 <!-- Barra de Filtros -->
 <div class="card shadow-sm mb-3" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
     <div class="card-header py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center flex-wrap gap-2">
             <span class="fw-bold small text-uppercase" style="color: #4B4E47; letter-spacing: 0.5px;">
                 <i class="bi bi-funnel me-1"></i>
                 Criterios de Filtrado
             </span>
-            <div class="btn-group btn-group-sm ms-2" role="group" id="btnGroupTipoPredio">
+            <div class="btn-group btn-group-sm ms-2 flex-wrap" role="group" id="btnGroupTipoPredio">
                 <button type="button" class="btn btn-sm btn-olive active" id="btnTipoTodos" onclick="cambiarTipoPredio('TODOS')">
                     Todos los Predios (15,280)
                 </button>
@@ -44,31 +44,37 @@
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="btnTipoSinSum" onclick="cambiarTipoPredio('SIN_SUMINISTRO')">
                     Sin Medidor / Baldíos
                 </button>
+                <button type="button" class="btn btn-sm btn-outline-warning" id="btnTipoParaCorte" onclick="cambiarTipoPredio('PARA_CORTE')">
+                    <i class="bi bi-exclamation-triangle me-1"></i>Para Corte
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" id="btnTipoCortado" onclick="cambiarTipoPredio('CORTADO')">
+                    <i class="bi bi-slash-circle me-1"></i>Cortados
+                </button>
             </div>
             <input type="hidden" id="filtroTipoPredio" value="@(ViewBag.TipoPredio ?? "TODOS")" />
         </div>
         <span class="small text-muted" id="lblContadorResultados">
-            Total filtrados: <strong id="lblCantRegistros">@Model.Count()</strong> predios
+            Total filtrados: <strong id="lblCantRegistros">0</strong> predios
             <span id="spinnerBusqueda" class="spinner-border spinner-border-sm text-primary ms-1" style="display: none;" role="status"></span>
         </span>
     </div>
     <div class="card-body p-3">
         <div class="row g-2 align-items-end">
-            <!-- Texto (Código o Titular) - NO COMBOBOX -->
-            <div class="col-md-4">
+            <!-- Texto (Código Fijo, ID o Titular) -->
+            <div class="col-md-3">
                 <label for="filtroTexto" class="form-label small fw-bold text-muted mb-1">
-                    Código Fijo o Titular
+                    Código Fijo, ID o Titular
                 </label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white">
                         <img src="~/logo.svg" alt="SIG" style="width: 16px; height: 16px; vertical-align: middle;" />
                     </span>
-                    <input type="text" id="filtroTexto" value="@ViewBag.Texto" class="form-control" placeholder="Escriba código o nombre..." autofocus autocomplete="off" />
+                    <input type="text" id="filtroTexto" value="@ViewBag.Texto" class="form-control" placeholder="Ej. 4936, Ubaldo..." autofocus autocomplete="off" />
                 </div>
             </div>
 
-            <!-- UV - COMBOBOX CON LISTA DE LO QUE EXISTE -->
-            <div class="col-md-3">
+            <!-- UV -->
+            <div class="col-md-2">
                 <label for="filtroUV" class="form-label small fw-bold text-muted mb-1">
                     Unidad Vecinal (UV)
                 </label>
@@ -88,8 +94,8 @@
                 </select>
             </div>
 
-            <!-- MANZANA - COMBOBOX DINÁMICO QUE SÓLO CONTIENE PREDIOS REALES -->
-            <div class="col-md-3">
+            <!-- MANZANA -->
+            <div class="col-md-2">
                 <label for="filtroMZA" class="form-label small fw-bold text-muted mb-1">
                     Manzana (MZA)
                 </label>
@@ -109,7 +115,7 @@
                 </select>
             </div>
 
-            <!-- LOTE - DATALIST -->
+            <!-- LOTE -->
             <div class="col-md-2">
                 <label for="filtroLote" class="form-label small fw-bold text-muted mb-1">
                     Lote
@@ -122,6 +128,21 @@
                     }
                 </datalist>
             </div>
+
+            <!-- ESTADO DE SUMINISTRO -->
+            <div class="col-md-3">
+                <label for="filtroEstado" class="form-label small fw-bold text-muted mb-1">
+                    Estado de Suministro
+                </label>
+                <select id="filtroEstado" class="form-select form-select-sm" style="background: #FAF9F5; border-color: #C9C5B9;">
+                    <option value="">[ Todos los Estados ]</option>
+                    <option value="1">Normal (Activo)</option>
+                    <option value="2">Para Corte (Mora)</option>
+                    <option value="3">Cortado (Suspención)</option>
+                    <option value="4">Baja Parcial / Total</option>
+                    <option value="0">Sin Suministro / Baldío</option>
+                </select>
+            </div>
         </div>
     </div>
 </div>
@@ -132,18 +153,23 @@
         <table class="table table-hover table-custom m-0" id="tablaResultados">
             <thead class="bg-light">
                 <tr>
-                    <th style="width: 100px;">Código</th>
+                    <th style="width: 100px;">Código Fijo</th>
                     <th>Titular del Servicio</th>
-                    <th style="width: 100px;">UV</th>
-                    <th style="width: 110px;">Manzana</th>
-                    <th style="width: 90px;">Lote</th>
+                    <th style="width: 90px;">UV</th>
+                    <th style="width: 100px;">Manzana</th>
+                    <th style="width: 80px;">Lote</th>
                     <th style="width: 130px;">Estado</th>
-                    <th style="width: 110px;">Fecha</th>
-                    <th class="text-center" style="width: 130px;">Acción</th>
+                    <th style="width: 110px;">Fecha Estado</th>
+                    <th class="text-center" style="width: 190px;">Acciones</th>
                 </tr>
             </thead>
             <tbody id="cuerpoTabla">
-                <!-- Se llena dinámicamente con paginación de a 20 -->
+                <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Cargando catálogo catastral...
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -151,13 +177,64 @@
     <!-- Barra de Paginación de a 20 -->
     <div class="card-footer py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2" style="background: #FAF9F5; border-top: 1px solid #E2DFD6;">
         <div class="small text-muted" id="lblInfoPaginacion">
-            Cargando registros...
+            Iniciando...
         </div>
         <nav aria-label="Navegación de resultados">
             <ul class="pagination pagination-sm m-0" id="paginadorUI">
-                <!-- Botones de página inyectados por JavaScript -->
             </ul>
         </nav>
+    </div>
+</div>
+
+<!-- Modal para Cambio de Estado de Suministro (Corte / Reconexión) -->
+<div class="modal fade" id="modalCambioEstado" tabindex="-1" aria-labelledby="modalCambioEstadoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border: 1px solid #C9C5B9;">
+            <div class="modal-header py-2 px-3" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <h6 class="modal-title fw-bold" id="modalCambioEstadoLabel" style="color: #2C2D2A;">
+                    <i class="bi bi-toggles me-1 text-primary"></i>
+                    Actualizar Estado de Suministro
+                </h6>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <input type="hidden" id="modalCodFijo" />
+                <div class="mb-2">
+                    <span class="text-muted small">Código Fijo:</span>
+                    <strong id="modalTxtCodFijo" class="font-monospace ms-1">-</strong>
+                </div>
+                <div class="mb-3">
+                    <span class="text-muted small">Titular:</span>
+                    <strong id="modalTxtTitular" class="ms-1">-</strong>
+                </div>
+                <div class="mb-3">
+                    <label for="modalSelEstado" class="form-label small fw-bold text-muted mb-1">
+                        Nuevo Estado Operativo
+                    </label>
+                    <select id="modalSelEstado" class="form-select form-select-sm">
+                        <option value="1">1 - Normal (Servicio Activo)</option>
+                        <option value="2">2 - Para Corte (Notificación de Mora)</option>
+                        <option value="3">3 - Cortado (Suministro Suspendido)</option>
+                        <option value="4">4 - Baja Parcial</option>
+                        <option value="5">5 - Baja Total</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label for="modalTxtMotivo" class="form-label small fw-bold text-muted mb-1">
+                        Motivo / Observación de Campo
+                    </label>
+                    <textarea id="modalTxtMotivo" class="form-control form-control-sm" rows="2" placeholder="Ej. Orden de corte por mora de 3 facturas o Reconexión por pago verificado..."></textarea>
+                </div>
+                <div id="modalAlertError" class="alert alert-danger py-1 px-2 small mb-0" style="display: none;"></div>
+            </div>
+            <div class="modal-footer py-2 px-3" style="background: #FAF9F5; border-top: 1px solid #E2DFD6;">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-sm btn-olive d-flex align-items-center gap-1" id="btnGuardarCambioEstado" onclick="guardarCambioEstado()">
+                    <i class="bi bi-check2-circle"></i>
+                    Guardar Estado
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -168,50 +245,25 @@
     let paginaActual = 1;
     const tamanoPagina = 20;
 
-    // Datos iniciales precargados desde el servidor
-    const datosInicialesDelServidor = [
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model)
-            {
-                <text>{
-                    idLote: @(item.IdLote.HasValue ? item.IdLote.Value.ToString() : "null"),
-                    codFijo: @(item.CodFijo.HasValue ? item.CodFijo.Value.ToString() : "null"),
-                    nombre: "@Html.Raw(item.Nombre?.Replace("\"", "\\\"") ?? "")",
-                    uv: "@Html.Raw(item.UV ?? "-")",
-                    mza: "@Html.Raw(item.MZA ?? "-")",
-                    nroLote: "@Html.Raw(item.NroLote ?? "-")",
-                    estado: @item.Estado,
-                    tieneSuministro: @(item.TieneSuministro ? "true" : "false"),
-                    estadoDesc: "@Html.Raw(item.EstadoDesc)",
-                    fechaCambioEstado: "@(item.FechaCambioEstado.HasValue ? item.FechaCambioEstado.Value.ToString("yyyy-MM-dd") : "")",
-                    latitud: @(item.Latitud.HasValue ? item.Latitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null"),
-                    longitud: @(item.Longitud.HasValue ? item.Longitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null")
-                },</text>
-            }
-        }
-    ];
-
     document.addEventListener("DOMContentLoaded", function () {
-        datosActuales = datosInicialesDelServidor;
-        paginaActual = 1;
-        renderizarPaginaActual();
+        // Carga asíncrona inmediata sin bloquear el HTML
+        ejecutarBusquedaAsincrona();
 
-        // 1. Escuchar escritura en Texto (Código o Titular) con debounce de 200ms
+        // 1. Escuchar escritura en Texto (Código, ID o Titular) con debounce
         const inputTexto = document.getElementById('filtroTexto');
         inputTexto.addEventListener('input', function () {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(ejecutarBusquedaAsincrona, 200);
+            debounceTimer = setTimeout(ejecutarBusquedaAsincrona, 250);
         });
 
-        // 2. Escuchar cambio en Combobox UV -> Actualiza Manzanas disponibles de esa UV y busca
+        // 2. Escuchar cambio en Combobox UV
         document.getElementById('filtroUV').addEventListener('change', function () {
             const uvSel = this.value;
             actualizarComboboxManzanasPorUV(uvSel);
             ejecutarBusquedaAsincrona();
         });
 
-        // 3. Escuchar cambio en Combobox Manzana -> Filtra al instante
+        // 3. Escuchar cambio en Combobox Manzana
         document.getElementById('filtroMZA').addEventListener('change', function () {
             ejecutarBusquedaAsincrona();
         });
@@ -219,16 +271,41 @@
         // 4. Escuchar cambio en Lote
         document.getElementById('filtroLote').addEventListener('input', function () {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(ejecutarBusquedaAsincrona, 200);
+            debounceTimer = setTimeout(ejecutarBusquedaAsincrona, 250);
+        });
+
+        // 5. Escuchar cambio en Estado
+        document.getElementById('filtroEstado').addEventListener('change', function () {
+            ejecutarBusquedaAsincrona();
         });
     });
 
-    // Cambiar tipo de predio (Todos, Con Suministro, Sin Suministro)
+    // Cambiar tipo de predio (Todos, Con Suministro, Sin Suministro, Para Corte, Cortado)
     function cambiarTipoPredio(tipo) {
         document.getElementById('filtroTipoPredio').value = tipo;
-        document.getElementById('btnTipoTodos').className = 'btn btn-sm ' + (tipo === 'TODOS' ? 'btn-olive active' : 'btn-outline-secondary');
-        document.getElementById('btnTipoConSum').className = 'btn btn-sm ' + (tipo === 'CON_SUMINISTRO' ? 'btn-olive active' : 'btn-outline-secondary');
-        document.getElementById('btnTipoSinSum').className = 'btn btn-sm ' + (tipo === 'SIN_SUMINISTRO' ? 'btn-olive active' : 'btn-outline-secondary');
+        
+        const botones = {
+            'TODOS': 'btnTipoTodos',
+            'CON_SUMINISTRO': 'btnTipoConSum',
+            'SIN_SUMINISTRO': 'btnTipoSinSum',
+            'PARA_CORTE': 'btnTipoParaCorte',
+            'CORTADO': 'btnTipoCortado'
+        };
+
+        for (let k in botones) {
+            const btn = document.getElementById(botones[k]);
+            if (!btn) continue;
+            if (k === tipo) {
+                if (k === 'PARA_CORTE') btn.className = 'btn btn-sm btn-warning active';
+                else if (k === 'CORTADO') btn.className = 'btn btn-sm btn-danger active';
+                else btn.className = 'btn btn-sm btn-olive active';
+            } else {
+                if (k === 'PARA_CORTE') btn.className = 'btn btn-sm btn-outline-warning';
+                else if (k === 'CORTADO') btn.className = 'btn btn-sm btn-outline-danger';
+                else btn.className = 'btn btn-sm btn-outline-secondary';
+            }
+        }
+
         ejecutarBusquedaAsincrona();
     }
 
@@ -258,6 +335,7 @@
         const mza = document.getElementById('filtroMZA').value.trim();
         const lote = document.getElementById('filtroLote').value.trim();
         const tipoPredio = document.getElementById('filtroTipoPredio').value.trim();
+        const estadoSel = document.getElementById('filtroEstado').value.trim();
 
         const spinner = document.getElementById('spinnerBusqueda');
         spinner.style.display = 'inline-block';
@@ -273,13 +351,30 @@
             .then(res => res.json())
             .then(data => {
                 spinner.style.display = 'none';
-                datosActuales = data || [];
-                paginaActual = 1; // Reiniciar a la primera página tras nuevo filtro
+                let items = data || [];
+
+                // Filtro secundario si seleccionó estado específico en el combo
+                if (estadoSel !== '') {
+                    const estNum = parseInt(estadoSel);
+                    items = items.filter(x => x.estado === estNum);
+                }
+
+                datosActuales = items;
+                paginaActual = 1;
                 renderizarPaginaActual();
             })
             .catch(err => {
                 spinner.style.display = 'none';
                 console.error("Error al buscar:", err);
+                const tbody = document.getElementById('cuerpoTabla');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-danger">
+                            <i class="bi bi-exclamation-triangle fs-3 d-block mb-1"></i>
+                            Ocurrió un error al cargar los datos. Intente nuevamente.
+                        </td>
+                    </tr>`;
+                document.getElementById('lblInfoPaginacion').innerText = 'Error al consultar registros';
             });
     }
 
@@ -312,7 +407,7 @@
         let html = '';
         for (let i = 0; i < itemsPagina.length; i++) {
             const it = itemsPagina[i];
-            const cod = it.codFijo ? it.codFijo : '<span class="text-muted fst-italic">S/C</span>';
+            const cod = it.codFijo ? `<span class="badge bg-dark font-monospace">${it.codFijo}</span>` : '<span class="text-muted fst-italic">S/C</span>';
             const nom = it.nombre || '-';
             const uv = it.uv || '-';
             const mza = it.mza || '-';
@@ -321,15 +416,15 @@
 
             let badgeEstado = '';
             if (!it.tieneSuministro || it.estado === 0) {
-                badgeEstado = '<span class="badge bg-light text-secondary border d-inline-flex align-items-center gap-1"><i class="bi bi-dash-circle"></i> Sin Suministro</span>';
+                badgeEstado = '<span class="badge bg-light text-secondary border d-inline-flex align-items-center gap-1"><i class="bi bi-dash-circle"></i> Baldío</span>';
             } else if (it.estado === 1) {
-                badgeEstado = '<span class="badge d-inline-flex align-items-center gap-1" style="background-color: #5E7A4A;"><i class="bi bi-check-circle"></i> Normal</span>';
+                badgeEstado = '<span class="badge d-inline-flex align-items-center gap-1 text-white" style="background-color: #5E7A4A;"><i class="bi bi-check-circle"></i> Normal</span>';
             } else if (it.estado === 2) {
-                badgeEstado = '<span class="badge d-inline-flex align-items-center gap-1" style="background-color: #C27D38;"><i class="bi bi-exclamation-circle"></i> Para Corte</span>';
+                badgeEstado = '<span class="badge d-inline-flex align-items-center gap-1 text-white" style="background-color: #C27D38;"><i class="bi bi-exclamation-triangle"></i> Para Corte</span>';
             } else if (it.estado === 3) {
-                badgeEstado = '<span class="badge d-inline-flex align-items-center gap-1" style="background-color: #B84A39;"><i class="bi bi-slash-circle"></i> Cortado</span>';
+                badgeEstado = '<span class="badge d-inline-flex align-items-center gap-1 text-white" style="background-color: #B84A39;"><i class="bi bi-slash-circle"></i> Cortado</span>';
             } else {
-                badgeEstado = `<span class="badge bg-secondary">${it.estadoDesc || 'Otro'}</span>`;
+                badgeEstado = `<span class="badge bg-secondary">${it.estadoDesc || 'Baja'}</span>`;
             }
 
             let botonMapa = '-';
@@ -338,19 +433,31 @@
                 const lngStr = Number(it.longitud).toFixed(6);
                 const paramDest = it.codFijo ? `cod=${it.codFijo}` : `lote=${encodeURIComponent(it.nroLote || '')}`;
                 const btnClase = it.tieneSuministro ? 'btn-olive' : 'btn-sand';
-                botonMapa = `<a href="/Mapa?lat=${latStr}&lng=${lngStr}&${paramDest}" class="btn btn-sm ${btnClase} py-0 px-2 d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;" title="Ver en mapa"><i class="bi bi-geo-alt"></i> Ver en Mapa</a>`;
+                botonMapa = `<a href="/Mapa?lat=${latStr}&lng=${lngStr}&${paramDest}" class="btn btn-sm ${btnClase} py-0 px-2 d-inline-flex align-items-center gap-1" style="font-size: 0.76rem;" title="Localizar en mapa"><i class="bi bi-geo-alt"></i> Mapa</a>`;
+            }
+
+            let botonEstado = '';
+            if (it.tieneSuministro && it.codFijo) {
+                const nomEscaped = (it.nombre || '').replace(/'/g, "\\'");
+                botonEstado = `<button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 d-inline-flex align-items-center gap-1" style="font-size: 0.76rem;" onclick="abrirModalEstado(${it.codFijo}, '${nomEscaped}', ${it.estado})" title="Modificar estado de corte"><i class="bi bi-toggles"></i> Estado</button>`;
             }
 
             html += `
                 <tr>
                     <td class="fw-bold font-monospace" style="color: #2D302B;">${cod}</td>
-                    <td>${nom}</td>
+                    <td class="fw-medium">${nom}</td>
                     <td><span class="badge bg-light text-dark border">${uv}</span></td>
                     <td><span class="badge bg-light text-dark border">${mza}</span></td>
                     <td><span class="badge bg-light text-dark border">${lote}</span></td>
                     <td>${badgeEstado}</td>
                     <td class="small text-muted font-monospace">${fecha}</td>
-                    <td class="text-center">${botonMapa}</td>
+                    <td class="text-center">
+                        <div class="d-inline-flex gap-1">
+                            ${botonMapa}
+                            ${botonEstado}
+                        </div>
+                    </td>
+                </tr>`;
         }
 
         tbody.innerHTML = html;
@@ -409,7 +516,6 @@
     function cambiarPagina(nuevaPagina) {
         paginaActual = nuevaPagina;
         renderizarPaginaActual();
-        // Desplazamiento suave al inicio de la tabla
         document.getElementById('tablaResultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
@@ -417,12 +523,72 @@
         document.getElementById('filtroTexto').value = '';
         document.getElementById('filtroUV').value = '';
         document.getElementById('filtroLote').value = '';
+        document.getElementById('filtroEstado').value = '';
         actualizarComboboxManzanasPorUV('');
         document.getElementById('filtroMZA').value = '';
-        ejecutarBusquedaAsincrona();
+        cambiarTipoPredio('TODOS');
     }
 
-    // Exportación CSV: EXPORTA TODOS LOS REGISTROS FILTRADOS (no sólo la página visible de 20)
+    // Modal para cambio de estado
+    let modalInstance = null;
+    function abrirModalEstado(codFijo, titular, estadoActual) {
+        document.getElementById('modalCodFijo').value = codFijo;
+        document.getElementById('modalTxtCodFijo').innerText = codFijo;
+        document.getElementById('modalTxtTitular').innerText = titular;
+        document.getElementById('modalSelEstado').value = estadoActual > 0 ? estadoActual : 1;
+        document.getElementById('modalTxtMotivo').value = '';
+        document.getElementById('modalAlertError').style.display = 'none';
+
+        if (!modalInstance) {
+            modalInstance = new bootstrap.Modal(document.getElementById('modalCambioEstado'));
+        }
+        modalInstance.show();
+    }
+
+    function guardarCambioEstado() {
+        const codFijo = parseInt(document.getElementById('modalCodFijo').value);
+        const nuevoEstado = parseInt(document.getElementById('modalSelEstado').value);
+        const motivo = document.getElementById('modalTxtMotivo').value.trim();
+        const alertErr = document.getElementById('modalAlertError');
+        const btn = document.getElementById('btnGuardarCambioEstado');
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Guardando...';
+        alertErr.style.display = 'none';
+
+        fetch('/api/suministros/cambiar-estado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ codFijo: codFijo, nuevoEstado: nuevoEstado, motivo: motivo })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check2-circle"></i> Guardar Estado';
+            if (data && data.success) {
+                modalInstance.hide();
+                // Actualizar elemento en memoria inmediatamente
+                const item = datosActuales.find(x => x.codFijo === codFijo);
+                if (item) {
+                    item.estado = nuevoEstado;
+                    item.estadoDesc = data.estadoDesc;
+                    item.fechaCambioEstado = new Date().toISOString().substring(0, 10);
+                }
+                renderizarPaginaActual();
+            } else {
+                alertErr.innerText = data.mensaje || 'Error al actualizar el estado.';
+                alertErr.style.display = 'block';
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check2-circle"></i> Guardar Estado';
+            alertErr.innerText = 'Error de conexión con el servidor.';
+            alertErr.style.display = 'block';
+        });
+    }
+
+    // Exportación CSV
     function exportarCSV() {
         if (!datosActuales || datosActuales.length === 0) {
             alert("No hay registros para exportar con los filtros actuales.");
@@ -430,10 +596,8 @@
         }
 
         let lineas = [];
-        // Encabezados
         lineas.push(["Código Fijo", "Titular", "UV", "Manzana", "Lote", "Estado", "Fecha Último Estado", "Latitud", "Longitud"].map(h => `"${h}"`).join(";"));
 
-        // Datos completos del filtro activo
         for (let i = 0; i < datosActuales.length; i++) {
             const it = datosActuales[i];
             const cod = it.codFijo || '';
@@ -451,10 +615,13 @@
 
         const csvContent = "\uFEFF" + lineas.join("\r\n");
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const enlace = document.createElement("a");
-        enlace.href = URL.createObjectURL(blob);
-        enlace.download = `Inmuebles_Export_${new Date().toISOString().substring(0, 10)}.csv`;
-        enlace.click();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `predios_exportados_${new Date().toISOString().substring(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>
 }

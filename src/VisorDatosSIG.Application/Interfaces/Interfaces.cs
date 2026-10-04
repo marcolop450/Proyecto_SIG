@@ -19,4 +19,5 @@ public interface IGeoDataService
     Task<IEnumerable<InmuebleSearchResultDto>> BuscarInmueblesAsync(string? texto, string? uv, string? mza, string? lote, string? tipoPredio = "TODOS");
     Task<FiltrosDisponiblesDto> ObtenerFiltrosDisponiblesAsync(string? uv = null);
     Task<object?> ObtenerDetalleEntidadAsync(string capa, int id);
+    Task<bool> CambiarEstadoSuministroAsync(int codFijo, byte nuevoEstado, string usuario, string? motivo);
 }

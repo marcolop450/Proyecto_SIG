@@ -19,6 +19,7 @@ class _MapScreenState extends State<MapScreen> {
   List<Inmueble> _inmuebles = [];
   bool _loading = false;
   LatLng _center = const LatLng(-16.377, -60.963);
+  int _estadoSeleccionado = 0; // 0=Todos, 1=Normal, 2=Para Corte, 3=Cortado
 
   @override
   void initState() {
@@ -142,6 +143,30 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  Widget _buildFiltroChip(String label, int estado, Color color) {
+    final active = _estadoSeleccionado == estado;
+    return GestureDetector(
+      onTap: () => setState(() => _estadoSeleccionado = estado),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: active ? color : Colors.white.withValues(alpha: 0.95),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color, width: active ? 1.5 : 1),
+          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 2, offset: Offset(0, 1))],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: active ? Colors.white : color,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,7 +198,9 @@ class _MapScreenState extends State<MapScreen> {
                 userAgentPackageName: 'com.uagrm.visordatossig',
               ),
               MarkerLayer(
-                markers: _inmuebles.map((item) {
+                markers: _inmuebles
+                    .where((item) => _estadoSeleccionado == 0 || item.estado == _estadoSeleccionado)
+                    .map((item) {
                   return Marker(
                     point: LatLng(item.latitud!, item.longitud!),
                     width: 24,
@@ -200,9 +227,28 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ],
           ),
+          Positioned(
+            top: 10,
+            left: 10,
+            right: 10,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildFiltroChip('Todos', 0, const Color(0xFF2E4636)),
+                  const SizedBox(width: 6),
+                  _buildFiltroChip('Normal', 1, const Color(0xFF5E7A4A)),
+                  const SizedBox(width: 6),
+                  _buildFiltroChip('Para Corte', 2, const Color(0xFFC27D38)),
+                  const SizedBox(width: 6),
+                  _buildFiltroChip('Cortados', 3, const Color(0xFFB84A39)),
+                ],
+              ),
+            ),
+          ),
           if (_loading)
             Positioned(
-              top: 10,
+              top: 55,
               left: 10,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
