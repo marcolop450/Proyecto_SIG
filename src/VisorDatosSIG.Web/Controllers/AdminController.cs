@@ -124,4 +124,47 @@ public class AdminController : Controller
         ViewBag.Roles = roles;
         return View(usuarios);
     }
+
+    [HttpGet]
+    public IActionResult CatalogoCapas()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult HistorialMigraciones()
+    {
+        string csvPath = Path.Combine(Directory.GetCurrentDirectory(), "resumen_migracion.csv");
+        if (!System.IO.File.Exists(csvPath))
+        {
+            csvPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "resumen_migracion.csv");
+            csvPath = Path.GetFullPath(csvPath);
+        }
+
+        var lineas = System.IO.File.Exists(csvPath) 
+            ? System.IO.File.ReadAllLines(csvPath) 
+            : Array.Empty<string>();
+
+        ViewBag.CsvPath = csvPath;
+        ViewBag.Lineas = lineas;
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Roles()
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        const string sqlRoles = @"
+            SELECT r.IdRol, r.NombreRol, r.Descripcion, r.Estado,
+                   COUNT(ur.IdUsuario) AS CantidadUsuarios
+            FROM dbo.Roles r
+            LEFT JOIN dbo.UsuariosRoles ur ON ur.IdRol = r.IdRol
+            GROUP BY r.IdRol, r.NombreRol, r.Descripcion, r.Estado
+            ORDER BY r.IdRol;";
+
+        var roles = await conn.QueryAsync<dynamic>(sqlRoles);
+        return View(roles);
+    }
 }

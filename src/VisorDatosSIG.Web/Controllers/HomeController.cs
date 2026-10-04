@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VisorDatosSIG.Application.Interfaces;
 
@@ -18,5 +18,17 @@ public class HomeController : Controller
     {
         var stats = await _geoDataService.ObtenerEstadisticasAsync();
         return View(stats);
+    }
+
+    [HttpGet]
+    public IActionResult Manual()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult AcercaDe()
+    {
+        return View();
     }
 }

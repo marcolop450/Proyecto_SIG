@@ -69,32 +69,61 @@
 
                 @if (User.IsInRole("Administrador"))
                 {
-                    <div class="sidebar-heading mt-3">Administración</div>
+                    <div class="sidebar-heading mt-3">4. Administración</div>
                     <ul class="sidebar-menu">
                         <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Usuarios" ? "active" : "")">
                             <a asp-controller="Admin" asp-action="Usuarios">
-                                <i class="bi bi-people"></i> Usuarios y Roles
+                                <i class="bi bi-people"></i> Usuarios
                             </a>
                         </li>
-                        <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Configuracion" ? "active" : "")">
-                            <a asp-controller="Admin" asp-action="Configuracion">
-                                <i class="bi bi-gear"></i> Configuración
+                        <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Roles" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="Roles">
+                                <i class="bi bi-shield-lock"></i> Perfiles y Permisos
+                            </a>
+                        </li>
+                        <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "CatalogoCapas" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="CatalogoCapas">
+                                <i class="bi bi-layers"></i> Catálogo de Capas
+                            </a>
+                        </li>
+                        <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "HistorialMigraciones" ? "active" : "")">
+                            <a asp-controller="Admin" asp-action="HistorialMigraciones">
+                                <i class="bi bi-clock-history"></i> Historial Migraciones
                             </a>
                         </li>
                         <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Bitacora" ? "active" : "")">
                             <a asp-controller="Admin" asp-action="Bitacora">
-                                <i class="bi bi-journal-text"></i> Bitácora
+                                <i class="bi bi-journal-text"></i> Bitácora del Sistema
                             </a>
                         </li>
                     </ul>
                 }
+
+                <div class="sidebar-heading mt-3">5. Cuenta y 6. Ayuda</div>
+                <ul class="sidebar-menu">
+                    <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Perfil" ? "active" : "")">
+                        <a asp-controller="Account" asp-action="Perfil">
+                            <i class="bi bi-person-badge"></i> Mi Perfil
+                        </a>
+                    </li>
+                    <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Manual" ? "active" : "")">
+                        <a asp-controller="Home" asp-action="Manual">
+                            <i class="bi bi-book"></i> Manual de Usuario
+                        </a>
+                    </li>
+                    <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "AcercaDe" ? "active" : "")">
+                        <a asp-controller="Home" asp-action="AcercaDe">
+                            <i class="bi bi-info-circle"></i> Acerca del Sistema
+                        </a>
+                    </li>
+                </ul>
 
                 <div class="mt-auto p-3 text-muted" style="font-size: 0.75rem; border-top: 1px solid #383B35;">
                     <div class="d-flex align-items-center gap-1">
                         <i class="bi bi-shield-lock-fill text-success"></i>
                         <span>Entorno Seguro · SRID 4326</span>
                     </div>
-                    <div class="mt-1">VisorDatosSIG v1.0 Enterprise</div>
+                    <div class="mt-1">VisorDatosSIG v2.0 Enterprise</div>
                 </div>
             </aside>
 

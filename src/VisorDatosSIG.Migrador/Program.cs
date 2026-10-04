@@ -18,22 +18,209 @@ class Program
     static void Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8;
-        Console.WriteLine("================================================================================");
-        Console.WriteLine("        MIGRADOR DE DATOS GEOGRÁFICOS SHP -> SQL SERVER 2022 (SRID 4326)");
-        Console.WriteLine("                     VisorDatosSIG 2026 - FICCT UAGRM");
-        Console.WriteLine("================================================================================");
-        Console.WriteLine();
+        string dataDir = BuscarDirectorioDatos();
 
+        if (args.Length > 0)
+        {
+            string cmd = args[0].ToLowerInvariant();
+            switch (cmd)
+            {
+                case "--preview":
+                case "--previsualizar":
+                    PrevisualizarCapas(dataDir);
+                    return;
+                case "--migrar-anexar":
+                case "--anexar":
+                    EjecutarMigracionCompleta(dataDir, modoReemplazar: false);
+                    return;
+                case "--rebuild-indexes":
+                case "--reconstruir-indices":
+                    ReconstruirIndices();
+                    return;
+                case "--migrar":
+                case "--reemplazar":
+                case "--auto":
+                default:
+                    EjecutarMigracionCompleta(dataDir, modoReemplazar: true);
+                    return;
+            }
+        }
+
+        // Modo Interactivo si se ejecuta sin argumentos
+        if (Console.IsInputRedirected)
+        {
+            EjecutarMigracionCompleta(dataDir, modoReemplazar: true);
+            return;
+        }
+
+        MostrarMenuInteractivo(dataDir);
+    }
+
+    private static string BuscarDirectorioDatos()
+    {
         string dataDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "DatosSIG_Reproj"));
         if (!Directory.Exists(dataDir))
         {
             dataDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "DatosSIG_Reproj"));
         }
+        return dataDir;
+    }
 
-        Registrar($"Inicio de migración: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+    private static void MostrarMenuInteractivo(string dataDir)
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("================================================================================");
+            Console.WriteLine("        MIGRADOR DE DATOS GEOGRÁFICOS SHP -> SQL SERVER 2022 (SRID 4326)");
+            Console.WriteLine("                     VisorDatosSIG 2026 - FICCT UAGRM");
+            Console.WriteLine("================================================================================");
+            Console.WriteLine();
+            Console.WriteLine("Directorio de shapefiles: " + dataDir);
+            Console.WriteLine();
+            Console.WriteLine("Seleccione una opción de operación:");
+            Console.WriteLine("  1. Previsualizar las 4 Capas (Primeros 20 registros y mapeo de campos)");
+            Console.WriteLine("  2. Migración Completa en Modo REEMPLAZAR (Limpieza e inserción atómica)");
+            Console.WriteLine("  3. Migración en Modo ANEXAR (Insertar sin duplicar claves existentes)");
+            Console.WriteLine("  4. Reconstruir Índices Espaciales y Relacionales");
+            Console.WriteLine("  5. Salir");
+            Console.WriteLine();
+            Console.Write("Ingrese opción [1-5]: ");
+
+            string? opt = Console.ReadLine()?.Trim();
+            Console.WriteLine();
+
+            switch (opt)
+            {
+                case "1":
+                    PrevisualizarCapas(dataDir);
+                    Pausar();
+                    break;
+                case "2":
+                    EjecutarMigracionCompleta(dataDir, modoReemplazar: true);
+                    Pausar();
+                    break;
+                case "3":
+                    EjecutarMigracionCompleta(dataDir, modoReemplazar: false);
+                    Pausar();
+                    break;
+                case "4":
+                    ReconstruirIndices();
+                    Pausar();
+                    break;
+                case "5":
+                    Console.WriteLine("Finalizando migrador.");
+                    return;
+                default:
+                    Console.WriteLine("Opción no válida.");
+                    Pausar();
+                    break;
+            }
+        }
+    }
+
+    private static void Pausar()
+    {
+        Console.WriteLine("\nPresione cualquier tecla para continuar...");
+        try { Console.ReadKey(); } catch { }
+    }
+
+    public static void PrevisualizarCapas(string dataDir)
+    {
+        Console.WriteLine("================================================================================");
+        Console.WriteLine("      PREVISUALIZACIÓN DE CAPAS CARTOGRÁFICAS (RF-MIG-03, RF-MIG-05)");
+        Console.WriteLine("================================================================================");
+        Console.WriteLine();
+
+        var capasInfo = new (string Archivo, string Nombre, string TablaDestino, (string Orig, string Dest)[] Mapeo)[]
+        {
+            ("Exp_MapaBase_MZA_4326", "Manzanas", "dbo.Manzanas", new[] { ("Id", "IdOrigen"), ("UV_MZA", "UV_MZA"), ("UV", "UV"), ("MZA", "MZA"), ("Geom", "Geom (Polygon)") }),
+            ("Exp_MapaBase_LOTES_4326", "Lotes Catastrales", "dbo.Lotes", new[] { ("Id", "IdOrigen"), ("NroLote", "NroLote"), ("Geom", "Geom (Polygon)") }),
+            ("Exp_CodigoFijo_4326", "Códigos Fijos (Medidores)", "dbo.CodigosFijos", new[] { ("CodF_SQL", "CodF_SQL"), ("CodF_SIG", "CodF_SIG"), ("CodFijo", "CodFijo"), ("Nombre", "Nombre"), ("Geom", "Geom (Point)") }),
+            ("Exp_MapaBase_VIAS_4326", "Red Vial", "dbo.Vias", new[] { ("OBJECTID", "OBJECTID"), ("Nombre/name", "Nombre"), ("type", "TipoVia"), ("OSMID/osm_id", "OSMID"), ("Geom", "Geom (PolyLine)") })
+        };
+
+        foreach (var c in capasInfo)
+        {
+            string shpPath = Path.Combine(dataDir, c.Archivo + ".shp");
+            if (!File.Exists(shpPath))
+            {
+                Console.WriteLine($"[AVISO] Archivo no encontrado: {shpPath}");
+                continue;
+            }
+
+            Console.WriteLine($"--------------------------------------------------------------------------------");
+            Console.WriteLine($"Capa: {c.Nombre} ({c.Archivo}.shp)  ->  Destino: {c.TablaDestino}");
+            Console.WriteLine($"Mapeo de Atributos:");
+            foreach (var m in c.Mapeo)
+            {
+                Console.WriteLine($"   * DBF [{m.Orig}]  -->  SQL [{m.Dest}]");
+            }
+            Console.WriteLine();
+
+            using var reader = Shapefile.OpenRead(shpPath);
+            int count = 0;
+            Console.WriteLine("Muestra de los primeros 20 registros:");
+            while (reader.Read() && count < 20)
+            {
+                count++;
+                var sb = new StringBuilder();
+                sb.Append($"  #{count,2} | ");
+                int fieldCount = 0;
+                foreach (var fld in reader.Fields)
+                {
+                    if (fieldCount++ < 5)
+                    {
+                        sb.Append($"{fld.Name}: {fld.Value} | ");
+                    }
+                }
+                sb.Append($"Geom: {reader.Geometry.GeometryType}");
+                Console.WriteLine(sb.ToString());
+            }
+            Console.WriteLine();
+        }
+    }
+
+    public static void ReconstruirIndices()
+    {
+        Console.WriteLine("================================================================================");
+        Console.WriteLine("      RECONSTRUCCIÓN DE ÍNDICES ESPACIALES Y RELACIONALES (RF-MIG-14)");
+        Console.WriteLine("================================================================================");
+        Console.WriteLine();
+
+        using var conn = new SqlConnection(ConnectionString);
+        try
+        {
+            conn.Open();
+            string[] tablas = { "dbo.Manzanas", "dbo.Lotes", "dbo.CodigosFijos", "dbo.Vias" };
+            foreach (var t in tablas)
+            {
+                Console.Write($"  → Reconstruyendo índices en {t}... ");
+                using var cmd = new SqlCommand($"ALTER INDEX ALL ON {t} REBUILD;", conn);
+                cmd.CommandTimeout = 120;
+                cmd.ExecuteNonQuery();
+                Console.WriteLine("OK");
+            }
+            Console.WriteLine("\nTodos los índices espaciales y relacionales fueron reconstruidos con éxito.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error al reconstruir índices: " + ex.Message);
+        }
+    }
+
+    public static void EjecutarMigracionCompleta(string dataDir, bool modoReemplazar)
+    {
+        _bitacora.Clear();
+        Registrar($"Inicio de migración: {DateTime.Now:yyyy-MM-dd HH:mm:ss} | Modo: {(modoReemplazar ? "REEMPLAZAR" : "ANEXAR")}");
         Registrar($"Directorio de datos: {dataDir}");
 
-        Console.WriteLine($"[1/5] Verificando directorio y componentes obligatorios (.shp, .shx, .dbf, .prj)...");
+        Console.WriteLine("================================================================================");
+        Console.WriteLine($"  INICIANDO MIGRACIÓN EN MODO: {(modoReemplazar ? "REEMPLAZAR SEGURO" : "ANEXAR SIN DUPLICAR")}");
+        Console.WriteLine("================================================================================");
+
+        // 1. Verificación de archivos obligatorios y WGS 84
+        Console.WriteLine($"\n[1/5] Verificando directorio y componentes obligatorios (.shp, .shx, .dbf, .prj)...");
         string[] capas = new[] { "Exp_MapaBase_MZA_4326", "Exp_MapaBase_LOTES_4326", "Exp_CodigoFijo_4326", "Exp_MapaBase_VIAS_4326" };
         foreach (var capa in capas)
         {
@@ -56,9 +243,10 @@ class Program
                 Console.ResetColor();
                 return;
             }
-            Console.WriteLine($"  ✓ Capa {capa} verificada con éxito.");
+            Console.WriteLine($"  ✓ Capa {capa} verificada con éxito (SRID 4326).");
         }
 
+        // 2. Conexión SQL
         Console.WriteLine("\n[2/5] Probando conexión a SQL Server 2022...");
         using (var conn = new SqlConnection(ConnectionString))
         {
@@ -78,32 +266,52 @@ class Program
 
         var swTotal = Stopwatch.StartNew();
 
-        Console.WriteLine("\n[2.5/5] Limpiando tablas anteriores respetando integridad referencial...");
-        LimpiarTablasExistentes();
+        if (modoReemplazar)
+        {
+            Console.WriteLine("\n[2.5/5] Limpiando tablas anteriores respetando integridad referencial...");
+            LimpiarTablasExistentes();
+        }
+        else
+        {
+            Console.WriteLine("\n[2.5/5] Modo ANEXAR seleccionado: Preservando datos existentes sin truncar...");
+        }
 
-        Console.WriteLine("\n[3/5] Migrando capas geográficas con transacciones...");
-        MigrarManzanas(Path.Combine(dataDir, "Exp_MapaBase_MZA_4326.shp"));
-        MigrarLotes(Path.Combine(dataDir, "Exp_MapaBase_LOTES_4326.shp"));
-        MigrarCodigosFijos(Path.Combine(dataDir, "Exp_CodigoFijo_4326.shp"));
-        MigrarVias(Path.Combine(dataDir, "Exp_MapaBase_VIAS_4326.shp"));
+        // 3. Migración por capas
+        Console.WriteLine("\n[3/5] Migrando capas geográficas con transacciones atómicas...");
+        int totalMza = MigrarManzanas(Path.Combine(dataDir, "Exp_MapaBase_MZA_4326.shp"), modoReemplazar);
+        int totalLotes = MigrarLotes(Path.Combine(dataDir, "Exp_MapaBase_LOTES_4326.shp"), modoReemplazar);
+        int totalCodigos = MigrarCodigosFijos(Path.Combine(dataDir, "Exp_CodigoFijo_4326.shp"), modoReemplazar);
+        int totalVias = MigrarVias(Path.Combine(dataDir, "Exp_MapaBase_VIAS_4326.shp"), modoReemplazar);
 
+        // 4. Relaciones espaciales
         Console.WriteLine("\n[4/5] Calculando relaciones espaciales (Lote-Manzana y CódigoFijo-Lote)...");
         ActualizarRelacionesEspaciales();
 
+        // 5. Validación oficial
         Console.WriteLine("\n[5/5] Ejecución de validaciones oficiales (Criterios Anexo C)...");
         EjecutarValidacionOficial();
 
         swTotal.Stop();
         Registrar($"Migración concluida en {swTotal.Elapsed.TotalSeconds:F1} segundos.");
 
-        // Guardar bitácora
+        // Guardar bitácora en TXT y CSV
         File.WriteAllText("bitacora_migracion.txt", _bitacora.ToString(), Encoding.UTF8);
+
+        // Guardar resumen formal CSV (RF-MIG-13)
+        var csvContent = new StringBuilder();
+        csvContent.AppendLine("Capa,TablaSQL,TotalInsertados,Modo,DuracionSegundos,FechaHora");
+        csvContent.AppendLine($"Manzanas,dbo.Manzanas,{totalMza},{(modoReemplazar ? "REEMPLAZAR" : "ANEXAR")},{swTotal.Elapsed.TotalSeconds:F1},{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        csvContent.AppendLine($"Lotes,dbo.Lotes,{totalLotes},{(modoReemplazar ? "REEMPLAZAR" : "ANEXAR")},{swTotal.Elapsed.TotalSeconds:F1},{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        csvContent.AppendLine($"CodigosFijos,dbo.CodigosFijos,{totalCodigos},{(modoReemplazar ? "REEMPLAZAR" : "ANEXAR")},{swTotal.Elapsed.TotalSeconds:F1},{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        csvContent.AppendLine($"Vias,dbo.Vias,{totalVias},{(modoReemplazar ? "REEMPLAZAR" : "ANEXAR")},{swTotal.Elapsed.TotalSeconds:F1},{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        File.WriteAllText("resumen_migracion.csv", csvContent.ToString(), Encoding.UTF8);
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"\n================================================================================");
-        Console.WriteLine($"        ¡MIGRACIÓN COMPLETA Y VERIFICADA CON ÉXITO EN {swTotal.Elapsed.TotalSeconds:F1} SEGUNDOS!");
+        Console.WriteLine($"  ¡MIGRACIÓN COMPLETA Y VERIFICADA CON ÉXITO EN {swTotal.Elapsed.TotalSeconds:F1} SEGUNDOS!");
         Console.WriteLine($"================================================================================");
-        Console.WriteLine("  Bitácora guardada en: bitacora_migracion.txt\n");
+        Console.WriteLine("  Bitácora guardada en:  bitacora_migracion.txt");
+        Console.WriteLine("  Resumen exportado en:  resumen_migracion.csv\n");
         Console.ResetColor();
     }
 
@@ -129,7 +337,7 @@ class Program
         _bitacora.AppendLine($"[{DateTime.Now:HH:mm:ss}] {mensaje}");
     }
 
-    static void MigrarManzanas(string shpPath)
+    static int MigrarManzanas(string shpPath, bool modoReemplazar)
     {
         Console.Write("  → Migrando Manzanas (esperado: 863)... ");
         var sw = Stopwatch.StartNew();
@@ -139,7 +347,10 @@ class Program
         conn.Open();
 
         using var tx = conn.BeginTransaction();
-        const string insertSql = @"
+        string insertSql = modoReemplazar ? @"
+            INSERT INTO dbo.Manzanas (IdOrigen, UV_MZA, UV, MZA, Geom)
+            VALUES (@IdOrigen, @UV_MZA, @UV, @MZA, geometry::STGeomFromText(@Wkt, 4326));" : @"
+            IF NOT EXISTS (SELECT 1 FROM dbo.Manzanas WHERE IdOrigen = @IdOrigen)
             INSERT INTO dbo.Manzanas (IdOrigen, UV_MZA, UV, MZA, Geom)
             VALUES (@IdOrigen, @UV_MZA, @UV, @MZA, geometry::STGeomFromText(@Wkt, 4326));";
 
@@ -177,11 +388,12 @@ class Program
         sw.Stop();
         Console.WriteLine($"{exitosos} insertadas ({sw.ElapsedMilliseconds} ms, {fallidos} omitidos)");
         Registrar($"Manzanas: {exitosos} insertadas, {fallidos} omitidos en {sw.ElapsedMilliseconds} ms.");
+        return exitosos;
     }
 
-    static void MigrarLotes(string shpPath)
+    static int MigrarLotes(string shpPath, bool modoReemplazar)
     {
-        Console.Write("  → Migrando Lotes (esperado: 15,281)... ");
+        Console.Write("  → Migrando Lotes (esperado: 15,280)... ");
         var sw = Stopwatch.StartNew();
         int exitosos = 0, fallidos = 0;
 
@@ -189,14 +401,19 @@ class Program
         conn.Open();
 
         using var tx = conn.BeginTransaction();
-        const string insertSql = @"
-            INSERT INTO dbo.Lotes (IdOrigen, NroLote, Geom)
-            VALUES (@IdOrigen, @NroLote, geometry::STGeomFromText(@Wkt, 4326));";
+        string insertSql = modoReemplazar ? @"
+            INSERT INTO dbo.Lotes (IdOrigen, NroLote, Geom, Latitud, Longitud)
+            VALUES (@IdOrigen, @NroLote, geometry::STGeomFromText(@Wkt, 4326), @Latitud, @Longitud);" : @"
+            IF NOT EXISTS (SELECT 1 FROM dbo.Lotes WHERE IdOrigen = @IdOrigen)
+            INSERT INTO dbo.Lotes (IdOrigen, NroLote, Geom, Latitud, Longitud)
+            VALUES (@IdOrigen, @NroLote, geometry::STGeomFromText(@Wkt, 4326), @Latitud, @Longitud);";
 
         using var cmd = new SqlCommand(insertSql, conn, tx);
         var pId = cmd.Parameters.Add("@IdOrigen", System.Data.SqlDbType.Int);
         var pNroLote = cmd.Parameters.Add("@NroLote", System.Data.SqlDbType.NVarChar, 15);
         var pWkt = cmd.Parameters.Add("@Wkt", System.Data.SqlDbType.NVarChar, -1);
+        var pLat = cmd.Parameters.Add("@Latitud", System.Data.SqlDbType.Float);
+        var pLon = cmd.Parameters.Add("@Longitud", System.Data.SqlDbType.Float);
 
         using var reader = Shapefile.OpenRead(shpPath);
         while (true)
@@ -208,6 +425,10 @@ class Program
                 pId.Value = Convert.ToInt32(reader.Fields["Id"].Value);
                 pNroLote.Value = reader.Fields["NroLote"].Value?.ToString() ?? (object)DBNull.Value;
                 pWkt.Value = _wkt2D.Write(reader.Geometry);
+
+                var centroid = reader.Geometry.Centroid;
+                pLat.Value = centroid.Y;
+                pLon.Value = centroid.X;
 
                 cmd.ExecuteNonQuery();
                 exitosos++;
@@ -224,9 +445,10 @@ class Program
         sw.Stop();
         Console.WriteLine($"\n    {exitosos} lotes insertados ({sw.Elapsed.TotalSeconds:F1} s, {fallidos} omitidos)");
         Registrar($"Lotes: {exitosos} insertados, {fallidos} omitidos en {sw.Elapsed.TotalSeconds:F1} s.");
+        return exitosos;
     }
 
-    static void MigrarCodigosFijos(string shpPath)
+    static int MigrarCodigosFijos(string shpPath, bool modoReemplazar)
     {
         Console.Write("  → Migrando Códigos Fijos (esperado: 6,271)... ");
         var sw = Stopwatch.StartNew();
@@ -236,7 +458,10 @@ class Program
         conn.Open();
 
         using var tx = conn.BeginTransaction();
-        const string insertSql = @"
+        string insertSql = modoReemplazar ? @"
+            INSERT INTO dbo.CodigosFijos (CodF_SQL, CodF_SIG, CodFijo, Nombre, Estado, FechaCambioEstado, Longitud, Latitud, Geom)
+            VALUES (@CodF_SQL, @CodF_SIG, @CodFijo, @Nombre, 1, SYSDATETIME(), @Longi, @Latid, geometry::Point(@Longi, @Latid, 4326));" : @"
+            IF NOT EXISTS (SELECT 1 FROM dbo.CodigosFijos WHERE CodFijo = @CodFijo)
             INSERT INTO dbo.CodigosFijos (CodF_SQL, CodF_SIG, CodFijo, Nombre, Estado, FechaCambioEstado, Longitud, Latitud, Geom)
             VALUES (@CodF_SQL, @CodF_SIG, @CodFijo, @Nombre, 1, SYSDATETIME(), @Longi, @Latid, geometry::Point(@Longi, @Latid, 4326));";
 
@@ -267,8 +492,6 @@ class Program
                 var fNombre = reader.Fields["Nombre"].Value;
                 pNombre.Value = fNombre?.ToString() ?? (object)DBNull.Value;
 
-                // Coordenadas reales extraídas directamente de la geometría del Shapefile (.shp)
-                // Soluciona el problema de origen donde el .dbf tenía Longi copiado en Latid.
                 double longi = reader.Geometry.Coordinate.X;
                 double latid = reader.Geometry.Coordinate.Y;
                 pLongi.Value = longi;
@@ -289,9 +512,10 @@ class Program
         sw.Stop();
         Console.WriteLine($"\n    {exitosos} códigos fijos insertados ({sw.Elapsed.TotalSeconds:F1} s, {fallidos} omitidos)");
         Registrar($"CodigosFijos: {exitosos} insertados, {fallidos} omitidos en {sw.Elapsed.TotalSeconds:F1} s.");
+        return exitosos;
     }
 
-    static void MigrarVias(string shpPath)
+    static int MigrarVias(string shpPath, bool modoReemplazar)
     {
         Console.Write("  → Migrando Vías (esperado: 578)... ");
         var sw = Stopwatch.StartNew();
@@ -301,7 +525,10 @@ class Program
         conn.Open();
 
         using var tx = conn.BeginTransaction();
-        const string insertSql = @"
+        string insertSql = modoReemplazar ? @"
+            INSERT INTO dbo.Vias (OBJECTID, Nombre, TipoVia, OSMID, Geom)
+            VALUES (@ObjId, @Nombre, @TipoVia, @OsmId, geometry::STGeomFromText(@Wkt, 4326));" : @"
+            IF NOT EXISTS (SELECT 1 FROM dbo.Vias WHERE OBJECTID = @ObjId)
             INSERT INTO dbo.Vias (OBJECTID, Nombre, TipoVia, OSMID, Geom)
             VALUES (@ObjId, @Nombre, @TipoVia, @OsmId, geometry::STGeomFromText(@Wkt, 4326));";
 
@@ -347,6 +574,7 @@ class Program
         sw.Stop();
         Console.WriteLine($"{exitosos} vías insertadas ({sw.ElapsedMilliseconds} ms, {fallidos} omitidos)");
         Registrar($"Vias: {exitosos} insertadas, {fallidos} omitidos en {sw.ElapsedMilliseconds} ms.");
+        return exitosos;
     }
 
     static void ActualizarRelacionesEspaciales()
@@ -412,5 +640,3 @@ class Program
         }
     }
 }
-
-

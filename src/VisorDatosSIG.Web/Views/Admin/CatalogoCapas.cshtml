@@ -1,0 +1,109 @@
+@{
+    ViewData["Title"] = "Catálogo de Capas Cartográficas";
+}
+
+<div class="row mb-3 align-items-center">
+    <div class="col">
+        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">
+            <i class="bi bi-layers me-2 text-primary"></i>
+            Catálogo de Capas Cartográficas (Anexo E 4.2)
+        </h4>
+        <p class="text-muted small mb-0">
+            Metadatos espaciales, atributos consultables, tipos de geometría y simbología del sistema.
+        </p>
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Manzanas -->
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100 border">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <strong class="d-flex align-items-center gap-2">
+                    <span class="legend-badge" style="border: 1.5px solid #5E7A4A; background: rgba(94, 122, 74, 0.2);"></span>
+                    Manzanas Urbanas
+                </strong>
+                <span class="badge bg-secondary">dbo.Manzanas</span>
+            </div>
+            <div class="card-body small">
+                <table class="table table-sm table-borderless m-0">
+                    <tr><td class="text-muted" style="width: 40%;">Tipo Geométrico:</td><td><strong>MultiPolygon (OGC)</strong></td></tr>
+                    <tr><td class="text-muted">Sistema de Coordenadas:</td><td><strong>SRID 4326 (WGS 84)</strong></td></tr>
+                    <tr><td class="text-muted">Total Entidades:</td><td><strong>863 polígonos</strong></td></tr>
+                    <tr><td class="text-muted">Campos Visibles:</td><td><code>IdOrigen, UV_MZA, UV, MZA</code></td></tr>
+                    <tr><td class="text-muted">Campos Buscables:</td><td><code>UV, MZA, UV_MZA</code></td></tr>
+                    <tr><td class="text-muted">Estilo por Defecto:</td><td>Borde verde olivo (#5E7A4A), relleno transparente 5%</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lotes -->
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100 border">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <strong class="d-flex align-items-center gap-2">
+                    <span class="legend-badge" style="border: 1px solid #C89D3C; background: rgba(200, 157, 60, 0.25);"></span>
+                    Lotes Catastrales
+                </strong>
+                <span class="badge bg-secondary">dbo.Lotes</span>
+            </div>
+            <div class="card-body small">
+                <table class="table table-sm table-borderless m-0">
+                    <tr><td class="text-muted" style="width: 40%;">Tipo Geométrico:</td><td><strong>MultiPolygon (OGC)</strong></td></tr>
+                    <tr><td class="text-muted">Sistema de Coordenadas:</td><td><strong>SRID 4326 (WGS 84)</strong></td></tr>
+                    <tr><td class="text-muted">Total Entidades:</td><td><strong>15,280 parcelas</strong></td></tr>
+                    <tr><td class="text-muted">Campos Visibles:</td><td><code>IdOrigen, NroLote, Latitud, Longitud</code></td></tr>
+                    <tr><td class="text-muted">Campos Buscables:</td><td><code>NroLote, IdManzana</code></td></tr>
+                    <tr><td class="text-muted">Estilo por Defecto:</td><td>Borde dorado arena (#C89D3C), opacidad regulable 0-100%</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Códigos Fijos -->
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100 border">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <strong class="d-flex align-items-center gap-2">
+                    <span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span>
+                    Códigos Fijos (Medidores)
+                </strong>
+                <span class="badge bg-secondary">dbo.CodigosFijos</span>
+            </div>
+            <div class="card-body small">
+                <table class="table table-sm table-borderless m-0">
+                    <tr><td class="text-muted" style="width: 40%;">Tipo Geométrico:</td><td><strong>Point (OGC)</strong></td></tr>
+                    <tr><td class="text-muted">Sistema de Coordenadas:</td><td><strong>SRID 4326 (WGS 84)</strong></td></tr>
+                    <tr><td class="text-muted">Total Entidades:</td><td><strong>6,271 puntos</strong></td></tr>
+                    <tr><td class="text-muted">Campos Visibles:</td><td><code>CodFijo, Nombre, Estado, FechaCambioEstado</code></td></tr>
+                    <tr><td class="text-muted">Campos Buscables:</td><td><code>CodFijo, Nombre (búsqueda parcial)</code></td></tr>
+                    <tr><td class="text-muted">Simbología Temática:</td><td>Normal (#5E7A4A), Para Corte (#C27D38), Cortado (#B84A39)</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vías -->
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100 border">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <strong class="d-flex align-items-center gap-2">
+                    <span class="legend-badge" style="height: 3px; background: #3B3D38; border-radius: 0;"></span>
+                    Red Vial Urbana
+                </strong>
+                <span class="badge bg-secondary">dbo.Vias</span>
+            </div>
+            <div class="card-body small">
+                <table class="table table-sm table-borderless m-0">
+                    <tr><td class="text-muted" style="width: 40%;">Tipo Geométrico:</td><td><strong>PolyLine / LineString (OGC)</strong></td></tr>
+                    <tr><td class="text-muted">Sistema de Coordenadas:</td><td><strong>SRID 4326 (WGS 84)</strong></td></tr>
+                    <tr><td class="text-muted">Total Entidades:</td><td><strong>578 ejes viales</strong></td></tr>
+                    <tr><td class="text-muted">Campos Visibles:</td><td><code>OBJECTID, Nombre, TipoVia, OSMID</code></td></tr>
+                    <tr><td class="text-muted">Campos Buscables:</td><td><code>Nombre, TipoVia</code></td></tr>
+                    <tr><td class="text-muted">Estilo por Defecto:</td><td>Trazo gris asfalto (#3B3D38), grosor 2.2 px</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

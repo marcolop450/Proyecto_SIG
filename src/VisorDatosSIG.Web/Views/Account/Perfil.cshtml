@@ -1,0 +1,62 @@
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Mi Perfil";
+}
+
+<div class="row mb-3 align-items-center">
+    <div class="col">
+        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">
+            <i class="bi bi-person-badge me-2 text-primary"></i>
+            Mi Perfil de Usuario (Anexo E 5.0)
+        </h4>
+        <p class="text-muted small mb-0">
+            Información de la cuenta activa, roles autorizados y parámetros de sesión.
+        </p>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card shadow-sm border">
+            <div class="card-header bg-white">
+                <strong class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-circle text-primary"></i>
+                    Datos de la Cuenta
+                </strong>
+            </div>
+            <div class="card-body small">
+                <table class="table table-sm table-borderless m-0">
+                    <tr><td class="text-muted" style="width: 40%;">Nombre Completo:</td><td><strong>@(User.FindFirst("NombreCompleto")?.Value ?? User.Identity?.Name)</strong></td></tr>
+                    <tr><td class="text-muted">Nombre de Usuario (Login):</td><td><code>@User.Identity?.Name</code></td></tr>
+                    <tr><td class="text-muted">Rol Asignado:</td><td><span class="badge bg-primary">@string.Join(", ", User.FindAll(ClaimTypes.Role).Select(c => c.Value))</span></td></tr>
+                    <tr><td class="text-muted">Tipo de Autenticación:</td><td>Cookies Seguras (.AspNetCore.Cookies)</td></tr>
+                    <tr><td class="text-muted">Algoritmo Criptográfico:</td><td>PBKDF2 HMAC-SHA256 (NIST SP 800-132)</td></tr>
+                    <tr><td class="text-muted">Duración de Sesión:</td><td>2 horas de actividad continua</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border">
+            <div class="card-header bg-white">
+                <strong class="d-flex align-items-center gap-2">
+                    <i class="bi bi-key text-primary"></i>
+                    Seguridad de la Cuenta
+                </strong>
+            </div>
+            <div class="card-body small">
+                <div class="alert alert-light border small text-muted mb-3">
+                    Para solicitar el cambio o restablecimiento de su contraseña, comuníquese con el <strong>Administrador del Sistema</strong> mediante el módulo de gestión de usuarios (RF-SEG-03).
+                </div>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Cerrar Sesión Activa
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

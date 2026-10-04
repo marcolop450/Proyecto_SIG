@@ -1,0 +1,77 @@
+@{
+    ViewData["Title"] = "Manual de Usuario";
+}
+
+<div class="row mb-3 align-items-center">
+    <div class="col">
+        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">
+            <i class="bi bi-book me-2 text-primary"></i>
+            Manual de Usuario e Instrucciones de Operación (Anexo E 6.0)
+        </h4>
+        <p class="text-muted small mb-0">
+            Guía paso a paso para el uso del Visor Cartográfico, Consultas Temáticas y Exportación de Datos.
+        </p>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card shadow-sm border h-100">
+            <div class="card-header bg-white">
+                <strong class="d-flex align-items-center gap-2">
+                    <i class="bi bi-map text-primary"></i>
+                    1. Navegación en el Mapa
+                </strong>
+            </div>
+            <div class="card-body small">
+                <p>El visor cartográfico permite interactuar con la cartografía urbana de San Ignacio de Velasco:</p>
+                <ul>
+                    <li><strong>Zoom y Desplazamiento:</strong> Use la rueda del ratón o los controles táctiles de pellizco para acercar o alejar.</li>
+                    <li><strong>Control de Capas:</strong> Use el panel flotante lateral para encender/apagar Manzanas, Lotes, Códigos Fijos y Vías.</li>
+                    <li><strong>Opacidad de Lotes:</strong> Deslice el control de 0% a 100% para transparentar el relleno y visualizar el mapa satelital base.</li>
+                    <li><strong>Extensión General:</strong> Haga clic en "Extensión" para regresar a la vista panorámica de la ciudad.</li>
+                    <li><strong>Geolocalización GPS:</strong> Presione "Ubicación" para centrar el mapa en su posición actual en terreno.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border h-100">
+            <div class="card-header bg-white">
+                <strong class="d-flex align-items-center gap-2">
+                    <i class="bi bi-search text-primary"></i>
+                    2. Búsqueda y Filtros
+                </strong>
+            </div>
+            <div class="card-body small">
+                <p>El módulo de consultas temáticas ofrece herramientas de filtrado multicriterio:</p>
+                <ul>
+                    <li><strong>Selector de Predios:</strong> Filtre entre "Todos los Predios (15,280)", "Con Suministro (5,118)" o "Sin Medidor / Baldíos (11,333)".</li>
+                    <li><strong>Búsqueda por Texto:</strong> Ingrese el código fijo o nombre del titular para coincidencias instantáneas.</li>
+                    <li><strong>Filtros por UV y Manzana:</strong> Seleccione una UV en el ComboBox y la lista de Manzanas se actualizará automáticamente.</li>
+                    <li><strong>Paginación:</strong> Navegue en bloques de a 20 registros con controles "Anterior" y "Siguiente".</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border h-100">
+            <div class="card-header bg-white">
+                <strong class="d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-arrow-down text-primary"></i>
+                    3. Ficha Técnica y Exportación
+                </strong>
+            </div>
+            <div class="card-body small">
+                <p>Visualización de atributos y descarga de datos oficiales:</p>
+                <ul>
+                    <li><strong>Identificación por Clic:</strong> Al hacer clic en un lote o medidor, se abre la Ficha Técnica con coordenadas y titular.</li>
+                    <li><strong>Vínculo Bidireccional:</strong> Al hacer clic en "Ver en Mapa" en la tabla, el visor viaja automáticamente a la entidad resaltándola con un círculo dorado.</li>
+                    <li><strong>Exportación a CSV:</strong> Haga clic en "Exportar CSV" para descargar todos los predios que cumplen con el filtro activo, sin límite de paginación.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
