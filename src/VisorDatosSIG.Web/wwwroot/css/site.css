@@ -319,3 +319,221 @@ body {
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2) !important;
   }
 }
+
+/* ==========================================================
+   Estilos Navbar Superior Oficial (Diseño VisorDatosSIG)
+   ========================================================== */
+.navbar-sig {
+  background-color: #17243B;
+  border-bottom: 2px solid #233654;
+  color: #FFFFFF;
+  padding: 0.45rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 1020;
+}
+
+.navbar-brand-sig {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.brand-icon-box {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.brand-title {
+  color: #FFFFFF;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.3px;
+}
+
+.brand-subtitle {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.73rem;
+  font-weight: 400;
+}
+
+.nav-link-sig {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.nav-link-sig:hover {
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.nav-link-sig.active {
+  color: #FFFFFF;
+  background-color: #273E64;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-weight: 600;
+}
+
+.badge-role {
+  background-color: #F59E0B;
+  color: #1E293B;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-salir-sig {
+  background: transparent;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  transition: all 0.15s ease;
+}
+
+.btn-salir-sig:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #EF4444;
+  color: #FFFFFF;
+}
+
+/* ==========================================================
+   Layout Pantalla Completa del Mapa con Sidebar Integrado
+   ========================================================== */
+.map-full-viewport {
+  height: calc(100vh - 58px);
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+}
+
+#mapSidebar {
+  width: 340px;
+  min-width: 340px;
+  max-width: 340px;
+  height: 100%;
+  background-color: #FFFFFF;
+  border-right: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+}
+
+#mapContainerFull {
+  flex-grow: 1;
+  height: 100%;
+  position: relative;
+  background-color: #E5E7EB;
+}
+
+/* Tarjetas de resultados de búsqueda lateral */
+.results-cards-container {
+  overflow-y: auto;
+  max-height: calc(100vh - 460px);
+  min-height: 160px;
+  padding-right: 4px;
+}
+
+.result-card-item {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  margin-bottom: 0.45rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.result-card-item:hover {
+  background-color: #F8FAFC;
+  border-color: #93C5FD;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.result-card-item.selected {
+  background-color: #EFF6FF;
+  border-color: #3B82F6;
+  border-left: 3px solid #3B82F6;
+}
+
+/* Ficha Catastral Flotante en Mapa */
+.ficha-catastral-panel {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 340px;
+  max-width: calc(100vw - 380px);
+  background: #FFFFFF;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  border: 1px solid #CBD5E1;
+  z-index: 1010;
+  overflow: hidden;
+  animation: fadeInRight 0.2s ease-out;
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(15px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.ficha-header {
+  background: #1976D2;
+  color: #FFFFFF;
+  padding: 0.65rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.pulse-selection-circle {
+  width: 44px;
+  height: 44px;
+  border: 2.5px dashed #0284C7;
+  background: rgba(14, 165, 233, 0.22);
+  border-radius: 50%;
+  animation: pulse-ring 1.8s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  50% { transform: scale(1.15); opacity: 0.35; }
+  100% { transform: scale(0.9); opacity: 0.9; }
+}
+
+.badge-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}

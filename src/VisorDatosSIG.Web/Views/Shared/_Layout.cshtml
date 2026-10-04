@@ -21,116 +21,97 @@
 <body>
     @if (User.Identity?.IsAuthenticated == true)
     {
-        <header class="app-header">
-            <a class="app-brand" asp-controller="Home" asp-action="Index">
-                <img src="~/logo.svg" alt="Logo" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px;" />
-                VisorDatosSIG
-            </a>
+        var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+        var isMapa = currentController == "Mapa";
+
+        <!-- Barra Superior Horizontal Oficial (Top Navbar) -->
+        <header class="navbar-sig">
             <div class="d-flex align-items-center gap-3">
-                <div class="d-flex align-items-center gap-2 px-3 py-1 rounded" style="background-color: #383B35; border: 1px solid #484B44;">
-                    <i class="bi bi-person-circle" style="color: var(--accent-gold); font-size: 1.1rem;"></i>
-                    <span style="color: #E8E5DC; font-size: 0.88rem;">
-                        <strong>@(User.FindFirst("NombreCompleto")?.Value ?? User.Identity.Name)</strong>
-                        <span class="ms-1 px-2 py-0 rounded text-uppercase" style="background-color: #242622; color: var(--accent-gold); font-size: 0.72rem; letter-spacing: 0.5px;">
-                            @string.Join(", ", User.FindAll(ClaimTypes.Role).Select(c => c.Value))
-                        </span>
+                <a class="navbar-brand-sig" asp-controller="Home" asp-action="Index">
+                    <div class="brand-icon-box">
+                        <i class="bi bi-layers-half text-white" style="font-size: 1.3rem;"></i>
+                    </div>
+                    <div>
+                        <div class="brand-title">VisorDatosSIG</div>
+                        <div class="brand-subtitle">Sistema Catastral Municipal</div>
+                    </div>
+                </a>
+
+                <nav class="d-none d-md-flex align-items-center gap-1 ms-3">
+                    <a asp-controller="Home" asp-action="Index" class="nav-link-sig @(currentController == "Home" && currentAction == "Index" ? "active" : "")">
+                        <i class="bi bi-speedometer2"></i> Inicio
+                    </a>
+                    <a asp-controller="Mapa" asp-action="Index" class="nav-link-sig @(isMapa ? "active" : "")">
+                        <i class="bi bi-map"></i> Visor Cartográfico
+                    </a>
+                    <a asp-controller="Consultas" asp-action="Index" class="nav-link-sig @(currentController == "Consultas" ? "active" : "")">
+                        <i class="bi bi-search"></i> Consultas
+                    </a>
+
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <div class="dropdown">
+                            <a class="nav-link-sig dropdown-toggle @(currentController == "Admin" ? "active" : "")" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-shield-lock"></i> Administración
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark shadow" style="background-color: #1E2D48; border-color: rgba(255,255,255,0.15);">
+                                <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Usuarios"><i class="bi bi-people me-2"></i> Usuarios</a></li>
+                                <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Roles"><i class="bi bi-shield-lock me-2"></i> Perfiles y Permisos</a></li>
+                                <li><hr class="dropdown-divider border-secondary"></li>
+                                <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="CatalogoCapas"><i class="bi bi-layers me-2"></i> Catálogo de Capas</a></li>
+                                <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="HistorialMigraciones"><i class="bi bi-clock-history me-2"></i> Historial Migraciones</a></li>
+                                <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Bitacora"><i class="bi bi-journal-text me-2"></i> Bitácora del Sistema</a></li>
+                            </ul>
+                        </div>
+                    }
+
+                    <a asp-controller="Account" asp-action="Perfil" class="nav-link-sig @(currentController == "Account" && currentAction == "Perfil" ? "active" : "")">
+                        <i class="bi bi-person-badge"></i> Mi Perfil
+                    </a>
+
+                    <div class="dropdown">
+                        <a class="nav-link-sig dropdown-toggle @(currentController == "Home" && (currentAction == "Manual" || currentAction == "AcercaDe") ? "active" : "")" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-question-circle"></i> Ayuda
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark shadow" style="background-color: #1E2D48; border-color: rgba(255,255,255,0.15);">
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Manual"><i class="bi bi-book me-2"></i> Manual de Usuario</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="AcercaDe"><i class="bi bi-info-circle me-2"></i> Acerca del Sistema</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-circle text-white-50" style="font-size: 1.1rem;"></i>
+                    <span class="text-white small fw-bold">@(User.FindFirst("NombreCompleto")?.Value ?? User.Identity?.Name)</span>
+                    <span class="badge-role">
+                        @string.Join(", ", User.FindAll(ClaimTypes.Role).Select(c => c.Value))
                     </span>
                 </div>
                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline m-0">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-sm btn-sand py-1 px-3 d-flex align-items-center gap-1">
+                    <button type="submit" class="btn btn-salir-sig d-flex align-items-center gap-1">
                         <i class="bi bi-box-arrow-right"></i>
-                        Cerrar Sesión
+                        Salir
                     </button>
                 </form>
             </div>
         </header>
 
-        <div class="app-layout">
-            <aside class="app-sidebar">
-                <div class="sidebar-heading">Módulos del Sistema</div>
-                <ul class="sidebar-menu">
-                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
-                        <a asp-controller="Home" asp-action="Index">
-                            <i class="bi bi-speedometer2"></i> Panel Principal
-                        </a>
-                    </li>
-                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Mapa" ? "active" : "")">
-                        <a asp-controller="Mapa" asp-action="Index">
-                            <i class="bi bi-map"></i> Visor Cartográfico
-                        </a>
-                    </li>
-                    <li class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Consultas" ? "active" : "")">
-                        <a asp-controller="Consultas" asp-action="Index">
-                            <i class="bi bi-search"></i> Consulta Temática
-                        </a>
-                    </li>
-                </ul>
-
-                @if (User.IsInRole("Administrador"))
-                {
-                    <div class="sidebar-heading mt-3">Administración</div>
-                    <ul class="sidebar-menu">
-                        <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Usuarios" ? "active" : "")">
-                            <a asp-controller="Admin" asp-action="Usuarios">
-                                <i class="bi bi-people"></i> Usuarios
-                            </a>
-                        </li>
-                        <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Roles" ? "active" : "")">
-                            <a asp-controller="Admin" asp-action="Roles">
-                                <i class="bi bi-shield-lock"></i> Perfiles y Permisos
-                            </a>
-                        </li>
-                        <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "CatalogoCapas" ? "active" : "")">
-                            <a asp-controller="Admin" asp-action="CatalogoCapas">
-                                <i class="bi bi-layers"></i> Catálogo de Capas
-                            </a>
-                        </li>
-                        <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "HistorialMigraciones" ? "active" : "")">
-                            <a asp-controller="Admin" asp-action="HistorialMigraciones">
-                                <i class="bi bi-clock-history"></i> Historial Migraciones
-                            </a>
-                        </li>
-                        <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Bitacora" ? "active" : "")">
-                            <a asp-controller="Admin" asp-action="Bitacora">
-                                <i class="bi bi-journal-text"></i> Bitácora del Sistema
-                            </a>
-                        </li>
-                    </ul>
-                }
-
-                <div class="sidebar-heading mt-3">Cuenta y Ayuda</div>
-                <ul class="sidebar-menu">
-                    <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Perfil" ? "active" : "")">
-                        <a asp-controller="Account" asp-action="Perfil">
-                            <i class="bi bi-person-badge"></i> Mi Perfil
-                        </a>
-                    </li>
-                    <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Manual" ? "active" : "")">
-                        <a asp-controller="Home" asp-action="Manual">
-                            <i class="bi bi-book"></i> Manual de Usuario
-                        </a>
-                    </li>
-                    <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "AcercaDe" ? "active" : "")">
-                        <a asp-controller="Home" asp-action="AcercaDe">
-                            <i class="bi bi-info-circle"></i> Acerca del Sistema
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="mt-auto p-3 text-muted" style="font-size: 0.75rem; border-top: 1px solid #383B35;">
-                    <div class="d-flex align-items-center gap-1">
-                        <i class="bi bi-shield-lock-fill text-success"></i>
-                        <span>Entorno Seguro · SRID 4326</span>
-                    </div>
-                    <div class="mt-1">VisorDatosSIG v2.0 Enterprise</div>
-                </div>
-            </aside>
-
-            <main class="app-content">
+        @if (isMapa)
+        {
+            <main class="map-full-viewport">
                 @RenderBody()
             </main>
-        </div>
+        }
+        else
+        {
+            <main class="container-fluid py-4 px-4" style="max-width: 1440px;">
+                @RenderBody()
+            </main>
+        }
     }
     else
     {

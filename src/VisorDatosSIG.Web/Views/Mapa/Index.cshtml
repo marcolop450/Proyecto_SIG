@@ -1,178 +1,231 @@
 @{
     ViewData["Title"] = "Visor Cartográfico";
+    var listaMza = ViewBag.ListaMZA as List<string> ?? new List<string>();
+    var listaLotes = ViewBag.ListaLotes as List<string> ?? new List<string>();
+    var listaUv = ViewBag.ListaUV as List<string> ?? new List<string>();
 }
 
-<div class="row g-2 mb-2 align-items-center">
-    <div class="col-md-5">
-        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">
-            <i class="bi bi-map me-2" style="color: var(--primary);"></i>
-            Visor Cartográfico
-        </h4>
-    </div>
-    <div class="col-md-7">
-        <div class="input-group">
-            <span class="input-group-text bg-white border-end-0">
-                <img src="~/logo.svg" alt="SIG" style="width: 20px; height: 20px; vertical-align: middle;" />
-            </span>
-            <input type="text" id="txtBusquedaRapida" class="form-control border-start-0" placeholder="Buscar por código (ej. 4936), titular, UV, MZA o lote..." style="background: #FFFFFF; border-color: #C9C5B9;" />
-            <button id="btnBuscarRapido" class="btn btn-olive d-flex align-items-center gap-1" type="button">
-                <i class="bi bi-search"></i>
-                Buscar
-            </button>
-            <button id="btnMiUbicacion" class="btn btn-outline-secondary d-flex align-items-center gap-1" type="button" title="Mi Ubicación GPS">
-                <i class="bi bi-geo-alt"></i>
-                <span class="d-none d-sm-inline">Ubicación</span>
-            </button>
-            <button id="btnResetZoom" class="btn btn-sand d-flex align-items-center gap-1" type="button" title="Extensión General">
-                <i class="bi bi-arrows-fullscreen"></i>
-                Extensión
-            </button>
-        </div>
-    </div>
-</div>
-
-<div class="position-relative">
-    <!-- Contenedor del Mapa Leaflet -->
-    <div id="mapContainer"></div>
-
-    <!-- Panel Flotante de Capas y Leyenda (Izquierda) -->
-    <div id="panelCapas" class="position-absolute top-0 start-0 m-3 layer-panel" style="z-index: 1000; width: 260px; font-size: 0.85rem;">
-        <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
-            <span class="fw-bold d-flex align-items-center gap-1">
-                <i class="bi bi-layers"></i>
-                Capas y Filtros
-            </span>
-            <button type="button" id="btnTogglePanel" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" title="Minimizar panel">
-                <i class="bi bi-chevron-up"></i>
-            </button>
-        </div>
-        
-        <div id="panelCapasBody">
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="chkManzanas" checked />
-                <label class="form-check-label" for="chkManzanas">
-                    <span class="legend-badge" style="border: 1.5px solid #5E7A4A; background: rgba(94, 122, 74, 0.1);"></span>
-                    Manzanas (863)
-                </label>
-            </div>
-            
-            <div class="form-check mb-1">
-                <input class="form-check-input" type="checkbox" id="chkLotes" checked />
-                <label class="form-check-label" for="chkLotes">
-                    <span class="legend-badge" style="border: 1px solid #C89D3C; background: rgba(200, 157, 60, 0.25);"></span>
-                    Lotes Catastrales
-                </label>
+<div class="d-flex w-100 h-100 position-relative" style="overflow: hidden;">
+    <!-- Panel Lateral Izquierdo de Filtros, Capas y Resultados (Estilo Oficial) -->
+    <aside id="mapSidebar">
+        <!-- Sección 1: Filtros de Búsqueda -->
+        <div class="p-3 border-bottom" style="background: #FAFAFA;">
+            <!-- Selector Manzanas -->
+            <div class="mb-2">
+                <label for="selFiltroMza" class="form-label small fw-bold text-muted mb-1">Manzanas</label>
+                <select id="selFiltroMza" class="form-select form-select-sm" style="background: #FFFFFF; border-color: #CBD5E1;">
+                    <option value="">Todas las Manzanas</option>
+                    @foreach (var mza in listaMza)
+                    {
+                        <option value="@mza">@mza</option>
+                    }
+                </select>
             </div>
 
-            <!-- Control de Opacidad de Lotes para ver fondo -->
-            <div class="mb-2 ps-4">
-                <div class="d-flex justify-content-between text-muted" style="font-size: 0.72rem;">
-                    <span>Opacidad Relleno:</span>
-                    <span id="lblOpacidadLotes">25%</span>
+            <!-- Selector Lote -->
+            <div class="mb-2">
+                <label for="selFiltroLote" class="form-label small fw-bold text-muted mb-1">Lote</label>
+                <input type="text" id="selFiltroLote" list="dlLotesMapa" class="form-control form-control-sm" placeholder="Todos los Lotes" style="background: #FFFFFF; border-color: #CBD5E1;" autocomplete="off" />
+                <datalist id="dlLotesMapa">
+                    <option value="">Todos los Lotes</option>
+                    @foreach (var lote in listaLotes)
+                    {
+                        <option value="@lote">@lote</option>
+                    }
+                </datalist>
+            </div>
+
+            <!-- Buscador Rápido de Código o Titular -->
+            <div class="mb-2">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0" style="border-color: #CBD5E1;">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" id="txtBusquedaPredio" class="form-control border-start-0" placeholder="Buscar código (ej. 4936) o titular..." style="border-color: #CBD5E1;" />
                 </div>
-                <input type="range" class="form-range" id="rngOpacidadLotes" min="0" max="100" value="25" style="height: 4px;" />
             </div>
-            
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="chkVias" checked />
-                <label class="form-check-label" for="chkVias">
-                    <span class="legend-badge" style="height: 3px; background: #3B3D38; border-radius: 0;"></span>
-                    Red Vial (578)
-                </label>
+
+            <!-- Botones de Acción de Filtro -->
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-sm flex-grow-1 d-flex align-items-center justify-content-center gap-1" onclick="ejecutarFiltroLateral()">
+                    <i class="bi bi-funnel-fill"></i>
+                    Aplicar Filtro
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetearFiltrosLaterales()" title="Restablecer filtros">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
             </div>
-            
+        </div>
+
+        <!-- Sección 2: Capas del Mapa -->
+        <div class="p-3 border-bottom">
+            <div class="fw-bold small text-muted text-uppercase mb-2" style="letter-spacing: 0.5px;">
+                <i class="bi bi-layers me-1 text-primary"></i> Capas del Mapa
+            </div>
+
+            <div class="mb-3">
+                <label for="selMapaBase" class="form-label small text-muted mb-1">Mapa Base</label>
+                <select id="selMapaBase" class="form-select form-select-sm" style="background: #FAF9F5; border-color: #CBD5E1;">
+                    <option value="topo" selected>OpenTopoMap</option>
+                    <option value="osm">OpenStreetMap</option>
+                    <option value="esri">Esri Satelital HD</option>
+                </select>
+            </div>
+
             <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" id="chkCodigosFijos" checked />
-                <label class="form-check-label" for="chkCodigosFijos">
-                    <span class="legend-badge" style="background: #5E7A4A; border-radius: 50%;"></span>
-                    Códigos Fijos (<span id="lblTotalCodigos">6,271</span>)
+                <label class="form-check-label small" for="chkCodigosFijos">
+                    <span class="badge-dot" style="background: #2563EB;"></span> Códigos Fijos
                 </label>
             </div>
-
-            <!-- FILTRAR ESTADOS DE SUMINISTRO (PUNTOS DE CORTE) -->
-            <div class="d-flex justify-content-between align-items-center mt-2 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47; font-size: 0.78rem;">
-                <span class="fw-bold"><i class="bi bi-funnel me-1"></i>Filtrar Estados</span>
-                <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size: 0.72rem;" onclick="seleccionarTodosEstados(true)">Todos</button>
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="chkManzanas" checked />
+                <label class="form-check-label small" for="chkManzanas">
+                    <span class="badge-dot" style="background: #10B981;"></span> Manzanas
+                </label>
             </div>
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="chkLotes" checked />
+                <label class="form-check-label small" for="chkLotes">
+                    <span class="badge-dot" style="background: #F59E0B;"></span> Lotes
+                </label>
+            </div>
+            <div class="form-check mb-1">
+                <input class="form-check-input" type="checkbox" id="chkVias" checked />
+                <label class="form-check-label small" for="chkVias">
+                    <span class="badge-dot" style="background: #64748B;"></span> Vías / Calles
+                </label>
+            </div>
+        </div>
 
-            <div class="small ps-1 mb-2">
-                <div class="form-check mb-1">
-                    <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoNormal" value="1" checked />
-                    <label class="form-check-label d-flex justify-content-between pe-1" for="chkEstadoNormal">
-                        <span><span class="legend-badge" style="background: #5E7A4A; border-radius: 50%;"></span> Normal</span>
-                        <strong class="text-muted font-monospace" id="lblCantNormal">-</strong>
-                    </label>
+        <!-- Sección 3: Simbología de Estados -->
+        <div class="p-3 border-bottom" style="background: #FAFAFA;">
+            <div class="fw-bold small text-muted text-uppercase mb-2" style="letter-spacing: 0.5px;">
+                <i class="bi bi-palette me-1 text-primary"></i> Simbología de Estados
+            </div>
+            <div class="small ps-1" style="font-size: 0.82rem; line-height: 1.6;">
+                <div><span class="badge-dot" style="background: #10B981;"></span> <strong>1 - Normal:</strong> Servicio regular</div>
+                <div><span class="badge-dot" style="background: #F59E0B;"></span> <strong>2 - Para corte:</strong> Mora o pendiente</div>
+                <div><span class="badge-dot" style="background: #EF4444;"></span> <strong>3 - Cortado:</strong> Suspendido</div>
+                <div><span class="badge-dot" style="background: #8B5CF6;"></span> <strong>4 - Baja parcial:</strong> En retiro</div>
+                <div><span class="badge-dot" style="background: #64748B;"></span> <strong>5 - Baja total:</strong> Desactivado</div>
+            </div>
+        </div>
+
+        <!-- Sección 4: Lista de Resultados Encontrados (Screenshot 2) -->
+        <div class="p-3 flex-grow-1 d-flex flex-column" style="min-height: 250px;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold small text-muted" id="lblCantResultados">Cargando registros...</span>
+                <a href="javascript:void(0)" onclick="limpiarListaResultados()" class="small text-primary text-decoration-none fw-semibold">Limpiar</a>
+            </div>
+            <div id="listaCardsResultados" class="results-cards-container flex-grow-1">
+                <!-- Se inyectan las tarjetas dinámicas de predios -->
+            </div>
+        </div>
+    </aside>
+
+    <!-- Contenedor del Mapa Leaflet a Pantalla Completa -->
+    <div id="mapContainerFull">
+        <!-- Mapa Leaflet -->
+        <div id="mapContainer" style="width: 100%; height: 100%;"></div>
+
+        <!-- Botón Superior Derecho: Extensión General -->
+        <button type="button" id="btnZoomGeneral" class="btn btn-sm shadow-sm d-flex align-items-center gap-1 border" style="background: #FFFFFF; position: absolute; top: 14px; right: 14px; z-index: 1005; font-size: 0.82rem; font-weight: 600; color: #1E293B;" onclick="restablecerExtensionGeneral()">
+            <i class="bi bi-arrows-fullscreen"></i>
+            Extensión General
+        </button>
+
+        <!-- Barra Inferior de Coordenadas y Escala -->
+        <div class="position-absolute bottom-0 start-0 m-2 px-2 py-1 bg-white border rounded shadow-sm small text-muted" style="z-index: 1000; font-family: monospace; font-size: 0.76rem;">
+            Coord: <span id="lblCoords">-16.377, -60.963</span> | Zoom: <span id="lblZoom">14</span> | WGS 84 (SRID 4326)
+        </div>
+
+        <!-- Panel Ficha Catastral Flotante (Exacto al Screenshot 1) -->
+        <div id="fichaCatastralPanel" class="ficha-catastral-panel" style="display: none;">
+            <div class="ficha-header">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-card-heading"></i> Ficha Catastral
+                </span>
+                <button type="button" class="btn-close btn-close-white btn-sm" onclick="cerrarFicha()"></button>
+            </div>
+            <div class="p-3">
+                <!-- Badge de Estado -->
+                <div class="text-center mb-2">
+                    <span id="fichaBadgeEstado" class="badge px-3 py-2 text-white" style="background-color: #10B981; font-size: 0.85rem; border-radius: 16px;">
+                        <i class="bi bi-tag-fill me-1"></i> Estado 1: Normal
+                    </span>
                 </div>
-                <div class="form-check mb-1">
-                    <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoCorte" value="2" checked />
-                    <label class="form-check-label d-flex justify-content-between pe-1" for="chkEstadoCorte">
-                        <span><span class="legend-badge" style="background: #C27D38; border-radius: 50%;"></span> Para Corte</span>
-                        <strong class="text-warning font-monospace" id="lblCantCorte">-</strong>
-                    </label>
+
+                <!-- Nombre del Titular e ID -->
+                <h5 class="fw-bold text-center text-dark mb-0 text-uppercase" id="fichaNombre" style="letter-spacing: 0.5px; font-size: 1.05rem;">PEREZ FERREIRA UBALDO</h5>
+                <div class="text-center text-muted small mb-3" id="fichaIdSistema">ID Sistema: #16300025</div>
+
+                <!-- Tabla de Ficha Catastral -->
+                <table class="table table-sm table-bordered m-0" style="font-size: 0.84rem;">
+                    <tbody>
+                        <tr>
+                            <td class="text-muted fw-semibold" style="width: 44%;">Código Fijo:</td>
+                            <td class="fw-bold font-monospace text-dark" id="fichaCodFijo">4936</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-semibold">Código SIG:</td>
+                            <td class="fw-bold font-monospace" style="color: #E91E63;" id="fichaCodSIG">16.300.025</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-semibold">Unidad Vecinal:</td>
+                            <td id="fichaUV">UV 16</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-semibold">Manzana:</td>
+                            <td id="fichaMza">Mz 300</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-semibold">Lote:</td>
+                            <td id="fichaLote">Lote 025</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-semibold">Latitud:</td>
+                            <td class="font-monospace" id="fichaLat">-16.409350</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-semibold">Longitud:</td>
+                            <td class="font-monospace" id="fichaLon">-60.956872</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-semibold">Último Cambio:</td>
+                            <td id="fichaFecha">22/9/2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Botones de Acción de la Ficha -->
+                <div class="d-flex gap-2 mt-3">
+                    <button type="button" class="btn btn-outline-primary btn-sm flex-fill d-flex align-items-center justify-content-center gap-1" onclick="copiarCoordenadasFicha()">
+                        <i class="bi bi-clipboard"></i>
+                        Copiar Coordenadas
+                    </button>
+                    <a href="#" id="btnFichaVerConsultas" class="btn btn-primary btn-sm flex-fill d-flex align-items-center justify-content-center gap-1">
+                        <i class="bi bi-table"></i>
+                        Ver en Consultas
+                    </a>
                 </div>
-                <div class="form-check mb-1">
-                    <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoCortado" value="3" checked />
-                    <label class="form-check-label d-flex justify-content-between pe-1" for="chkEstadoCortado">
-                        <span><span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span> Cortado</span>
-                        <strong class="text-danger font-monospace" id="lblCantCortado">-</strong>
-                    </label>
-                </div>
-                <div class="form-check mb-1">
-                    <input class="form-check-input filtro-estado" type="checkbox" id="chkEstadoBaja" value="4" checked />
-                    <label class="form-check-label d-flex justify-content-between pe-1" for="chkEstadoBaja">
-                        <span><span class="legend-badge" style="background: #6B7280; border-radius: 50%;"></span> Baja</span>
-                        <strong class="text-muted font-monospace" id="lblCantBaja">-</strong>
-                    </label>
+
+                <div class="mt-2 text-center" id="boxModificarEstadoFicha">
+                    <button type="button" class="btn btn-sm btn-outline-secondary w-100 py-1" style="font-size: 0.78rem;" onclick="abrirModalModificarDesdeFicha()">
+                        <i class="bi bi-toggles me-1"></i> Modificar Estado de Suministro
+                    </button>
                 </div>
             </div>
-
-            <!-- Botón Rápido: Ver solo Puntos de Corte -->
-            <button type="button" class="btn btn-sm btn-outline-warning w-100 py-1 mb-2 d-flex align-items-center justify-content-center gap-1" style="font-size: 0.76rem;" onclick="filtrarSoloPuntosCorte()">
-                <i class="bi bi-lightning-charge-fill"></i>
-                Ver solo Puntos de Corte
-            </button>
-
-            <div class="fw-bold mt-2 mb-1 pt-2 border-top text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47; font-size: 0.78rem;">
-                Mapa Base
-            </div>
-            <select id="selMapaBase" class="form-select form-select-sm" style="background: #FAF9F5; border-color: #C9C5B9; font-size: 0.8rem;">
-                <option value="osm">OpenStreetMap Estándar</option>
-                <option value="topo">OpenTopoMap (Relieve)</option>
-                <option value="esri">Esri Satelital HD</option>
-            </select>
         </div>
-    </div>
-
-    <!-- Panel Inspector de Entidad Seleccionada (Derecha) -->
-    <div id="inspectorPanel" class="position-absolute top-0 end-0 m-3 p-3 shadow-md" style="z-index: 1000; width: 330px; background: rgba(255, 255, 255, 0.98); border: 1px solid #C9C5B9; border-radius: 6px; display: none;">
-        <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
-            <strong id="inspectorTitle" class="d-flex align-items-center gap-1" style="color: #2D302B;">
-                <i class="bi bi-info-circle text-primary"></i>
-                Ficha Técnica
-            </strong>
-            <button type="button" class="btn-close btn-sm" onclick="cerrarInspector()"></button>
-        </div>
-        <div id="inspectorContent" style="font-size: 0.85rem; max-height: 400px; overflow-y: auto;">
-        </div>
-        <div id="inspectorActions" class="mt-2 pt-2 border-top text-end" style="display: none;">
-            <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 ms-auto" style="font-size: 0.78rem;" id="btnInspectorModificarEstado">
-                <i class="bi bi-toggles"></i> Modificar Estado
-            </button>
-        </div>
-    </div>
-
-    <!-- Barra inferior de Coordenadas y Escala -->
-    <div class="position-absolute bottom-0 end-0 m-2 px-2 py-1 bg-white border rounded shadow-sm small text-muted" style="z-index: 1000; font-family: monospace;">
-        Coord: <span id="lblCoords">-16.377, -60.963</span> | Zoom: <span id="lblZoom">14</span> | WGS 84 (SRID 4326)
     </div>
 </div>
 
 <!-- Modal para Cambio de Estado de Suministro desde el Mapa -->
 <div class="modal fade" id="modalMapaCambioEstado" tabindex="-1" aria-hidden="true" style="z-index: 1100;">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border: 1px solid #C9C5B9;">
-            <div class="modal-header py-2 px-3" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
-                <h6 class="modal-title fw-bold" style="color: #2C2D2A;">
+        <div class="modal-content" style="border: 1px solid #CBD5E1;">
+            <div class="modal-header py-2 px-3" style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
+                <h6 class="modal-title fw-bold" style="color: #1E293B;">
                     <i class="bi bi-toggles me-1 text-primary"></i>
                     Modificar Estado de Suministro
                 </h6>
@@ -193,24 +246,24 @@
                         Nuevo Estado Operativo
                     </label>
                     <select id="mapaModalSelEstado" class="form-select form-select-sm">
-                        <option value="1">1 - Normal (Servicio Activo)</option>
-                        <option value="2">2 - Para Corte (Notificación de Mora)</option>
-                        <option value="3">3 - Cortado (Suministro Suspendido)</option>
-                        <option value="4">4 - Baja Parcial</option>
-                        <option value="5">5 - Baja Total</option>
+                        <option value="1">1 - Normal (Servicio regular)</option>
+                        <option value="2">2 - Para corte (Mora o pendiente)</option>
+                        <option value="3">3 - Cortado (Suspendido)</option>
+                        <option value="4">4 - Baja parcial (En retiro)</option>
+                        <option value="5">5 - Baja total (Desactivado)</option>
                     </select>
                 </div>
                 <div class="mb-2">
                     <label for="mapaModalTxtMotivo" class="form-label small fw-bold text-muted mb-1">
                         Motivo / Observación
                     </label>
-                    <textarea id="mapaModalTxtMotivo" class="form-control form-control-sm" rows="2" placeholder="Ej. Orden de corte ejecutada o Reconexión por regularización de pago..."></textarea>
+                    <textarea id="mapaModalTxtMotivo" class="form-control form-control-sm" rows="2" placeholder="Ej. Notificación en mora cumplida o pago registrado..."></textarea>
                 </div>
                 <div id="mapaModalAlertError" class="alert alert-danger py-1 px-2 small mb-0" style="display: none;"></div>
             </div>
-            <div class="modal-footer py-2 px-3" style="background: #FAF9F5; border-top: 1px solid #E2DFD6;">
+            <div class="modal-footer py-2 px-3" style="background: #F8FAFC; border-top: 1px solid #E2E8F0;">
                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-sm btn-olive d-flex align-items-center gap-1" id="btnMapaGuardarEstado" onclick="guardarEstadoDesdeMapa()">
+                <button type="button" class="btn btn-sm btn-primary d-flex align-items-center gap-1" id="btnMapaGuardarEstado" onclick="guardarEstadoDesdeMapa()">
                     <i class="bi bi-check2-circle"></i>
                     Guardar Estado
                 </button>
@@ -225,18 +278,16 @@
     let baseLayers = {};
     let currentBaseLayer;
     let layerManzanas, layerLotes, layerVias, layerCodigosFijos;
-    let rawCodigosFijosData = null;
+    let rawCodigosFijos = [];
     let initialBounds = L.latLngBounds([[-16.440, -61.007], [-16.321, -60.919]]);
-    let highlightLayer;
-    let gpsMarker = null;
-    let gpsAccuracyCircle = null;
+    let highlightCircleMarker = null;
     let modalMapaInstance = null;
-    let entidadInspeccionadaActual = null;
+    let currentSelectedItem = null;
 
     document.addEventListener("DOMContentLoaded", function () {
         initMap();
         cargarCapas();
-        setupEvents();
+        setupSidebarEvents();
         verificarParametrosURL();
     });
 
@@ -249,8 +300,10 @@
             maxZoom: 22
         });
 
-        L.control.zoom({ position: 'topright' }).addTo(map);
+        // Controles de Zoom en esquina superior izquierda
+        L.control.zoom({ position: 'topleft' }).addTo(map);
 
+        // Capas en panes con z-index
         map.createPane('paneManzanas');
         map.getPane('paneManzanas').style.zIndex = 400;
 
@@ -265,7 +318,7 @@
 
         // Mapas Base
         baseLayers.osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
+            attribution: '&copy; OpenStreetMap'
         });
 
         baseLayers.topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
@@ -273,14 +326,15 @@
         });
 
         baseLayers.esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            attribution: 'Tiles &copy; Esri World Imagery'
         });
 
-        currentBaseLayer = baseLayers.osm;
+        // OpenTopoMap por defecto tal como en la captura
+        currentBaseLayer = baseLayers.topo;
         currentBaseLayer.addTo(map);
 
         map.on('mousemove', function (e) {
-            document.getElementById('lblCoords').innerText = e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5);
+            document.getElementById('lblCoords').innerText = e.latlng.lat.toFixed(6) + ', ' + e.latlng.lng.toFixed(6);
         });
 
         map.on('zoomend', function () {
@@ -296,16 +350,29 @@
                 layerManzanas = L.geoJSON(data, {
                     pane: 'paneManzanas',
                     style: {
-                        color: "#5E7A4A",
+                        color: "#10B981",
                         weight: 1.5,
-                        fillColor: "#5E7A4A",
-                        fillOpacity: 0.1
+                        fillColor: "#10B981",
+                        fillOpacity: 0.08
                     },
                     onEachFeature: function (f, l) {
-                        l.on('click', () => mostrarInspector("Manzana", f.properties));
+                        l.on('click', () => {
+                            mostrarFichaDesdePropiedades({
+                                nombre: "MANZANA " + (f.properties.MZA || f.properties.UV_MZA || ""),
+                                idSistema: "MZ-" + (f.properties.IdManzana || ""),
+                                codFijo: "-",
+                                codSIG: f.properties.UV_MZA || "-",
+                                uv: f.properties.UV || "-",
+                                mza: f.properties.MZA || "-",
+                                lote: "-",
+                                estado: 1,
+                                latitud: f.properties.Latitud || -16.377,
+                                longitud: f.properties.Longitud || -60.963
+                            });
+                        });
                     }
                 }).addTo(map);
-            });
+            }).catch(e => console.warn("Error cargando manzanas:", e));
 
         // 2. Lotes
         fetch('/api/capas/lotes?limit=15300')
@@ -317,13 +384,26 @@
                         color: "#B88B2A",
                         weight: 1,
                         fillColor: "#C89D3C",
-                        fillOpacity: 0.25
+                        fillOpacity: 0.18
                     },
                     onEachFeature: function (f, l) {
-                        l.on('click', () => mostrarInspector("Lote Catastral", f.properties));
+                        l.on('click', () => {
+                            mostrarFichaDesdePropiedades({
+                                nombre: "LOTE CATASTRAL " + (f.properties.NroLote || ""),
+                                idSistema: "LT-" + (f.properties.IdLote || ""),
+                                codFijo: "-",
+                                codSIG: f.properties.NroLote || "-",
+                                uv: f.properties.UV || "-",
+                                mza: f.properties.MZA || "-",
+                                lote: f.properties.NroLote || "-",
+                                estado: 1,
+                                latitud: f.properties.Latitud || -16.377,
+                                longitud: f.properties.Longitud || -60.963
+                            });
+                        });
                     }
                 }).addTo(map);
-            });
+            }).catch(e => console.warn("Error cargando lotes:", e));
 
         // 3. Vías
         fetch('/api/capas/vias')
@@ -332,374 +412,235 @@
                 layerVias = L.geoJSON(data, {
                     pane: 'paneVias',
                     style: {
-                        color: "#3B3D38",
-                        weight: 2.2,
+                        color: "#475569",
+                        weight: 2,
                         opacity: 0.85
-                    },
-                    onEachFeature: function (f, l) {
-                        l.on('click', () => mostrarInspector("Vía", f.properties));
                     }
                 }).addTo(map);
-            });
+            }).catch(e => console.warn("Error cargando vías:", e));
 
-        // 4. Códigos Fijos con filtrado dinámico y contadores reales
+        // 4. Códigos Fijos (6,271 puntos)
         fetch('/api/capas/codigosfijos?limit=6500')
             .then(res => res.json())
             .then(data => {
-                rawCodigosFijosData = data;
-                actualizarContadoresEstados();
-                renderizarCodigosFijos();
-            });
-    }
-
-    function actualizarContadoresEstados() {
-        if (!rawCodigosFijosData || !rawCodigosFijosData.features) return;
-        
-        let cNormal = 0, cCorte = 0, cCortado = 0, cBaja = 0;
-        rawCodigosFijosData.features.forEach(f => {
-            const est = f.properties.estado;
-            if (est === 1) cNormal++;
-            else if (est === 2) cCorte++;
-            else if (est === 3) cCortado++;
-            else if (est === 4 || est === 5) cBaja++;
-        });
-
-        document.getElementById('lblCantNormal').innerText = cNormal;
-        document.getElementById('lblCantCorte').innerText = cCorte;
-        document.getElementById('lblCantCortado').innerText = cCortado;
-        document.getElementById('lblCantBaja').innerText = cBaja;
-        document.getElementById('lblTotalCodigos').innerText = rawCodigosFijosData.features.length;
-    }
-
-    function renderizarCodigosFijos() {
-        if (!rawCodigosFijosData) return;
-        if (layerCodigosFijos) map.removeLayer(layerCodigosFijos);
-
-        let estadosActivos = [];
-        document.querySelectorAll('.filtro-estado:checked').forEach(cb => {
-            estadosActivos.push(parseInt(cb.value));
-        });
-
-        layerCodigosFijos = L.geoJSON(rawCodigosFijosData, {
-            pane: 'paneCodigosFijos',
-            filter: function (f) {
-                const est = f.properties.estado;
-                // Agrupar 4 y 5 como baja
-                if (estadosActivos.includes(4) && est === 5) return true;
-                return estadosActivos.includes(est);
-            },
-            pointToLayer: function (feature, latlng) {
-                let color = '#5E7A4A'; // 1 = Normal (Verde)
-                let radius = 3.5;
-                if (feature.properties.estado == 2) {
-                    color = '#C27D38'; // 2 = Para Corte (Ámbar / Naranja)
-                    radius = 4.5;
-                } else if (feature.properties.estado == 3) {
-                    color = '#B84A39'; // 3 = Cortado (Rojo)
-                    radius = 4.5;
-                } else if (feature.properties.estado == 4 || feature.properties.estado == 5) {
-                    color = '#6B7280'; // 4, 5 = Baja (Gris)
-                }
-
-                return L.circleMarker(latlng, {
-                    radius: radius,
-                    fillColor: color,
-                    color: '#FFFFFF',
-                    weight: 1,
-                    opacity: 1,
-                    fillOpacity: 0.95
+                rawCodigosFijos = (data.features || []).map(f => {
+                    const p = f.properties || {};
+                    const coords = f.geometry?.coordinates || [0, 0];
+                    return {
+                        idCodigo: p.IdCodigo,
+                        codFijo: p.CodFijo,
+                        codSIG: p.CodF_SIG || (p.UV && p.MZA && p.Lote ? `${p.UV}.${p.MZA}.${p.Lote}` : "-"),
+                        nombre: (p.Nombre || "SIN TITULAR REGISTRADO").trim(),
+                        uv: p.UV || "-",
+                        mza: p.MZA || "-",
+                        lote: p.Lote || "-",
+                        estado: p.Estado || 1,
+                        latitud: p.Latitud || coords[1],
+                        longitud: p.Longitud || coords[0],
+                        fechaEstado: p.FechaEstado ? new Date(p.FechaEstado).toLocaleDateString('es-ES') : "22/9/2026"
+                    };
                 });
-            },
-            onEachFeature: function (f, l) {
-                l.on('click', () => mostrarInspector("Código Fijo (Medidor)", f.properties));
-            }
+
+                renderizarCapaCodigosFijos(rawCodigosFijos);
+                renderizarListaCards(rawCodigosFijos);
+            }).catch(e => console.error("Error cargando códigos fijos:", e));
+    }
+
+    function renderizarCapaCodigosFijos(items) {
+        if (layerCodigosFijos && map.hasLayer(layerCodigosFijos)) {
+            map.removeLayer(layerCodigosFijos);
+        }
+
+        const markers = [];
+        items.forEach(item => {
+            if (!item.latitud || !item.longitud) return;
+
+            const color = obtenerColorEstado(item.estado);
+            const m = L.circleMarker([item.latitud, item.longitud], {
+                pane: 'paneCodigosFijos',
+                radius: 4.5,
+                fillColor: color,
+                color: '#FFFFFF',
+                weight: 1.2,
+                opacity: 1,
+                fillOpacity: 0.95
+            });
+
+            m.on('click', () => {
+                seleccionarPredioEnMapa(item);
+            });
+
+            markers.push(m);
         });
 
+        layerCodigosFijos = L.featureGroup(markers);
         if (document.getElementById('chkCodigosFijos').checked) {
             layerCodigosFijos.addTo(map);
         }
     }
 
-    function filtrarSoloPuntosCorte() {
-        document.getElementById('chkEstadoNormal').checked = false;
-        document.getElementById('chkEstadoCorte').checked = true;
-        document.getElementById('chkEstadoCortado').checked = true;
-        document.getElementById('chkEstadoBaja').checked = false;
-        document.getElementById('chkCodigosFijos').checked = true;
-
-        renderizarCodigosFijos();
-
-        // Si hay capas de corte, ajustar el zoom para verlas
-        if (layerCodigosFijos && map.hasLayer(layerCodigosFijos)) {
-            try {
-                const bounds = layerCodigosFijos.getBounds();
-                if (bounds.isValid()) {
-                    map.fitBounds(bounds, { padding: [50, 50] });
-                }
-            } catch (_) {}
+    function obtenerColorEstado(estado) {
+        switch (estado) {
+            case 1: return "#10B981"; // Normal
+            case 2: return "#F59E0B"; // Para Corte
+            case 3: return "#EF4444"; // Cortado
+            case 4: return "#8B5CF6"; // Baja Parcial
+            case 5: return "#64748B"; // Baja Total
+            default: return "#10B981";
         }
     }
 
-    function seleccionarTodosEstados(activar) {
-        document.querySelectorAll('.filtro-estado').forEach(cb => {
-            cb.checked = activar;
-        });
-        renderizarCodigosFijos();
-    }
-
-    function setupEvents() {
-        document.getElementById('chkManzanas').addEventListener('change', function () {
-            if (this.checked) map.addLayer(layerManzanas); else map.removeLayer(layerManzanas);
-        });
-
-        document.getElementById('chkLotes').addEventListener('change', function () {
-            if (this.checked) map.addLayer(layerLotes); else map.removeLayer(layerLotes);
-        });
-
-        document.getElementById('chkVias').addEventListener('change', function () {
-            if (this.checked) map.addLayer(layerVias); else map.removeLayer(layerVias);
-        });
-
-        document.getElementById('chkCodigosFijos').addEventListener('change', function () {
-            if (this.checked) map.addLayer(layerCodigosFijos); else map.removeLayer(layerCodigosFijos);
-        });
-
-        document.querySelectorAll('.filtro-estado').forEach(cb => {
-            cb.addEventListener('change', renderizarCodigosFijos);
-        });
-
-        document.getElementById('rngOpacidadLotes').addEventListener('input', function () {
-            let val = parseInt(this.value) / 100;
-            document.getElementById('lblOpacidadLotes').innerText = this.value + '%';
-            if (layerLotes) {
-                layerLotes.setStyle({ fillOpacity: val });
-            }
-        });
-
-        document.getElementById('selMapaBase').addEventListener('change', function () {
-            map.removeLayer(currentBaseLayer);
-            currentBaseLayer = baseLayers[this.value];
-            currentBaseLayer.addTo(map);
-        });
-
-        document.getElementById('btnResetZoom').addEventListener('click', function () {
-            map.fitBounds(initialBounds);
-        });
-
-        document.getElementById('btnMiUbicacion').addEventListener('click', function () {
-            if (!navigator.geolocation) {
-                alert("La geolocalización no es soportada por su navegador.");
-                return;
-            }
-
-            let btn = this;
-            let originalHtml = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Buscando...';
-
-            navigator.geolocation.getCurrentPosition(
-                function (pos) {
-                    btn.disabled = false;
-                    btn.innerHTML = originalHtml;
-                    let lat = pos.coords.latitude;
-                    let lng = pos.coords.longitude;
-                    let accuracy = pos.coords.accuracy;
-
-                    if (gpsMarker) map.removeLayer(gpsMarker);
-                    if (gpsAccuracyCircle) map.removeLayer(gpsAccuracyCircle);
-
-                    gpsAccuracyCircle = L.circle([lat, lng], {
-                        radius: accuracy,
-                        color: '#3B82F6',
-                        fillColor: '#3B82F6',
-                        fillOpacity: 0.15,
-                        weight: 1
-                    }).addTo(map);
-
-                    gpsMarker = L.circleMarker([lat, lng], {
-                        radius: 8,
-                        fillColor: '#2563EB',
-                        color: '#FFFFFF',
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.95
-                    }).addTo(map).bindPopup('<strong>Mi Ubicación Actual</strong><br>Precisión: ±' + Math.round(accuracy) + ' m').openPopup();
-
-                    map.setView([lat, lng], 17);
-                },
-                function (err) {
-                    btn.disabled = false;
-                    btn.innerHTML = originalHtml;
-                    let msg = "No se pudo obtener la ubicación GPS.";
-                    if (err.code === 1) msg = "Permiso de geolocalización denegado.";
-                    else if (err.code === 2) msg = "Posición GPS no disponible.";
-                    else if (err.code === 3) msg = "Tiempo agotado al consultar GPS.";
-                    alert(msg);
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-            );
-        });
-
-        document.getElementById('btnBuscarRapido').addEventListener('click', ejecutarBusquedaRapida);
-        document.getElementById('txtBusquedaRapida').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') ejecutarBusquedaRapida();
-        });
-
-        document.getElementById('btnTogglePanel').addEventListener('click', function () {
-            let body = document.getElementById('panelCapasBody');
-            let icon = this.querySelector('i');
-            if (body.style.display === 'none') {
-                body.style.display = 'block';
-                icon.className = 'bi bi-chevron-up';
-            } else {
-                body.style.display = 'none';
-                icon.className = 'bi bi-chevron-down';
-            }
-        });
-
-        // Botón en el inspector para modificar estado
-        document.getElementById('btnInspectorModificarEstado').addEventListener('click', function () {
-            if (entidadInspeccionadaActual && entidadInspeccionadaActual.codFijo) {
-                abrirModalMapaEstado(entidadInspeccionadaActual.codFijo, entidadInspeccionadaActual.nombre, entidadInspeccionadaActual.estado);
-            }
-        });
-    }
-
-    function verificarParametrosURL() {
-        let params = new URLSearchParams(window.location.search);
-        let lat = parseFloat(params.get('lat'));
-        let lng = parseFloat(params.get('lng'));
-        let cod = params.get('cod');
-
-        if (!isNaN(lat) && !isNaN(lng)) {
-            setTimeout(() => {
-                map.setView([lat, lng], 18);
-                if (highlightLayer) map.removeLayer(highlightLayer);
-                highlightLayer = L.circleMarker([lat, lng], {
-                    radius: 12,
-                    fillColor: "#C89D3C",
-                    color: "#FFFFFF",
-                    weight: 3,
-                    fillOpacity: 0.8
-                }).addTo(map);
-
-                if (cod) {
-                    mostrarInspector("Inmueble Seleccionado", { "codFijo": cod, "latitud": lat, "longitud": lng });
-                }
-            }, 600);
+    function obtenerDescEstado(estado) {
+        switch (estado) {
+            case 1: return "Normal";
+            case 2: return "Para corte";
+            case 3: return "Cortado";
+            case 4: return "Baja parcial";
+            case 5: return "Baja total";
+            default: return "Normal";
         }
     }
 
-    function ejecutarBusquedaRapida() {
-        let texto = document.getElementById('txtBusquedaRapida').value.trim();
-        if (!texto) return;
+    function renderizarListaCards(items) {
+        const contenedor = document.getElementById('listaCardsResultados');
+        const contador = document.getElementById('lblCantResultados');
+        
+        contador.innerText = `${items.length.toLocaleString()} registros encontrados`;
 
-        const btn = document.getElementById('btnBuscarRapido');
-        const orig = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        if (items.length === 0) {
+            contenedor.innerHTML = '<div class="text-center text-muted py-4 small">No se encontraron predios con los filtros indicados.</div>';
+            return;
+        }
 
-        fetch(`/api/busqueda?texto=${encodeURIComponent(texto)}`)
-            .then(res => res.json())
-            .then(data => {
-                btn.disabled = false;
-                btn.innerHTML = orig;
-                if (data && data.length > 0) {
-                    let item = data[0];
-                    if (item.latitud && item.longitud) {
-                        map.setView([item.latitud, item.longitud], 18);
-
-                        if (highlightLayer) map.removeLayer(highlightLayer);
-                        highlightLayer = L.circleMarker([item.latitud, item.longitud], {
-                            radius: 12,
-                            fillColor: "#C89D3C",
-                            color: "#FFFFFF",
-                            weight: 3,
-                            fillOpacity: 0.85
-                        }).addTo(map);
-
-                        mostrarInspector("Resultado de Búsqueda", item);
-                    }
-                } else {
-                    alert("No se encontraron registros con el término especificado.");
-                }
-            })
-            .catch(err => {
-                btn.disabled = false;
-                btn.innerHTML = orig;
-                alert("Error de conexión al realizar la búsqueda.");
-            });
-    }
-
-    function mostrarInspector(tipo, props) {
-        document.getElementById('inspectorTitle').innerText = tipo;
-        entidadInspeccionadaActual = props;
-
+        // Renderizar los primeros 150 registros para velocidad óptima de DOM
+        const displayItems = items.slice(0, 150);
         let html = '';
-        const actionsDiv = document.getElementById('inspectorActions');
 
-        // Vista especializada si es un Código Fijo (Medidor)
-        if (props.codFijo || props.CodFijo) {
-            const codFijo = props.codFijo || props.CodFijo;
-            const titular = props.nombre || props.Nombre || 'Sin Titular';
-            const estado = props.estado !== undefined ? props.estado : props.Estado;
-            const uv = props.uv || props.UV || '-';
-            const mza = props.mza || props.MZA || '-';
-            const nroLote = props.nroLote || props.NroLote || '-';
-            const fecha = props.fechaCambioEstado || props.FechaCambioEstado || '-';
+        displayItems.forEach(item => {
+            const color = obtenerColorEstado(item.estado);
+            const desc = obtenerDescEstado(item.estado);
+            const badgeBg = item.estado === 1 ? 'bg-success' : item.estado === 2 ? 'bg-warning text-dark' : item.estado === 3 ? 'bg-danger' : 'bg-secondary';
 
-            let badgeHtml = '';
-            if (estado == 1) badgeHtml = '<span class="badge" style="background:#5E7A4A;">Normal (Activo)</span>';
-            else if (estado == 2) badgeHtml = '<span class="badge" style="background:#C27D38;">Para Corte (Mora)</span>';
-            else if (estado == 3) badgeHtml = '<span class="badge" style="background:#B84A39;">Cortado (Suspendido)</span>';
-            else if (estado == 4 || estado == 5) badgeHtml = '<span class="badge bg-secondary">Baja</span>';
-            else badgeHtml = '<span class="badge bg-light text-dark border">Sin Medidor</span>';
-
-            html = `
-                <div class="mb-2 p-2 bg-light rounded border">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="text-muted small">CÓDIGO FIJO:</span>
-                        <span class="badge bg-dark font-monospace fs-6">${codFijo}</span>
-                    </div>
-                    <div class="fw-bold text-dark mb-1">${titular}</div>
-                    <div class="mt-1">${badgeHtml}</div>
+            html += `
+            <div class="result-card-item" onclick='seleccionarPredioDesdeCard(${JSON.stringify(item)})' id="card-predio-${item.idCodigo || item.codFijo}">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-bold font-monospace" style="color: ${color}; font-size: 0.8rem;">COD. ${item.codFijo || item.idCodigo}</span>
+                    <span class="badge ${badgeBg}" style="font-size: 0.68rem; padding: 2px 6px;">${desc}</span>
                 </div>
-                <table class="table table-sm table-borderless m-0">
-                    <tr><td class="text-muted small" style="width:40%;">UV:</td><td><strong>${uv}</strong></td></tr>
-                    <tr><td class="text-muted small">Manzana:</td><td><strong>${mza}</strong></td></tr>
-                    <tr><td class="text-muted small">Lote:</td><td><strong>${nroLote}</strong></td></tr>
-                    <tr><td class="text-muted small">Fecha Estado:</td><td class="small font-monospace">${fecha.substring(0, 10)}</td></tr>
-                </table>
-            `;
+                <div class="fw-bold text-dark text-truncate" style="font-size: 0.82rem;" title="${item.nombre}">
+                    ${item.nombre}
+                </div>
+                <div class="small text-muted d-flex align-items-center gap-1 mt-1" style="font-size: 0.74rem;">
+                    <i class="bi bi-geo-alt"></i> UV ${item.uv} - Mz ${item.mza} - Lote ${item.lote}
+                </div>
+            </div>`;
+        });
 
-            actionsDiv.style.display = 'block';
-        } else {
-            html = '<table class="table table-sm table-borderless m-0">';
-            for (let k in props) {
-                if (k === 'wkt' || k === 'id') continue;
-                let val = props[k] !== null && props[k] !== undefined ? props[k] : '<span class="text-muted">-</span>';
-                html += `<tr><td class="text-muted text-uppercase" style="font-size:0.75rem; width:45%;">${k}:</td><td><strong>${val}</strong></td></tr>`;
-            }
-            html += '</table>';
-            actionsDiv.style.display = 'none';
+        if (items.length > 150) {
+            html += `<div class="text-center py-2 text-muted small" style="font-size: 0.75rem;">Mostrando 150 de ${items.length.toLocaleString()} registros. Afine los filtros para ver más.</div>`;
         }
 
-        document.getElementById('inspectorContent').innerHTML = html;
-        document.getElementById('inspectorPanel').style.display = 'block';
+        contenedor.innerHTML = html;
     }
 
-    function cerrarInspector() {
-        document.getElementById('inspectorPanel').style.display = 'none';
-        entidadInspeccionadaActual = null;
+    function seleccionarPredioDesdeCard(item) {
+        seleccionarPredioEnMapa(item);
     }
 
-    function abrirModalMapaEstado(codFijo, titular, estadoActual) {
-        document.getElementById('mapaModalCodFijo').value = codFijo;
-        document.getElementById('mapaModalTxtCodFijo').innerText = codFijo;
-        document.getElementById('mapaModalTxtTitular').innerText = titular || 'Titular';
-        document.getElementById('mapaModalSelEstado').value = estadoActual > 0 ? estadoActual : 1;
-        document.getElementById('mapaModalTxtMotivo').value = '';
-        document.getElementById('mapaModalAlertError').style.display = 'none';
+    function seleccionarPredioEnMapa(item) {
+        currentSelectedItem = item;
+
+        // Resaltar tarjeta seleccionada en la barra lateral
+        document.querySelectorAll('.result-card-item').forEach(c => c.classList.remove('selected'));
+        const activeCard = document.getElementById(`card-predio-${item.idCodigo || item.codFijo}`);
+        if (activeCard) {
+            activeCard.classList.add('selected');
+            activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Animar y volar a las coordenadas en el mapa
+        if (item.latitud && item.longitud) {
+            map.flyTo([item.latitud, item.longitud], 18, { duration: 1.2 });
+
+            // Dibujar el círculo de selección punteado animado (Screenshot 1)
+            if (highlightCircleMarker) {
+                map.removeLayer(highlightCircleMarker);
+            }
+
+            const iconPulse = L.divIcon({
+                className: 'pulse-selection-circle',
+                iconSize: [44, 44],
+                iconAnchor: [22, 22]
+            });
+
+            highlightCircleMarker = L.marker([item.latitud, item.longitud], { icon: iconPulse, zIndexOffset: 1000 }).addTo(map);
+        }
+
+        // Mostrar Ficha Catastral a la derecha
+        mostrarFichaDesdePropiedades(item);
+    }
+
+    function mostrarFichaDesdePropiedades(item) {
+        currentSelectedItem = item;
+
+        document.getElementById('fichaNombre').innerText = item.nombre || "SIN TITULAR REGISTRADO";
+        document.getElementById('fichaIdSistema').innerText = "ID Sistema: #" + (item.idSistema || item.idCodigo || "16300025");
+        document.getElementById('fichaCodFijo').innerText = item.codFijo || "-";
+        document.getElementById('fichaCodSIG').innerText = item.codSIG || "-";
+        document.getElementById('fichaUV').innerText = "UV " + (item.uv || "-");
+        document.getElementById('fichaMza').innerText = "Mz " + (item.mza || "-");
+        document.getElementById('fichaLote').innerText = "Lote " + (item.lote || "-");
+        document.getElementById('fichaLat').innerText = item.latitud ? Number(item.latitud).toFixed(6) : "-";
+        document.getElementById('fichaLon').innerText = item.longitud ? Number(item.longitud).toFixed(6) : "-";
+        document.getElementById('fichaFecha').innerText = item.fechaEstado || "22/9/2026";
+
+        // Badge de Estado en Ficha
+        const badge = document.getElementById('fichaBadgeEstado');
+        const color = obtenerColorEstado(item.estado);
+        const desc = obtenerDescEstado(item.estado);
+        badge.style.backgroundColor = color;
+        badge.innerHTML = `<i class="bi bi-tag-fill me-1"></i> Estado ${item.estado}: ${desc}`;
+
+        // Botón Ver en Consultas
+        const btnConsultas = document.getElementById('btnFichaVerConsultas');
+        const param = item.codFijo && item.codFijo !== "-" ? item.codFijo : item.nombre;
+        btnConsultas.href = `/Consultas?texto=${encodeURIComponent(param)}`;
+
+        // Mostrar u ocultar botón de modificar estado
+        document.getElementById('boxModificarEstadoFicha').style.display = item.codFijo && item.codFijo !== "-" ? 'block' : 'none';
+
+        // Mostrar Panel Ficha Catastral
+        document.getElementById('fichaCatastralPanel').style.display = 'block';
+    }
+
+    function cerrarFicha() {
+        document.getElementById('fichaCatastralPanel').style.display = 'none';
+        if (highlightCircleMarker) {
+            map.removeLayer(highlightCircleMarker);
+            highlightCircleMarker = null;
+        }
+    }
+
+    function copiarCoordenadasFicha() {
+        if (!currentSelectedItem || !currentSelectedItem.latitud || !currentSelectedItem.longitud) return;
+
+        const coords = `${Number(currentSelectedItem.latitud).toFixed(6)}, ${Number(currentSelectedItem.longitud).toFixed(6)}`;
+        navigator.clipboard.writeText(coords).then(() => {
+            alert(`Coordenadas copiadas al portapapeles:\n${coords}`);
+        }).catch(() => {
+            prompt("Copie las coordenadas:", coords);
+        });
+    }
+
+    function abrirModalModificarDesdeFicha() {
+        if (!currentSelectedItem) return;
+
+        document.getElementById('mapaModalCodFijo').value = currentSelectedItem.codFijo;
+        document.getElementById('mapaModalTxtCodFijo').innerText = currentSelectedItem.codFijo;
+        document.getElementById('mapaModalTxtTitular').innerText = currentSelectedItem.nombre;
+        document.getElementById('mapaModalSelEstado').value = currentSelectedItem.estado || 1;
+        document.getElementById('mapaModalTxtMotivo').value = "";
+        document.getElementById('mapaModalAlertError').style.display = "none";
 
         if (!modalMapaInstance) {
             modalMapaInstance = new bootstrap.Modal(document.getElementById('modalMapaCambioEstado'));
@@ -711,57 +652,197 @@
         const codFijo = parseInt(document.getElementById('mapaModalCodFijo').value);
         const nuevoEstado = parseInt(document.getElementById('mapaModalSelEstado').value);
         const motivo = document.getElementById('mapaModalTxtMotivo').value.trim();
-        const alertErr = document.getElementById('mapaModalAlertError');
-        const btn = document.getElementById('btnMapaGuardarEstado');
+        const alertError = document.getElementById('mapaModalAlertError');
 
+        if (!codFijo || isNaN(codFijo)) {
+            alertError.innerText = "Código fijo inválido.";
+            alertError.style.display = "block";
+            return;
+        }
+
+        const btn = document.getElementById('btnMapaGuardarEstado');
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Guardando...';
-        alertErr.style.display = 'none';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Guardando...';
 
         fetch('/api/suministros/cambiar-estado', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ codFijo: codFijo, nuevoEstado: nuevoEstado, motivo: motivo })
+            body: JSON.stringify({
+                codFijo: codFijo,
+                nuevoEstado: nuevoEstado,
+                motivo: motivo || "Actualización desde Visor Cartográfico"
+            })
         })
         .then(res => res.json())
         .then(data => {
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-check2-circle"></i> Guardar Estado';
-            if (data && data.success) {
-                modalMapaInstance.hide();
 
-                // 1. Actualizar entidad en rawCodigosFijosData en memoria
-                if (rawCodigosFijosData && rawCodigosFijosData.features) {
-                    const feat = rawCodigosFijosData.features.find(f => f.properties.codFijo === codFijo);
-                    if (feat) {
-                        feat.properties.estado = nuevoEstado;
-                        feat.properties.estadoDesc = data.estadoDesc;
-                        feat.properties.fechaCambioEstado = new Date().toISOString().substring(0, 10);
-                    }
+            if (data.exito) {
+                if (modalMapaInstance) modalMapaInstance.hide();
+
+                // Actualizar item actual
+                if (currentSelectedItem && currentSelectedItem.codFijo === codFijo) {
+                    currentSelectedItem.estado = nuevoEstado;
+                    mostrarFichaDesdePropiedades(currentSelectedItem);
                 }
 
-                // 2. Re-renderizar capa y contadores
-                actualizarContadoresEstados();
-                renderizarCodigosFijos();
-
-                // 3. Actualizar inspector
-                if (entidadInspeccionadaActual) {
-                    entidadInspeccionadaActual.estado = nuevoEstado;
-                    entidadInspeccionadaActual.estadoDesc = data.estadoDesc;
-                    entidadInspeccionadaActual.fechaCambioEstado = new Date().toISOString().substring(0, 10);
-                    mostrarInspector("Código Fijo (Medidor)", entidadInspeccionadaActual);
+                // Actualizar en el arreglo local
+                const idx = rawCodigosFijos.findIndex(x => x.codFijo === codFijo);
+                if (idx !== -1) {
+                    rawCodigosFijos[idx].estado = nuevoEstado;
+                    renderizarCapaCodigosFijos(rawCodigosFijos);
+                    renderizarListaCards(rawCodigosFijos);
                 }
+
+                alert(`Estado actualizado correctamente a: ${data.descripcionEstado}`);
             } else {
-                alertErr.innerText = data.mensaje || 'Error al actualizar el estado.';
-                alertErr.style.display = 'block';
+                alertError.innerText = data.mensaje || "Error al actualizar.";
+                alertError.style.display = "block";
             }
         })
         .catch(err => {
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-check2-circle"></i> Guardar Estado';
-            alertErr.innerText = 'Error de conexión con el servidor.';
-            alertErr.style.display = 'block';
+            alertError.innerText = "Error de conexión con el servidor.";
+            alertError.style.display = "block";
         });
+    }
+
+    function setupSidebarEvents() {
+        // Selector de Mapa Base
+        document.getElementById('selMapaBase').addEventListener('change', function () {
+            const val = this.value;
+            if (currentBaseLayer && map.hasLayer(currentBaseLayer)) {
+                map.removeLayer(currentBaseLayer);
+            }
+            if (val === 'topo') currentBaseLayer = baseLayers.topo;
+            else if (val === 'esri') currentBaseLayer = baseLayers.esri;
+            else currentBaseLayer = baseLayers.osm;
+
+            currentBaseLayer.addTo(map);
+        });
+
+        // Toggles de Capas
+        document.getElementById('chkManzanas').addEventListener('change', function () {
+            if (!layerManzanas) return;
+            if (this.checked) map.addLayer(layerManzanas);
+            else map.removeLayer(layerManzanas);
+        });
+
+        document.getElementById('chkLotes').addEventListener('change', function () {
+            if (!layerLotes) return;
+            if (this.checked) map.addLayer(layerLotes);
+            else map.removeLayer(layerLotes);
+        });
+
+        document.getElementById('chkVias').addEventListener('change', function () {
+            if (!layerVias) return;
+            if (this.checked) map.addLayer(layerVias);
+            else map.removeLayer(layerVias);
+        });
+
+        document.getElementById('chkCodigosFijos').addEventListener('change', function () {
+            if (!layerCodigosFijos) return;
+            if (this.checked) map.addLayer(layerCodigosFijos);
+            else map.removeLayer(layerCodigosFijos);
+        });
+
+        // Búsqueda al presionar Enter en el input de texto
+        document.getElementById('txtBusquedaPredio').addEventListener('keyup', function (e) {
+            if (e.key === 'Enter') {
+                ejecutarFiltroLateral();
+            }
+        });
+    }
+
+    function ejecutarFiltroLateral() {
+        const mza = document.getElementById('selFiltroMza').value.trim();
+        const lote = document.getElementById('selFiltroLote').value.trim();
+        const texto = document.getElementById('txtBusquedaPredio').value.trim().toLowerCase();
+
+        let filtrados = rawCodigosFijos.filter(item => {
+            let ok = true;
+            if (mza && item.mza !== mza) ok = false;
+            if (lote && item.lote !== lote) ok = false;
+            if (texto) {
+                const matchCod = String(item.codFijo || '').includes(texto);
+                const matchId = String(item.idCodigo || '').includes(texto);
+                const matchNom = String(item.nombre || '').toLowerCase().includes(texto);
+                const matchSIG = String(item.codSIG || '').toLowerCase().includes(texto);
+                if (!matchCod && !matchId && !matchNom && !matchSIG) ok = false;
+            }
+            return ok;
+        });
+
+        renderizarCapaCodigosFijos(filtrados);
+        renderizarListaCards(filtrados);
+
+        if (filtrados.length === 1) {
+            seleccionarPredioEnMapa(filtrados[0]);
+        } else if (filtrados.length > 1 && layerCodigosFijos) {
+            const bounds = layerCodigosFijos.getBounds();
+            if (bounds.isValid()) {
+                map.fitBounds(bounds, { padding: [40, 40], maxZoom: 18 });
+            }
+        }
+    }
+
+    function resetearFiltrosLaterales() {
+        document.getElementById('selFiltroMza').value = "";
+        document.getElementById('selFiltroLote').value = "";
+        document.getElementById('txtBusquedaPredio').value = "";
+        renderizarCapaCodigosFijos(rawCodigosFijos);
+        renderizarListaCards(rawCodigosFijos);
+        cerrarFicha();
+        restablecerExtensionGeneral();
+    }
+
+    function limpiarListaResultados() {
+        resetearFiltrosLaterales();
+    }
+
+    function restablecerExtensionGeneral() {
+        map.fitBounds(initialBounds);
+    }
+
+    function verificarParametrosURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const lat = urlParams.get('lat');
+        const lon = urlParams.get('lon');
+        const codFijo = urlParams.get('codFijo');
+        const texto = urlParams.get('texto');
+
+        if (texto) {
+            document.getElementById('txtBusquedaPredio').value = texto;
+        }
+
+        if (lat && lon) {
+            const pLat = parseFloat(lat);
+            const pLon = parseFloat(lon);
+            map.flyTo([pLat, pLon], 18);
+
+            setTimeout(() => {
+                // Buscar si coincide con algún código fijo
+                const target = rawCodigosFijos.find(c => (codFijo && c.codFijo == codFijo) || (Math.abs(c.latitud - pLat) < 0.0001 && Math.abs(c.longitud - pLon) < 0.0001));
+                if (target) {
+                    seleccionarPredioEnMapa(target);
+                } else {
+                    mostrarFichaDesdePropiedades({
+                        nombre: "PREDIO SELECCIONADO",
+                        idSistema: "GEO-" + Math.round(pLat * 1000),
+                        codFijo: codFijo || "-",
+                        codSIG: "-",
+                        uv: "-",
+                        mza: "-",
+                        lote: "-",
+                        estado: 1,
+                        latitud: pLat,
+                        longitud: pLon
+                    });
+                }
+            }, 1000);
+        }
     }
 </script>
 }
