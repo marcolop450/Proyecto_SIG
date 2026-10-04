@@ -171,7 +171,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Visor Cartográfico Móvil'),
+        title: const Text('Visor Cartográfico'),
         backgroundColor: const Color(0xFF2E4636),
         foregroundColor: Colors.white,
         actions: [

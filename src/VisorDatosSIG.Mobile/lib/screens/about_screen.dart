@@ -66,7 +66,7 @@ class AboutScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Equipo de Desarrollo (Orden Alfabético por Apellido)',
+                      'Equipo de Desarrollo',
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF2C2D2A)),
                     ),
                     const Divider(height: 16),

@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.search, color: Color(0xFF2C2D2A)),
-              title: const Text('Consultas Temáticas (15,280)', style: TextStyle(fontSize: 13)),
+              title: const Text('Consultas Temáticas', style: TextStyle(fontSize: 13)),
               onTap: () {
                 Navigator.pop(context);
                 setState(() => _currentIndex = 1);

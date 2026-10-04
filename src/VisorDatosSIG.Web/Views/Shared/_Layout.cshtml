@@ -69,7 +69,7 @@
 
                 @if (User.IsInRole("Administrador"))
                 {
-                    <div class="sidebar-heading mt-3">4. Administración</div>
+                    <div class="sidebar-heading mt-3">Administración</div>
                     <ul class="sidebar-menu">
                         <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Usuarios" ? "active" : "")">
                             <a asp-controller="Admin" asp-action="Usuarios">
@@ -99,7 +99,7 @@
                     </ul>
                 }
 
-                <div class="sidebar-heading mt-3">5. Cuenta y 6. Ayuda</div>
+                <div class="sidebar-heading mt-3">Cuenta y Ayuda</div>
                 <ul class="sidebar-menu">
                     <li class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Perfil" ? "active" : "")">
                         <a asp-controller="Account" asp-action="Perfil">

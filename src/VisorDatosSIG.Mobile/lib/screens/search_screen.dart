@@ -40,7 +40,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFAF9F5),
       appBar: AppBar(
-        title: const Text('Consulta Temática Móvil'),
+        title: const Text('Consultas Temáticas'),
         backgroundColor: const Color(0xFF2E4636),
         foregroundColor: Colors.white,
       ),
@@ -73,7 +73,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildChip('TODOS', 'Todos (15,280)'),
+                      _buildChip('TODOS', 'Todos'),
                       const SizedBox(width: 6),
                       _buildChip('CON_SUMINISTRO', 'Con Suministro'),
                       const SizedBox(width: 6),
