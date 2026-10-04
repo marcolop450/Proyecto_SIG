@@ -131,7 +131,7 @@ public class GeoDataService : IGeoDataService
         });
     }
 
-    public async Task<IEnumerable<InmuebleSearchResultDto>> BuscarInmueblesAsync(string? texto, string? uv, string? mza, string? lote)
+    public async Task<IEnumerable<InmuebleSearchResultDto>> BuscarInmueblesAsync(string? texto, string? uv, string? mza, string? lote, string? tipoPredio = "TODOS")
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
@@ -141,9 +141,10 @@ public class GeoDataService : IGeoDataService
         p.Add("@UV", string.IsNullOrWhiteSpace(uv) ? null : uv.Trim());
         p.Add("@Mza", string.IsNullOrWhiteSpace(mza) ? null : mza.Trim());
         p.Add("@Lote", string.IsNullOrWhiteSpace(lote) ? null : lote.Trim());
+        p.Add("@TipoSuministro", string.IsNullOrWhiteSpace(tipoPredio) ? "TODOS" : tipoPredio.Trim().ToUpperInvariant());
 
         return await conn.QueryAsync<InmuebleSearchResultDto>(
-            "dbo.sp_BuscarInmueble",
+            "dbo.sp_BuscarPrediosTotal",
             p,
             commandType: System.Data.CommandType.StoredProcedure
         );
@@ -158,25 +159,20 @@ public class GeoDataService : IGeoDataService
 
         const string sqlUV = @"
             SELECT DISTINCT LTRIM(RTRIM(m.UV)) AS UV 
-            FROM dbo.CodigosFijos c
-            JOIN dbo.Lotes l ON l.IdLote = c.IdLote
-            JOIN dbo.Manzanas m ON m.IdManzana = l.IdManzana
+            FROM dbo.Manzanas m
             WHERE m.UV IS NOT NULL AND LTRIM(RTRIM(m.UV)) <> '' 
             ORDER BY UV;";
 
         const string sqlMZA = @"
             SELECT DISTINCT LTRIM(RTRIM(m.MZA)) AS MZA 
-            FROM dbo.CodigosFijos c
-            JOIN dbo.Lotes l ON l.IdLote = c.IdLote
-            JOIN dbo.Manzanas m ON m.IdManzana = l.IdManzana
+            FROM dbo.Manzanas m
             WHERE m.MZA IS NOT NULL AND LTRIM(RTRIM(m.MZA)) <> ''
               AND (@UV IS NULL OR m.UV = @UV OR m.UV LIKE '%' + @UV + '%')
             ORDER BY MZA;";
 
         const string sqlLotes = @"
-            SELECT DISTINCT TOP 100 LTRIM(RTRIM(l.NroLote)) AS NroLote 
-            FROM dbo.CodigosFijos c
-            JOIN dbo.Lotes l ON l.IdLote = c.IdLote
+            SELECT DISTINCT TOP 200 LTRIM(RTRIM(l.NroLote)) AS NroLote 
+            FROM dbo.Lotes l
             WHERE l.NroLote IS NOT NULL AND LTRIM(RTRIM(l.NroLote)) <> '' 
             ORDER BY NroLote;";
 

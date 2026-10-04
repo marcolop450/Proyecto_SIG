@@ -16,7 +16,7 @@ public interface IGeoDataService
     Task<string> ObtenerLotesGeoJsonAsync(string? bbox = null, int limit = 2000);
     Task<string> ObtenerViasGeoJsonAsync(string? bbox = null);
     Task<string> ObtenerCodigosFijosGeoJsonAsync(string? bbox = null, int limit = 3000);
-    Task<IEnumerable<InmuebleSearchResultDto>> BuscarInmueblesAsync(string? texto, string? uv, string? mza, string? lote);
+    Task<IEnumerable<InmuebleSearchResultDto>> BuscarInmueblesAsync(string? texto, string? uv, string? mza, string? lote, string? tipoPredio = "TODOS");
     Task<FiltrosDisponiblesDto> ObtenerFiltrosDisponiblesAsync(string? uv = null);
     Task<object?> ObtenerDetalleEntidadAsync(string capa, int id);
 }

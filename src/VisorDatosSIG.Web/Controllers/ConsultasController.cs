@@ -15,19 +15,20 @@ public class ConsultasController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(string? texto, string? uv, string? mza, string? lote)
+    public async Task<IActionResult> Index(string? texto, string? uv, string? mza, string? lote, string? tipoPredio = "TODOS")
     {
         ViewBag.Texto = texto;
         ViewBag.UV = uv;
         ViewBag.Mza = mza;
         ViewBag.Lote = lote;
+        ViewBag.TipoPredio = string.IsNullOrWhiteSpace(tipoPredio) ? "TODOS" : tipoPredio;
 
         var filtros = await _geoDataService.ObtenerFiltrosDisponiblesAsync(uv);
         ViewBag.ListaUV = filtros.ListaUV;
         ViewBag.ListaMZA = filtros.ListaMZA;
         ViewBag.ListaLotes = filtros.ListaLotes;
 
-        var results = await _geoDataService.BuscarInmueblesAsync(texto, uv, mza, lote);
+        var results = await _geoDataService.BuscarInmueblesAsync(texto, uv, mza, lote, tipoPredio);
         return View(results);
     }
 }

@@ -19,6 +19,10 @@
                 <i class="bi bi-search"></i>
                 Buscar
             </button>
+            <button id="btnMiUbicacion" class="btn btn-outline-secondary d-flex align-items-center gap-1" type="button" title="Mi Ubicación GPS">
+                <i class="bi bi-geo-alt"></i>
+                <span class="d-none d-sm-inline">Ubicación</span>
+            </button>
             <button id="btnResetZoom" class="btn btn-sand d-flex align-items-center gap-1" type="button" title="Extensión General">
                 <i class="bi bi-arrows-fullscreen"></i>
                 Extensión
@@ -149,6 +153,8 @@
     let rawCodigosFijosData = null;
     let initialBounds = L.latLngBounds([[-16.440, -61.007], [-16.321, -60.919]]);
     let highlightLayer;
+    let gpsMarker = null;
+    let gpsAccuracyCircle = null;
 
     document.addEventListener("DOMContentLoaded", function () {
         initMap();
@@ -350,6 +356,59 @@
 
         document.getElementById('btnResetZoom').addEventListener('click', function () {
             map.fitBounds(initialBounds);
+        });
+
+        document.getElementById('btnMiUbicacion').addEventListener('click', function () {
+            if (!navigator.geolocation) {
+                alert("La geolocalización no es compatible con este dispositivo o navegador.");
+                return;
+            }
+            const btn = this;
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
+
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    const accuracy = pos.coords.accuracy;
+
+                    if (gpsMarker) map.removeLayer(gpsMarker);
+                    if (gpsAccuracyCircle) map.removeLayer(gpsAccuracyCircle);
+
+                    gpsAccuracyCircle = L.circle([lat, lng], {
+                        radius: accuracy,
+                        color: '#3B82F6',
+                        fillColor: '#3B82F6',
+                        fillOpacity: 0.15,
+                        weight: 1
+                    }).addTo(map);
+
+                    gpsMarker = L.circleMarker([lat, lng], {
+                        radius: 8,
+                        fillColor: '#2563EB',
+                        color: '#FFFFFF',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.95
+                    }).addTo(map).bindPopup('<strong>Mi Ubicación Actual</strong><br>Precisión: ±' + Math.round(accuracy) + ' m').openPopup();
+
+                    map.setView([lat, lng], 17);
+                },
+                function (err) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                    let msg = "No se pudo obtener la ubicación GPS.";
+                    if (err.code === 1) msg = "Permiso de geolocalización denegado por el usuario.";
+                    else if (err.code === 2) msg = "Posición GPS no disponible.";
+                    else if (err.code === 3) msg = "Tiempo de espera agotado al consultar GPS.";
+                    alert(msg);
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         });
 
         document.getElementById('btnBuscarRapido').addEventListener('click', ejecutarBusquedaRapida);

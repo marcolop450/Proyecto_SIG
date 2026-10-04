@@ -1,0 +1,24 @@
+{
+  "name": "VisorDatosSIG - Sistema de Información Geográfica",
+  "short_name": "VisorDatosSIG",
+  "description": "Plataforma de gestión territorial, catastral y de servicios de San Ignacio de Velasco",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F3EC",
+  "theme_color": "#2E4636",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

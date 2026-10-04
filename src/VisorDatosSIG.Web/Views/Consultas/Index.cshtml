@@ -28,11 +28,25 @@
 
 <!-- Barra de Filtros -->
 <div class="card shadow-sm mb-3" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
-    <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
-        <span class="fw-bold small text-uppercase" style="color: #4B4E47; letter-spacing: 0.5px;">
-            <i class="bi bi-funnel me-1"></i>
-            Criterios de Filtrado
-        </span>
+    <div class="card-header py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+        <div class="d-flex align-items-center gap-2">
+            <span class="fw-bold small text-uppercase" style="color: #4B4E47; letter-spacing: 0.5px;">
+                <i class="bi bi-funnel me-1"></i>
+                Criterios de Filtrado
+            </span>
+            <div class="btn-group btn-group-sm ms-2" role="group" id="btnGroupTipoPredio">
+                <button type="button" class="btn btn-sm btn-olive active" id="btnTipoTodos" onclick="cambiarTipoPredio('TODOS')">
+                    Todos los Predios (15,280)
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="btnTipoConSum" onclick="cambiarTipoPredio('CON_SUMINISTRO')">
+                    Con Suministro
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="btnTipoSinSum" onclick="cambiarTipoPredio('SIN_SUMINISTRO')">
+                    Sin Medidor / Baldíos
+                </button>
+            </div>
+            <input type="hidden" id="filtroTipoPredio" value="@(ViewBag.TipoPredio ?? "TODOS")" />
+        </div>
         <span class="small text-muted" id="lblContadorResultados">
             Total filtrados: <strong id="lblCantRegistros">@Model.Count()</strong> predios
             <span id="spinnerBusqueda" class="spinner-border spinner-border-sm text-primary ms-1" style="display: none;" role="status"></span>
@@ -161,14 +175,16 @@
             foreach (var item in Model)
             {
                 <text>{
+                    idLote: @(item.IdLote.HasValue ? item.IdLote.Value.ToString() : "null"),
                     codFijo: @(item.CodFijo.HasValue ? item.CodFijo.Value.ToString() : "null"),
                     nombre: "@Html.Raw(item.Nombre?.Replace("\"", "\\\"") ?? "")",
                     uv: "@Html.Raw(item.UV ?? "-")",
                     mza: "@Html.Raw(item.MZA ?? "-")",
                     nroLote: "@Html.Raw(item.NroLote ?? "-")",
                     estado: @item.Estado,
+                    tieneSuministro: @(item.TieneSuministro ? "true" : "false"),
                     estadoDesc: "@Html.Raw(item.EstadoDesc)",
-                    fechaCambioEstado: "@item.FechaCambioEstado.ToString("yyyy-MM-dd")",
+                    fechaCambioEstado: "@(item.FechaCambioEstado.HasValue ? item.FechaCambioEstado.Value.ToString("yyyy-MM-dd") : "")",
                     latitud: @(item.Latitud.HasValue ? item.Latitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null"),
                     longitud: @(item.Longitud.HasValue ? item.Longitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "null")
                 },</text>
@@ -207,7 +223,16 @@
         });
     });
 
-    // Cascada de UV -> Manzanas (Sólo muestra manzanas con predios existentes)
+    // Cambiar tipo de predio (Todos, Con Suministro, Sin Suministro)
+    function cambiarTipoPredio(tipo) {
+        document.getElementById('filtroTipoPredio').value = tipo;
+        document.getElementById('btnTipoTodos').className = 'btn btn-sm ' + (tipo === 'TODOS' ? 'btn-olive active' : 'btn-outline-secondary');
+        document.getElementById('btnTipoConSum').className = 'btn btn-sm ' + (tipo === 'CON_SUMINISTRO' ? 'btn-olive active' : 'btn-outline-secondary');
+        document.getElementById('btnTipoSinSum').className = 'btn btn-sm ' + (tipo === 'SIN_SUMINISTRO' ? 'btn-olive active' : 'btn-outline-secondary');
+        ejecutarBusquedaAsincrona();
+    }
+
+    // Cascada de UV -> Manzanas
     function actualizarComboboxManzanasPorUV(uv) {
         const selectMZA = document.getElementById('filtroMZA');
         const valorMzaActual = selectMZA.value;
@@ -232,6 +257,7 @@
         const uv = document.getElementById('filtroUV').value.trim();
         const mza = document.getElementById('filtroMZA').value.trim();
         const lote = document.getElementById('filtroLote').value.trim();
+        const tipoPredio = document.getElementById('filtroTipoPredio').value.trim();
 
         const spinner = document.getElementById('spinnerBusqueda');
         spinner.style.display = 'inline-block';
@@ -241,6 +267,7 @@
         if (uv) params.append('uv', uv);
         if (mza) params.append('mza', mza);
         if (lote) params.append('lote', lote);
+        if (tipoPredio) params.append('tipoPredio', tipoPredio);
 
         fetch('/api/busqueda?' + params.toString())
             .then(res => res.json())
@@ -285,7 +312,7 @@
         let html = '';
         for (let i = 0; i < itemsPagina.length; i++) {
             const it = itemsPagina[i];
-            const cod = it.codFijo || '-';
+            const cod = it.codFijo ? it.codFijo : '<span class="text-muted fst-italic">S/C</span>';
             const nom = it.nombre || '-';
             const uv = it.uv || '-';
             const mza = it.mza || '-';
@@ -293,7 +320,9 @@
             const fecha = it.fechaCambioEstado ? it.fechaCambioEstado.substring(0, 10) : '-';
 
             let badgeEstado = '';
-            if (it.estado === 1) {
+            if (!it.tieneSuministro || it.estado === 0) {
+                badgeEstado = '<span class="badge bg-light text-secondary border d-inline-flex align-items-center gap-1"><i class="bi bi-dash-circle"></i> Sin Suministro</span>';
+            } else if (it.estado === 1) {
                 badgeEstado = '<span class="badge d-inline-flex align-items-center gap-1" style="background-color: #5E7A4A;"><i class="bi bi-check-circle"></i> Normal</span>';
             } else if (it.estado === 2) {
                 badgeEstado = '<span class="badge d-inline-flex align-items-center gap-1" style="background-color: #C27D38;"><i class="bi bi-exclamation-circle"></i> Para Corte</span>';
@@ -307,7 +336,9 @@
             if (it.latitud && it.longitud) {
                 const latStr = Number(it.latitud).toFixed(6);
                 const lngStr = Number(it.longitud).toFixed(6);
-                botonMapa = `<a href="/Mapa?lat=${latStr}&lng=${lngStr}&cod=${cod}" class="btn btn-sm btn-olive py-0 px-2 d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;" title="Ver en mapa"><i class="bi bi-geo-alt"></i> Ver en Mapa</a>`;
+                const paramDest = it.codFijo ? `cod=${it.codFijo}` : `lote=${encodeURIComponent(it.nroLote || '')}`;
+                const btnClase = it.tieneSuministro ? 'btn-olive' : 'btn-sand';
+                botonMapa = `<a href="/Mapa?lat=${latStr}&lng=${lngStr}&${paramDest}" class="btn btn-sm ${btnClase} py-0 px-2 d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;" title="Ver en mapa"><i class="bi bi-geo-alt"></i> Ver en Mapa</a>`;
             }
 
             html += `
@@ -320,7 +351,6 @@
                     <td>${badgeEstado}</td>
                     <td class="small text-muted font-monospace">${fecha}</td>
                     <td class="text-center">${botonMapa}</td>
-                </tr>`;
         }
 
         tbody.innerHTML = html;

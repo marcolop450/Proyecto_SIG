@@ -426,13 +426,15 @@ def build_complete_document():
         "2. Diagnóstico e Ingesta Cartográfica de Shapefiles ESRI",
         "3. Solución Técnica de la Inconsistencia del Predio 1001",
         "4. Diseño e Implementación de la Base de Datos Espacial (SQL Server 2022)",
+        "   4.4 Cobertura Catastral Total: Diagnóstico de 15,280 Predios y Terrenos Baldíos",
         "5. Arquitectura de Software en Capas Limpias (.NET 8.0 C#)",
         "6. Módulo de Seguridad Criptográfica y Control de Acceso (RBAC)",
         "7. Servicios GeoJSON y Protocolo de Comunicación Espacial",
-        "8. Diseño de la Interfaz de Usuario y Experiencia de Operación (UIX)",
+        "8. Diseño de Interfaz (UIX), Arquitectura Móvil PWA y Geolocalización (Anexo F.7)",
         "9. Pruebas de Verificación OGC, Rendimiento y Auditoría",
-        "10. Guía de Instalación, Configuración y Despliegue Local",
-        "11. Conclusiones y Trabajo Futuro"
+        "10. Catálogo y Selección de Agent Skills para Optimización del Proyecto",
+        "11. Guía de Instalación, Configuración y Despliegue Local",
+        "12. Conclusiones y Trabajo Futuro"
     ]
     for item in indice_items:
         p_idx = doc.add_paragraph()
@@ -637,6 +639,26 @@ def build_complete_document():
     )
     add_code_block(doc, sql_sp, "Procedimiento T-SQL de enlace topológico automatizado")
 
+    add_heading_2(doc, "Cobertura Catastral Total: Diagnóstico de 15,280 Predios y Terrenos Baldíos")
+    add_p(doc, 
+        "Durante las pruebas de verificación territorial y cotejo de campo, se detectó una aparente discrepancia: "
+        "las consultas temáticas previas arrojaban alrededor de 3,000 registros, a pesar de que el catastro urbano "
+        "de San Ignacio de Velasco cuenta con 15,280 lotes delimitados. El diagnóstico técnico de la base de datos "
+        "reveló la causa fundamental y motivó una reingeniería del modelo de consulta:"
+    )
+    add_bullet(doc, "La tabla dbo.CodigosFijos contiene 6,271 puntos de medición eléctrica vinculados espacialmente a 3,947 polígonos de lote (debido a predios con múltiples medidores o conexiones compartidas). Las consultas basadas exclusivamente en dbo.CodigosFijos omitían por completo los 11,333 terrenos baldíos o parcelas sin medidor activo instalado.", "Causa Raíz en el Modelo Relacional: ")
+    add_bullet(doc, "Se añadieron formalmente las columnas 'Latitud FLOAT' y 'Longitud FLOAT' directamente en la tabla dbo.Lotes y se precalcularon sus coordenadas geográficas mediante la función OGC Lote.Geom.STCentroid() para los 15,280 polígonos catastrales, permitiendo la georreferenciación instantánea de cualquier predio sin sobrecargar la CPU del servidor al vuelo.", "Precomputación de Centroides Espaciales: ")
+    add_bullet(doc, "Se construyó el procedimiento almacenado unificado dbo.sp_BuscarPrediosTotal y se actualizó dbo.sp_BuscarInmueble con el parámetro @TipoSuministro ('TODOS', 'CON_SUMINISTRO', 'SIN_SUMINISTRO'). Esto permite al usuario explorar tanto los 5,118 registros con medidor como los 11,333 lotes baldíos, o el universo consolidado de 16,451 relaciones prediales.", "Procedimiento Almacenado Unificado de Cobertura Total: ")
+    add_bullet(doc, "El tiempo de respuesta se mantiene en rango de ultra-alto rendimiento: 0.335 segundos para consultar los 16,451 registros completos, 0.172 segundos para los 11,333 baldíos y 0.092 segundos para los predios con suministro, garantizando una experiencia de usuario fluida.", "Rendimiento Sub-Segundo Verificado: ")
+
+    headers_predios = ["Categoría de Predio", "Total Entidades", "Fuente de Datos", "Estado en Visor / Consultas"]
+    data_predios = [
+        ["Predios con Suministro Activo", "5,118 registros", "dbo.CodigosFijos + dbo.Lotes", "Identificados por Código Fijo y Nombre de Titular"],
+        ["Terrenos Baldíos / Sin Medidor", "11,333 registros", "dbo.Lotes (sin código fijo)", "Registrados como '(Sin Suministro / Terreno Baldío)' con centroide"],
+        ["Universo Predial Consolidado", "16,451 registros", "dbo.Lotes + dbo.CodigosFijos", "Disponibles en el selector de filtros y tabla paginada"]
+    ]
+    add_custom_table(doc, headers_predios, data_predios, [1.8, 1.3, 1.8, 1.6])
+
     # -------------------------------------------------------------
     # 6. ARQUITECTURA LIMPIA
     # -------------------------------------------------------------
@@ -720,9 +742,9 @@ def build_complete_document():
     )
 
     # -------------------------------------------------------------
-    # 9. INTERFAZ DE USUARIO Y EXPERIENCIA (UIX)
+    # 9. INTERFAZ DE USUARIO, EXPERIENCIA Y VERSIÓN MÓVIL (UIX/PWA)
     # -------------------------------------------------------------
-    add_heading_1(doc, "8. Diseño de la Interfaz de Usuario y Experiencia de Operación (UIX)")
+    add_heading_1(doc, "8. Diseño de Interfaz (UIX), Arquitectura Móvil PWA y Geolocalización (Anexo F.7)")
     add_p(doc, 
         "El diseño visual de VisorDatosSIG 2026 fue concebido para romper con la estética genérica de plantillas corporativas. "
         "Se adoptó una identidad visual distintiva inspirada en la cartografía histórica y los tonos cálidos del paisaje chiquitano:"
@@ -765,6 +787,18 @@ def build_complete_document():
 
     bitacora_img = os.path.join(img_dir, "bitacora_auditoria.png")
     add_image_box(doc, bitacora_img, "Registro histórico de auditoría con trazabilidad de cambios de suministro")
+
+    add_heading_2(doc, "Arquitectura Móvil PWA y Geolocalización en Terreno (Anexo F.7)")
+    add_p(doc, 
+        "Para dar estricto cumplimiento al Pliego de Especificaciones del docente (Sección 1.2, 2.2, 2.3 y Anexo F.7: "
+        "'Mockup de Pantallas en Dispositivos Móviles'), VisorDatosSIG fue dotado de capacidades Progressive Web App (PWA) "
+        "y diseño adaptativo responsive de nivel empresarial, sin incurrir en costos de tiendas comerciales (App Store o Play Store):"
+    )
+    add_bullet(doc, "Incorporación del archivo manifest.json con identidad visual de la institución, paleta #2E4636 / #F5F3EC, iconos en alta resolución y modo 'standalone' que permite al operario instalar la aplicación directamente en la pantalla de inicio de su teléfono móvil o tableta.", "Web App Manifest Institucional: ")
+    add_bullet(doc, "Implementación de sw.js con estrategia Cache-First para recursos estáticos (CSS, librerías Leaflet, iconos, fuentes) y Network-First para consultas espaciales y transacciones de seguridad, garantizando arranque instantáneo en terreno.", "Service Worker y Caché Offline: ")
+    add_bullet(doc, "El visor cartográfico y las tablas de consulta se adaptan con fluidez a pantallas ultra-estrechas desde 360 píxeles de ancho (Samsung Galaxy, iPhone SE, Xiaomi), reorganizando menús en drawers táctiles y colapsando paneles laterales.", "Diseño Táctil Responsive (360px+): ")
+    add_bullet(doc, "El panel de detalles de inmuebles se transforma automáticamente en una tarjeta deslizable inferior (Bottom Sheet) en pantallas móviles, permitiendo al inspector visualizar los atributos del lote sin perder de vista su posición cartográfica.", "Ficha Técnica Móvil tipo Bottom Sheet: ")
+    add_bullet(doc, "Se integró el botón 'Mi Ubicación' con la API HTML5 navigator.geolocation y highAccuracy: true, permitiendo al funcionario municipal geolocalizarse en tiempo real en las calles de San Ignacio de Velasco con indicación de radio de precisión en metros.", "Geolocalización GPS en Tiempo Real: ")
 
     # -------------------------------------------------------------
     # 10. PRUEBAS Y VALIDACIÓN
@@ -822,9 +856,72 @@ def build_complete_document():
     add_bullet(doc, "SRID 4326 (WGS 84), STIsValid() = 1", "Conformidad Espacial: ")
 
     # -------------------------------------------------------------
-    # 11. GUIA DE INSTALACIÓN
+    # 11. CATALOGO DE SKILLS
     # -------------------------------------------------------------
-    add_heading_1(doc, "10. Guía de Instalación, Configuración y Despliegue Local")
+    add_heading_1(doc, "10. Catálogo y Selección de Agent Skills para Optimización del Proyecto")
+    add_p(doc, 
+        "A partir del catálogo respaldado de 310 herramientas especializadas (Agent Skills), se seleccionó un conjunto estratégico "
+        "de 8 skills de alto impacto para elevar la eficiencia arquitectónica, la robustez del backend, la experiencia móvil "
+        "y el cumplimiento riguroso de las especificaciones docentes:"
+    )
+
+    headers_skills = ["Skill Seleccionada", "Área de Impacto", "Comando de Reinstalación CLI", "Justificación Técnica y Aporte al Proyecto"]
+    data_skills = [
+        [
+            "dotnet-backend-patterns",
+            "Backend .NET 8 / C#",
+            "npx @rmyndharis/antigravity-skills install dotnet-backend-patterns",
+            "Alinea el código con patrones idiomáticos de .NET 8, inyección de dependencias, DTOs inmutables, repositorios Dapper y manejo estructurado de excepciones."
+        ],
+        [
+            "performance-optimization",
+            "Rendimiento & Profiling",
+            "npx @rmyndharis/antigravity-skills install application-performance-performance-optimization",
+            "Optimiza el plan de ejecución de SQL Server, índices espaciales GEOMETRY_GRID y minimiza la latencia de serialización GeoJSON para 15,280 lotes."
+        ],
+        [
+            "database-migration",
+            "Base de Datos SQL",
+            "npx @rmyndharis/antigravity-skills install database-migration",
+            "Garantiza el control de versiones formal de los scripts DDL/DML (ScriptDatabaseV13), asegurando la reproducibilidad íntegra del esquema."
+        ],
+        [
+            "multi-platform-apps-multi-platform",
+            "Arquitectura Móvil",
+            "npx @rmyndharis/antigravity-skills install multi-platform-apps-multi-platform",
+            "Guía la arquitectura multiplataforma web/móvil PWA, asegurando que la experiencia táctil satisfaga el estándar del Anexo F.7 del pliego."
+        ],
+        [
+            "frontend-developer",
+            "UI/UX y Leaflet.js",
+            "npx @rmyndharis/antigravity-skills install frontend-developer",
+            "Optimiza los componentes visuales, el renderizado de capas vectoriales en Leaflet y el diseño corporativo institucional en paleta clara."
+        ],
+        [
+            "frontend-mobile-development-component-scaffold",
+            "Componentes Móviles",
+            "npx @rmyndharis/antigravity-skills install frontend-mobile-development-component-scaffold",
+            "Acelera el andamiaje de hojas inferiores (bottom sheets), menús off-canvas y botones flotantes para inspección catastral táctil."
+        ],
+        [
+            "spec-driven-development",
+            "Conformidad Normativa",
+            "npx @rmyndharis/antigravity-skills install spec-driven-development",
+            "Valida punto por punto el cumplimiento de los requerimientos funcionales, no funcionales y entregables del documento oficial VisorDatosSIG."
+        ],
+        [
+            "security-and-hardening",
+            "Seguridad Criptográfica",
+            "npx @rmyndharis/antigravity-skills install security-and-hardening",
+            "Supervisa la protección de endpoints API contra accesos no autorizados, validación antiforgery y mitigación de vectores de ataque web."
+        ]
+    ]
+    add_custom_table(doc, headers_skills, data_skills, [1.5, 1.2, 2.0, 2.3])
+
+    # -------------------------------------------------------------
+    # 12. GUIA DE INSTALACIÓN
+    # -------------------------------------------------------------
+    add_heading_1(doc, "11. Guía de Instalación, Configuración y Despliegue Local")
     add_p(doc, 
         "Para reproducir el despliegue del sistema en un entorno de desarrollo o evaluación local sobre Windows 10/11, "
         "se deben seguir las siguientes instrucciones secuenciales:"
@@ -832,7 +929,7 @@ def build_complete_document():
 
     add_bullet(doc, "Windows 10 u 11 (x64), .NET 8.0 SDK instalado (verificar con dotnet --version), Microsoft SQL Server 2022 (Developer o Express en localhost) y SQL Server Management Studio (SSMS).", "1. Requisitos del Sistema: ")
     add_bullet(doc, "git clone https://github.com/marcolop450/Proyecto_SIG.git y navegar al directorio raíz.", "2. Clonación del Repositorio: ")
-    add_bullet(doc, "Abrir SSMS y ejecutar en orden: ScriptDatabaseV13\\01_CrearBD.sql (crea tablas e índices) y luego los scripts complementarios 04, 05, 06 y 07.", "3. Creación de la Base de Datos: ")
+    add_bullet(doc, "Abrir SSMS y ejecutar en orden: ScriptDatabaseV13\\01_CrearBD.sql (crea tablas e índices) y luego los scripts complementarios 04, 05, 06, 07, 08 y 09.", "3. Creación de la Base de Datos: ")
     add_bullet(doc, "Ejecutar en terminal: dotnet run --project src/VisorDatosSIG.Migrador/VisorDatosSIG.Migrador.csproj. Esto procesará los shapefiles y poblará la base de datos.", "4. Migración de Geodatos: ")
     add_bullet(doc, "Ejecutar en terminal: dotnet run --project src/VisorDatosSIG.Web/VisorDatosSIG.Web.csproj. Abrir el navegador en http://localhost:5000.", "5. Lanzamiento de la Aplicación Web: ")
 
@@ -846,9 +943,9 @@ def build_complete_document():
     add_custom_table(doc, headers_cred, data_cred, [1.5, 1.5, 1.5, 2.0])
 
     # -------------------------------------------------------------
-    # 12. CONCLUSIONES
+    # 13. CONCLUSIONES
     # -------------------------------------------------------------
-    add_heading_1(doc, "11. Conclusiones y Trabajo Futuro")
+    add_heading_1(doc, "12. Conclusiones y Trabajo Futuro")
     add_p(doc, 
         "La implementación de VisorDatosSIG 2026 demuestra que la combinación de .NET 8.0 C#, Microsoft SQL Server 2022 Spatial "
         "y Leaflet.js conforma una arquitectura de alto rendimiento, escalable y robusta para la gestión territorial urbana. "

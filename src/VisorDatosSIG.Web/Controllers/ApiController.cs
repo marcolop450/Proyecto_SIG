@@ -56,9 +56,9 @@ public class ApiController : ControllerBase
     }
 
     [HttpGet("busqueda")]
-    public async Task<IActionResult> Buscar([FromQuery] string? texto, [FromQuery] string? uv, [FromQuery] string? mza, [FromQuery] string? lote)
+    public async Task<IActionResult> Buscar([FromQuery] string? texto, [FromQuery] string? uv, [FromQuery] string? mza, [FromQuery] string? lote, [FromQuery] string? tipoPredio = "TODOS")
     {
-        var resultados = await _geoDataService.BuscarInmueblesAsync(texto, uv, mza, lote);
+        var resultados = await _geoDataService.BuscarInmueblesAsync(texto, uv, mza, lote, tipoPredio);
         return Ok(resultados);
     }
 

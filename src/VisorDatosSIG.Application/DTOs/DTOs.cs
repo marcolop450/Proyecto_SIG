@@ -33,20 +33,23 @@ public class MenuItemDto
 
 public class InmuebleSearchResultDto
 {
-    public int IdCodigo { get; set; }
+    public int? IdLote { get; set; }
+    public int? IdCodigo { get; set; }
     public int? CodFijo { get; set; }
     public string? Nombre { get; set; }
     public byte Estado { get; set; }
+    public bool TieneSuministro { get; set; }
     public string EstadoDesc => Estado switch
     {
+        0 => "Sin Suministro",
         1 => "Normal",
         2 => "Para Corte",
         3 => "Cortado",
         4 => "Baja Parcial",
         5 => "Baja Total",
-        _ => "Desconocido"
+        _ => TieneSuministro ? "Normal" : "Sin Suministro"
     };
-    public DateTime FechaCambioEstado { get; set; }
+    public DateTime? FechaCambioEstado { get; set; }
     public string? UV { get; set; }
     public string? MZA { get; set; }
     public string? NroLote { get; set; }

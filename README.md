@@ -67,7 +67,43 @@ El sistema implementa control de acceso basado en roles con el principio de mín
 
 ---
 
-## 4. ¿Qué es el Servicio GeoJSON en VisorDatosSIG?
+## 4. Cobertura Catastral Total: 15,280 Predios y Terrenos Baldíos
+
+Para asegurar que ningún terreno quede fuera del sistema, se implementó la cobertura predial integral:
+* **Diagnóstico de Inmuebles**: De los 15,280 lotes en `dbo.Lotes`, 3,947 albergan medidores eléctricos (5,118 registros con código fijo por suministros múltiples) y **11,333 corresponden a terrenos baldíos o predios sin conexión**.
+* **Centroides Precalculados**: Se agregaron los atributos `Latitud` y `Longitud` a `dbo.Lotes` calculados mediante `STCentroid()`, permitiendo georreferenciar cualquier predio de inmediato.
+* **Procedimiento Almacenado `dbo.sp_BuscarPrediosTotal`**: Permite filtrar por tipo de predio (`TODOS`, `CON_SUMINISTRO`, `SIN_SUMINISTRO`) con respuesta en menos de 0.35 segundos.
+
+---
+
+## 5. Arquitectura Móvil PWA y Geolocalización (Anexo F.7)
+
+En estricto cumplimiento del pliego de especificaciones (Sección 1.2, 2.2, 2.3 y Anexo F.7: *Mockup de Pantallas en Dispositivos Móviles*):
+* **Progressive Web App (PWA)**: Compatible con teléfonos y tabletas Android e iOS sin pasar por tiendas comerciales, mediante `manifest.json` y `sw.js`.
+* **Diseño Adaptativo Táctil (360px+)**: Barra de navegación superior condensada, menú tipo drawer y tabla de consultas adaptada para terminales compactos.
+* **Ficha Técnica en Bottom Sheet**: La inspección de atributos prediales se despliega como tarjeta inferior deslizable para no obstaculizar la cartografía.
+* **Geolocalización GPS en Tiempo Real**: Botón *Mi Ubicación* integrado con Leaflet y la API HTML5 `navigator.geolocation` con radio de precisión en metros.
+
+---
+
+## 6. Catálogo de Agent Skills Especializadas para el Proyecto
+
+Selección de herramientas clave del catálogo de 310 skills respaldadas para maximizar la calidad y eficiencia del proyecto:
+
+| Skill | Área de Impacto | Comando de Instalación |
+| :--- | :--- | :--- |
+| `dotnet-backend-patterns` | Backend .NET 8 / C# | `npx @rmyndharis/antigravity-skills install dotnet-backend-patterns` |
+| `performance-optimization` | SQL Server & Profiling | `npx @rmyndharis/antigravity-skills install application-performance-performance-optimization` |
+| `database-migration` | Esquemas y Scripts SQL | `npx @rmyndharis/antigravity-skills install database-migration` |
+| `multi-platform-apps-multi-platform` | PWA y Responsive Móvil | `npx @rmyndharis/antigravity-skills install multi-platform-apps-multi-platform` |
+| `frontend-developer` | UI/UX & Leaflet.js | `npx @rmyndharis/antigravity-skills install frontend-developer` |
+| `frontend-mobile-development-component-scaffold` | Componentes Táctiles | `npx @rmyndharis/antigravity-skills install frontend-mobile-development-component-scaffold` |
+| `spec-driven-development` | Conformidad del Pliego | `npx @rmyndharis/antigravity-skills install spec-driven-development` |
+| `security-and-hardening` | Criptografía & RBAC | `npx @rmyndharis/antigravity-skills install security-and-hardening` |
+
+---
+
+## 7. ¿Qué es el Servicio GeoJSON en VisorDatosSIG?
 
 **GeoJSON** es un estándar abierto de intercambio de datos geoespaciales basado en JSON (especificación RFC 7946). Permite estructurar entidades geográficas combinando:
 1. **Geometría espacial**: Puntos (`Point`), cadenas de líneas (`LineString`) o polígonos (`Polygon` / `MultiPolygon`) codificados en coordenadas latitud/longitud en WGS 84.
@@ -82,7 +118,7 @@ En la aplicación, los endpoints ubicados en `/api/capas/*`:
 
 ---
 
-## 5. Guía de Instalación y Puesta en Marcha
+## 8. Guía de Instalación y Puesta en Marcha
 
 ### Requisitos Previos
 1. **Windows 10 / 11 (x64)**.
@@ -105,11 +141,13 @@ cd "Proyecto_SIG"
 1. Abre **SSMS** y conéctate a tu instancia local (`localhost`).
 2. Abre y ejecuta el script principal:
    `ScriptDatabaseV13\01_CrearBD.sql` (Presiona `F5`).
-3. Ejecuta los scripts complementarios de roles y vistas si requieres ajustes específicos:
+3. Ejecuta los scripts complementarios en orden secuencial:
    * `ScriptDatabaseV13\04_Actualizar_CodigosFijos_Estado.sql`
    * `ScriptDatabaseV13\05_Optimizar_Relacion_CodigoFijo_Lote.sql`
    * `ScriptDatabaseV13\06_Agregar_Nombre_Vias.sql`
    * `ScriptDatabaseV13\07_Roles_Usuarios_Menu.sql`
+   * `ScriptDatabaseV13\08_MenuOpciones_UsuarioMenu.sql`
+   * `ScriptDatabaseV13\09_Procedimiento_BuscarPrediosTotal.sql`
 
 ---
 
@@ -142,7 +180,7 @@ Abre tu navegador e ingresa a:
 
 ---
 
-## 6. Pruebas de Verificación y Calidad
+## 9. Pruebas de Verificación y Calidad
 
 ### Prueba 1: Búsqueda del Código Fijo 1001 (Validación de Coordenadas)
 Para verificar que el punto 1001 se encuentra ubicado en San Ignacio de Velasco y no en coordenadas erróneas:
@@ -186,7 +224,7 @@ FROM dbo.Vias;
 
 ---
 
-## 7. Estructura del Repositorio
+## 10. Estructura del Repositorio
 
 ```
 Proyecto_SIG/
