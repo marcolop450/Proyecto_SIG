@@ -69,7 +69,7 @@
                     <span class="input-group-text bg-white">
                         <img src="~/logo.svg" alt="SIG" style="width: 16px; height: 16px; vertical-align: middle;" />
                     </span>
-                    <input type="text" id="filtroTexto" value="@ViewBag.Texto" class="form-control" placeholder="Ej. 4936, Ubaldo..." autofocus autocomplete="off" />
+                    <input type="text" id="filtroTexto" value="@ViewBag.Texto" class="form-control" placeholder="Ej. 1001, Gómez o UV 01..." autofocus autocomplete="off" />
                 </div>
             </div>
 
@@ -358,6 +358,16 @@
                     const estNum = parseInt(estadoSel);
                     items = items.filter(x => x.estado === estNum);
                 }
+
+                // Orden ascendente estricto por Código Fijo / ID
+                items.sort((a, b) => {
+                    const codA = a.codFijo ? parseInt(a.codFijo) : 999999;
+                    const codB = b.codFijo ? parseInt(b.codFijo) : 999999;
+                    if (codA !== codB) return codA - codB;
+                    const idA = a.idLote ? parseInt(a.idLote) : (a.idCodigo ? parseInt(a.idCodigo) : 0);
+                    const idB = b.idLote ? parseInt(b.idLote) : (b.idCodigo ? parseInt(b.idCodigo) : 0);
+                    return idA - idB;
+                });
 
                 datosActuales = items;
                 paginaActual = 1;

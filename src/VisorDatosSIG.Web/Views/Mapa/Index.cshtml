@@ -41,7 +41,7 @@
                     <span class="input-group-text bg-white border-end-0" style="border-color: #CBD5E1;">
                         <i class="bi bi-search text-muted"></i>
                     </span>
-                    <input type="text" id="txtBusquedaPredio" class="form-control border-start-0" placeholder="Buscar código (ej. 4936) o titular..." style="border-color: #CBD5E1;" />
+                    <input type="text" id="txtBusquedaPredio" class="form-control border-start-0" placeholder="Buscar por código, titular o lote..." style="border-color: #CBD5E1;" />
                 </div>
             </div>
 
@@ -157,43 +157,43 @@
                 </div>
 
                 <!-- Nombre del Titular e ID -->
-                <h5 class="fw-bold text-center text-dark mb-0 text-uppercase" id="fichaNombre" style="letter-spacing: 0.5px; font-size: 1.05rem;">PEREZ FERREIRA UBALDO</h5>
-                <div class="text-center text-muted small mb-3" id="fichaIdSistema">ID Sistema: #16300025</div>
+                <h5 class="fw-bold text-center text-dark mb-0 text-uppercase" id="fichaNombre" style="letter-spacing: 0.5px; font-size: 1.05rem;">TITULAR DEL PREDIO</h5>
+                <div class="text-center text-muted small mb-3" id="fichaIdSistema">ID Sistema: -</div>
 
                 <!-- Tabla de Ficha Catastral -->
                 <table class="table table-sm table-bordered m-0" style="font-size: 0.84rem;">
                     <tbody>
                         <tr>
                             <td class="text-muted fw-semibold" style="width: 44%;">Código Fijo:</td>
-                            <td class="fw-bold font-monospace text-dark" id="fichaCodFijo">4936</td>
+                            <td class="fw-bold font-monospace text-dark" id="fichaCodFijo">-</td>
                         </tr>
                         <tr>
                             <td class="text-muted fw-semibold">Código SIG:</td>
-                            <td class="fw-bold font-monospace" style="color: #E91E63;" id="fichaCodSIG">16.300.025</td>
+                            <td class="fw-bold font-monospace" style="color: #E91E63;" id="fichaCodSIG">-</td>
                         </tr>
                         <tr>
                             <td class="text-muted fw-semibold">Unidad Vecinal:</td>
-                            <td id="fichaUV">UV 16</td>
+                            <td id="fichaUV">-</td>
                         </tr>
                         <tr>
                             <td class="text-muted fw-semibold">Manzana:</td>
-                            <td id="fichaMza">Mz 300</td>
+                            <td id="fichaMza">-</td>
                         </tr>
                         <tr>
                             <td class="text-muted fw-semibold">Lote:</td>
-                            <td id="fichaLote">Lote 025</td>
+                            <td id="fichaLote">-</td>
                         </tr>
                         <tr>
                             <td class="text-muted fw-semibold">Latitud:</td>
-                            <td class="font-monospace" id="fichaLat">-16.409350</td>
+                            <td class="font-monospace" id="fichaLat">-</td>
                         </tr>
                         <tr>
                             <td class="text-muted fw-semibold">Longitud:</td>
-                            <td class="font-monospace" id="fichaLon">-60.956872</td>
+                            <td class="font-monospace" id="fichaLon">-</td>
                         </tr>
                         <tr>
                             <td class="text-muted fw-semibold">Último Cambio:</td>
-                            <td id="fichaFecha">22/9/2026</td>
+                            <td id="fichaFecha">-</td>
                         </tr>
                     </tbody>
                 </table>
@@ -440,6 +440,8 @@
                         fechaEstado: p.FechaEstado ? new Date(p.FechaEstado).toLocaleDateString('es-ES') : "22/9/2026"
                     };
                 });
+
+                rawCodigosFijos.sort((a, b) => (parseInt(a.codFijo) || 999999) - (parseInt(b.codFijo) || 999999));
 
                 renderizarCapaCodigosFijos(rawCodigosFijos);
                 renderizarListaCards(rawCodigosFijos);
@@ -767,13 +769,14 @@
             if (lote && item.lote !== lote) ok = false;
             if (texto) {
                 const matchCod = String(item.codFijo || '').includes(texto);
-                const matchId = String(item.idCodigo || '').includes(texto);
                 const matchNom = String(item.nombre || '').toLowerCase().includes(texto);
                 const matchSIG = String(item.codSIG || '').toLowerCase().includes(texto);
-                if (!matchCod && !matchId && !matchNom && !matchSIG) ok = false;
+                if (!matchCod && !matchNom && !matchSIG) ok = false;
             }
             return ok;
         });
+
+        filtrados.sort((a, b) => (parseInt(a.codFijo) || 999999) - (parseInt(b.codFijo) || 999999));
 
         renderizarCapaCodigosFijos(filtrados);
         renderizarListaCards(filtrados);
