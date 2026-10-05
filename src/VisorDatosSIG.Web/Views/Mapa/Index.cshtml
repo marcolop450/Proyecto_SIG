@@ -129,10 +129,18 @@
         <!-- Mapa Leaflet -->
         <div id="mapContainer" style="width: 100%; height: 100%;"></div>
 
-        <!-- Botón Superior Derecho: Extensión General -->
-        <button type="button" id="btnZoomGeneral" class="btn btn-sm shadow-sm d-flex align-items-center gap-1 border" style="background: #FFFFFF; position: absolute; top: 14px; right: 14px; z-index: 1005; font-size: 0.82rem; font-weight: 600; color: #1E293B;" onclick="restablecerExtensionGeneral()">
+        <!-- Botón Flotante para abrir Filtros/Capas en pantallas móviles (< 768px) -->
+        <button type="button" id="btnToggleSidebarMobile" class="btn btn-sm shadow d-md-none btn-sig-chiquitano position-absolute" style="top: 12px; left: 50px; z-index: 1005;" onclick="toggleMapSidebarMobile()" aria-label="Abrir panel de filtros y capas">
+            <i class="bi bi-sliders me-1"></i> Filtros y Capas
+        </button>
+
+        <!-- Fondo Oscuro para cerrar drawer en móvil -->
+        <div id="mapSidebarBackdrop" class="position-absolute w-100 h-100 bg-dark bg-opacity-50 d-none" style="top: 0; left: 0; z-index: 1040;" onclick="toggleMapSidebarMobile()"></div>
+
+        <!-- Botón de Extensión General (Posicionado para no colisionar con zoom Leaflet ni Ficha) -->
+        <button type="button" id="btnZoomGeneral" class="btn btn-sm shadow-sm d-flex align-items-center gap-1 border position-absolute map-zoom-general-btn" style="top: 12px; z-index: 1005; background: #FFFFFF; font-size: 0.82rem; font-weight: 600; color: #1E293B;" onclick="restablecerExtensionGeneral()" title="Restablecer extensión general">
             <i class="bi bi-arrows-fullscreen"></i>
-            Extensión General
+            <span class="d-none d-sm-inline">Extensión General</span>
         </button>
 
         <!-- Barra Inferior de Coordenadas y Escala -->
@@ -140,18 +148,18 @@
             Coord: <span id="lblCoords">-16.377, -60.963</span> | Zoom: <span id="lblZoom">14</span> | WGS 84 (SRID 4326)
         </div>
 
-        <!-- Panel Ficha Catastral Flotante (Exacto al Screenshot 1) -->
+        <!-- Panel Ficha Catastral Flotante / Bottom Sheet Móvil -->
         <div id="fichaCatastralPanel" class="ficha-catastral-panel" style="display: none;">
             <div class="ficha-header">
                 <span class="d-flex align-items-center gap-2">
                     <i class="bi bi-card-heading"></i> Ficha Catastral
                 </span>
-                <button type="button" class="btn-close btn-close-white btn-sm" onclick="cerrarFicha()"></button>
+                <button type="button" class="btn-close btn-close-white btn-sm" onclick="cerrarFicha()" aria-label="Cerrar ficha catastral"></button>
             </div>
             <div class="p-3">
-                <!-- Badge de Estado -->
+                <!-- Badge de Estado con alto contraste WCAG AA -->
                 <div class="text-center mb-2">
-                    <span id="fichaBadgeEstado" class="badge px-3 py-2 text-white" style="background-color: #10B981; font-size: 0.85rem; border-radius: 16px;">
+                    <span id="fichaBadgeEstado" class="badge px-3 py-2 fw-bold" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; font-size: 0.85rem; border-radius: 16px;">
                         <i class="bi bi-tag-fill me-1"></i> Estado 1: Normal
                     </span>
                 </div>
@@ -169,7 +177,7 @@
                         </tr>
                         <tr>
                             <td class="text-muted fw-semibold">Código SIG:</td>
-                            <td class="fw-bold font-monospace" style="color: #E91E63;" id="fichaCodSIG">-</td>
+                            <td class="fw-bold font-monospace" style="color: #854D0E;" id="fichaCodSIG">-</td>
                         </tr>
                         <tr>
                             <td class="text-muted fw-semibold">Unidad Vecinal:</td>
@@ -293,6 +301,7 @@
 
     function initMap() {
         map = L.map('mapContainer', {
+            preferCanvas: true,
             zoomControl: false,
             center: [-16.377, -60.963],
             zoom: 14,
@@ -483,12 +492,12 @@
 
     function obtenerColorEstado(estado) {
         switch (estado) {
-            case 1: return "#10B981"; // Normal
-            case 2: return "#F59E0B"; // Para Corte
-            case 3: return "#EF4444"; // Cortado
-            case 4: return "#8B5CF6"; // Baja Parcial
-            case 5: return "#64748B"; // Baja Total
-            default: return "#10B981";
+            case 1: return "#0D8258"; // Normal (Verde accesible WCAG AA)
+            case 2: return "#D97706"; // Para Corte (Ámbar oscuro accesible WCAG AA)
+            case 3: return "#DC2626"; // Cortado (Rojo accesible WCAG AA)
+            case 4: return "#7C3AED"; // Baja Parcial
+            case 5: return "#475569"; // Baja Total
+            default: return "#0D8258";
         }
     }
 
@@ -502,6 +511,8 @@
             default: return "Normal";
         }
     }
+
+    let cardsDataMap = {};
 
     function renderizarListaCards(items) {
         const contenedor = document.getElementById('listaCardsResultados');
@@ -517,17 +528,30 @@
         // Renderizar los primeros 150 registros para velocidad óptima de DOM
         const displayItems = items.slice(0, 150);
         let html = '';
+        cardsDataMap = {};
 
         displayItems.forEach(item => {
+            const itemKey = String(item.idCodigo || item.codFijo);
+            cardsDataMap[itemKey] = item;
+
             const color = obtenerColorEstado(item.estado);
             const desc = obtenerDescEstado(item.estado);
-            const badgeBg = item.estado === 1 ? 'bg-success' : item.estado === 2 ? 'bg-warning text-dark' : item.estado === 3 ? 'bg-danger' : 'bg-secondary';
+            let badgeStyle = '';
+            if (item.estado === 1) {
+                badgeStyle = 'background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;';
+            } else if (item.estado === 2) {
+                badgeStyle = 'background-color: #FEF3C7; color: #78350F; border: 1px solid #FDE68A;';
+            } else if (item.estado === 3) {
+                badgeStyle = 'background-color: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;';
+            } else {
+                badgeStyle = 'background-color: #E2E8F0; color: #475569; border: 1px solid #CBD5E1;';
+            }
 
             html += `
-            <div class="result-card-item" onclick='seleccionarPredioDesdeCard(${JSON.stringify(item)})' id="card-predio-${item.idCodigo || item.codFijo}">
+            <div class="result-card-item" tabindex="0" role="button" aria-label="Predio ${item.nombre}, Código ${item.codFijo || item.idCodigo}" onclick="seleccionarPredioPorKey('${itemKey}')" onkeydown="handleCardKey(event, '${itemKey}')" id="card-predio-${itemKey}">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <span class="fw-bold font-monospace" style="color: ${color}; font-size: 0.8rem;">COD. ${item.codFijo || item.idCodigo}</span>
-                    <span class="badge ${badgeBg}" style="font-size: 0.68rem; padding: 2px 6px;">${desc}</span>
+                    <span class="badge fw-bold" style="${badgeStyle} font-size: 0.68rem; padding: 2px 6px;">${desc}</span>
                 </div>
                 <div class="fw-bold text-dark text-truncate" style="font-size: 0.82rem;" title="${item.nombre}">
                     ${item.nombre}
@@ -543,6 +567,20 @@
         }
 
         contenedor.innerHTML = html;
+    }
+
+    function seleccionarPredioPorKey(key) {
+        const item = cardsDataMap[key];
+        if (item) {
+            seleccionarPredioEnMapa(item);
+        }
+    }
+
+    function handleCardKey(event, key) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            seleccionarPredioPorKey(key);
+        }
     }
 
     function seleccionarPredioDesdeCard(item) {
@@ -578,6 +616,16 @@
             highlightCircleMarker = L.marker([item.latitud, item.longitud], { icon: iconPulse, zIndexOffset: 1000 }).addTo(map);
         }
 
+        // Si estamos en móvil, cerramos el drawer de sidebar al seleccionar para ver el mapa y la ficha
+        if (window.innerWidth < 768) {
+            const sidebar = document.getElementById('mapSidebar');
+            const backdrop = document.getElementById('mapSidebarBackdrop');
+            if (sidebar && sidebar.classList.contains('sidebar-open')) {
+                sidebar.classList.remove('sidebar-open');
+                if (backdrop) backdrop.classList.add('d-none');
+            }
+        }
+
         // Mostrar Ficha Catastral a la derecha
         mostrarFichaDesdePropiedades(item);
     }
@@ -596,11 +644,28 @@
         document.getElementById('fichaLon').innerText = item.longitud ? Number(item.longitud).toFixed(6) : "-";
         document.getElementById('fichaFecha').innerText = item.fechaEstado || "22/9/2026";
 
-        // Badge de Estado en Ficha
+        // Badge de Estado en Ficha con alto contraste WCAG AA
         const badge = document.getElementById('fichaBadgeEstado');
-        const color = obtenerColorEstado(item.estado);
         const desc = obtenerDescEstado(item.estado);
-        badge.style.backgroundColor = color;
+        let badgeBg = '#D1FAE5';
+        let badgeColor = '#065F46';
+        let badgeBorder = '#A7F3D0';
+        if (item.estado === 2) {
+            badgeBg = '#FEF3C7';
+            badgeColor = '#78350F';
+            badgeBorder = '#FDE68A';
+        } else if (item.estado === 3) {
+            badgeBg = '#FEE2E2';
+            badgeColor = '#991B1B';
+            badgeBorder = '#FECACA';
+        } else if (item.estado > 3) {
+            badgeBg = '#E2E8F0';
+            badgeColor = '#475569';
+            badgeBorder = '#CBD5E1';
+        }
+        badge.style.backgroundColor = badgeBg;
+        badge.style.color = badgeColor;
+        badge.style.border = `1px solid ${badgeBorder}`;
         badge.innerHTML = `<i class="bi bi-tag-fill me-1"></i> Estado ${item.estado}: ${desc}`;
 
         // Botón Ver en Consultas
@@ -812,8 +877,8 @@
     function verificarParametrosURL() {
         const urlParams = new URLSearchParams(window.location.search);
         const lat = urlParams.get('lat');
-        const lon = urlParams.get('lon');
-        const codFijo = urlParams.get('codFijo');
+        const lon = urlParams.get('lon') || urlParams.get('lng');
+        const codFijo = urlParams.get('codFijo') || urlParams.get('cod');
         const texto = urlParams.get('texto');
 
         if (texto) {
@@ -827,7 +892,7 @@
 
             setTimeout(() => {
                 // Buscar si coincide con algún código fijo
-                const target = rawCodigosFijos.find(c => (codFijo && c.codFijo == codFijo) || (Math.abs(c.latitud - pLat) < 0.0001 && Math.abs(c.longitud - pLon) < 0.0001));
+                const target = rawCodigosFijos.find(c => (codFijo && (c.codFijo == codFijo || c.idCodigo == codFijo)) || (Math.abs(c.latitud - pLat) < 0.0001 && Math.abs(c.longitud - pLon) < 0.0001));
                 if (target) {
                     seleccionarPredioEnMapa(target);
                 } else {
@@ -845,6 +910,20 @@
                     });
                 }
             }, 1000);
+        }
+    }
+
+    function toggleMapSidebarMobile() {
+        const sidebar = document.getElementById('mapSidebar');
+        const backdrop = document.getElementById('mapSidebarBackdrop');
+        if (!sidebar) return;
+        const isOpen = sidebar.classList.toggle('sidebar-open');
+        if (backdrop) {
+            if (isOpen) {
+                backdrop.classList.remove('d-none');
+            } else {
+                backdrop.classList.add('d-none');
+            }
         }
     }
 </script>
