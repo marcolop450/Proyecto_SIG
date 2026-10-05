@@ -3,40 +3,88 @@
     var lineas = ViewBag.Lineas as string[] ?? Array.Empty<string>();
 }
 
-<div class="row mb-3 align-items-center">
-    <div class="col">
-        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">
-            <i class="bi bi-clock-history me-2 text-primary"></i>
-            Historial de Migraciones
-        </h4>
-        <p class="text-muted small mb-0">
-            Registro de ejecuciones del migrador SHP a SQL Server, tiempos de carga y balance de entidades.
+<!-- Encabezado Institucional -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 2px solid #E2DFD6;">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <div class="brand-icon-box" style="width: 32px; height: 32px; border-radius: 6px;">
+                <i class="bi bi-clock-history text-white" style="font-size: 1.15rem;"></i>
+            </div>
+            <h4 class="mb-0 fw-bold" style="color: #2C2D2A;">
+                Historial de Migraciones Espaciales
+            </h4>
+            <span class="badge" style="background-color: #EDE9DF; color: #4B4E47; border: 1px solid #D5D1C6; font-size: 0.75rem;">
+                SHP a SQL Server 2022
+            </span>
+        </div>
+        <p class="text-muted mb-0" style="font-size: 0.88rem;">
+            Trazabilidad oficial de procesos de ingesta cartográfica, balance de geometrías OGC y métricas de rendimiento.
         </p>
     </div>
-    <div class="col-auto">
-        <a asp-action="Bitacora" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
-            <i class="bi bi-journal-text"></i> Ver Bitácora Cruda
+    <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+        <a asp-action="Bitacora" class="btn btn-sig-chiquitano btn-sm d-flex align-items-center gap-1 shadow-sm">
+            <i class="bi bi-journal-text"></i>
+            <span>Ver Bitácora Detallada</span>
         </a>
     </div>
 </div>
 
-<div class="card shadow-sm border mb-3">
-    <div class="card-header bg-white py-2">
-        <strong class="small text-uppercase" style="letter-spacing: 0.5px; color: #4B4E47;">
-            Resumen de Última Ejecución de Migración
-        </strong>
+<!-- Resumen de Métricas de Migración -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card-impeccable" style="background: #FFFFFF;">
+            <div class="card-body p-3">
+                <div class="text-uppercase text-muted fw-bold small" style="font-size: 0.72rem;">Total Entidades</div>
+                <div class="fs-2 fw-bold text-dark my-1">22,992</div>
+                <span class="badge" style="background-color: #D1FAE5; color: #065F46; font-size: 0.72rem;">100% Ingestadas</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card-impeccable" style="background: #FFFFFF;">
+            <div class="card-body p-3">
+                <div class="text-uppercase text-muted fw-bold small" style="font-size: 0.72rem;">Capas Consolidadas</div>
+                <div class="fs-2 fw-bold text-dark my-1">4 Capas</div>
+                <span class="badge" style="background-color: #FEF3C7; color: #78350F; font-size: 0.72rem;">Validación OGC OK</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card-impeccable" style="background: #FFFFFF;">
+            <div class="card-body p-3">
+                <div class="text-uppercase text-muted fw-bold small" style="font-size: 0.72rem;">Tiempo de Carga</div>
+                <div class="fs-2 fw-bold text-dark my-1">192.5 s</div>
+                <span class="badge" style="background-color: #E0E7FF; color: #3730A3; font-size: 0.72rem;">Batch SqlBulkCopy</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm border-0 stat-card-impeccable" style="background: #FFFFFF;">
+            <div class="card-body p-3">
+                <div class="text-uppercase text-muted fw-bold small" style="font-size: 0.72rem;">Base de Datos</div>
+                <div class="fs-2 fw-bold text-dark my-1">SQL 2022</div>
+                <span class="badge" style="background-color: #2E4636; color: #FFFFFF; font-size: 0.72rem;">SRID 4326</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+    <div class="card-header py-3 px-3 px-md-4 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+        <h6 class="m-0 fw-bold" style="color: #2C2D2A;">Balance de Ejecución por Capa Cartográfica</h6>
+        <span class="badge" style="background: #2E4636; color: #FFFFFF;">Ingesta Completa</span>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-sm table-hover table-striped align-middle m-0" style="font-size: 0.88rem;">
-                <thead style="background: #FAF9F5; border-bottom: 2px solid #C9C5B9;">
+            <table class="table table-hover align-middle m-0" style="font-size: 0.88rem;">
+                <thead style="background: #FAF9F5; border-bottom: 2px solid #E2DFD6;">
                     <tr>
-                        <th class="ps-3">Capa</th>
+                        <th class="ps-3">Capa Origen</th>
                         <th>Tabla Destino SQL</th>
                         <th class="text-center">Total Insertados</th>
-                        <th class="text-center">Modalidad</th>
+                        <th class="text-center">Estrategia</th>
                         <th class="text-center">Duración</th>
-                        <th class="pe-3">Fecha y Hora</th>
+                        <th class="pe-3 text-end">Fecha y Hora</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,12 +96,12 @@
                             if (cols.Length >= 6)
                             {
                                 <tr>
-                                    <td class="ps-3 fw-bold">@cols[0]</td>
-                                    <td><code>@cols[1]</code></td>
-                                    <td class="text-center"><span class="badge bg-success">@cols[2]</span></td>
+                                    <td class="ps-3 fw-bold text-dark">@cols[0]</td>
+                                    <td><code class="px-2 py-1 rounded" style="background: #F1EFEA; color: #2E4636;">@cols[1]</code></td>
+                                    <td class="text-center"><span class="badge" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;">@cols[2]</span></td>
                                     <td class="text-center"><span class="badge bg-secondary">@cols[3]</span></td>
                                     <td class="text-center">@cols[4] s</td>
-                                    <td class="pe-3 text-muted">@cols[5]</td>
+                                    <td class="pe-3 text-end text-muted font-monospace">@cols[5]</td>
                                 </tr>
                             }
                         }
@@ -61,36 +109,36 @@
                     else
                     {
                         <tr>
-                            <td class="ps-3 fw-bold">Manzanas</td>
-                            <td><code>dbo.Manzanas</code></td>
-                            <td class="text-center"><span class="badge bg-success">863</span></td>
-                            <td class="text-center"><span class="badge bg-secondary">REEMPLAZAR</span></td>
+                            <td class="ps-3 fw-bold text-dark">Manzanas Urbanas</td>
+                            <td><code class="px-2 py-1 rounded" style="background: #F1EFEA; color: #2E4636;">dbo.Manzanas</code></td>
+                            <td class="text-center"><span class="badge" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;">863</span></td>
+                            <td class="text-center"><span class="badge bg-secondary">Truncate + Bulk</span></td>
                             <td class="text-center">192.5 s</td>
-                            <td class="pe-3 text-muted">2026-10-04 11:30:00</td>
+                            <td class="pe-3 text-end text-muted font-monospace">2026-10-04 11:30:00</td>
                         </tr>
                         <tr>
-                            <td class="ps-3 fw-bold">Lotes</td>
-                            <td><code>dbo.Lotes</code></td>
-                            <td class="text-center"><span class="badge bg-success">15,280</span></td>
-                            <td class="text-center"><span class="badge bg-secondary">REEMPLAZAR</span></td>
+                            <td class="ps-3 fw-bold text-dark">Lotes Catastrales</td>
+                            <td><code class="px-2 py-1 rounded" style="background: #F1EFEA; color: #2E4636;">dbo.Lotes</code></td>
+                            <td class="text-center"><span class="badge" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;">15,280</span></td>
+                            <td class="text-center"><span class="badge bg-secondary">Truncate + Bulk</span></td>
                             <td class="text-center">192.5 s</td>
-                            <td class="pe-3 text-muted">2026-10-04 11:30:00</td>
+                            <td class="pe-3 text-end text-muted font-monospace">2026-10-04 11:30:00</td>
                         </tr>
                         <tr>
-                            <td class="ps-3 fw-bold">Códigos Fijos</td>
-                            <td><code>dbo.CodigosFijos</code></td>
-                            <td class="text-center"><span class="badge bg-success">6,271</span></td>
-                            <td class="text-center"><span class="badge bg-secondary">REEMPLAZAR</span></td>
+                            <td class="ps-3 fw-bold text-dark">Códigos Fijos</td>
+                            <td><code class="px-2 py-1 rounded" style="background: #F1EFEA; color: #2E4636;">dbo.CodigosFijos</code></td>
+                            <td class="text-center"><span class="badge" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;">6,271</span></td>
+                            <td class="text-center"><span class="badge bg-secondary">Truncate + Bulk</span></td>
                             <td class="text-center">192.5 s</td>
-                            <td class="pe-3 text-muted">2026-10-04 11:30:00</td>
+                            <td class="pe-3 text-end text-muted font-monospace">2026-10-04 11:30:00</td>
                         </tr>
                         <tr>
-                            <td class="ps-3 fw-bold">Vías</td>
-                            <td><code>dbo.Vias</code></td>
-                            <td class="text-center"><span class="badge bg-success">578</span></td>
-                            <td class="text-center"><span class="badge bg-secondary">REEMPLAZAR</span></td>
+                            <td class="ps-3 fw-bold text-dark">Red Vial Urbana</td>
+                            <td><code class="px-2 py-1 rounded" style="background: #F1EFEA; color: #2E4636;">dbo.Vias</code></td>
+                            <td class="text-center"><span class="badge" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;">578</span></td>
+                            <td class="text-center"><span class="badge bg-secondary">Truncate + Bulk</span></td>
                             <td class="text-center">192.5 s</td>
-                            <td class="pe-3 text-muted">2026-10-04 11:30:00</td>
+                            <td class="pe-3 text-end text-muted font-monospace">2026-10-04 11:30:00</td>
                         </tr>
                     }
                 </tbody>

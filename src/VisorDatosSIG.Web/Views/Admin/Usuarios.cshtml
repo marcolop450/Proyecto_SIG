@@ -1,70 +1,92 @@
-﻿@model IEnumerable<dynamic>
+@model IEnumerable<dynamic>
 @{
     ViewData["Title"] = "Gestión de Usuarios y Roles";
     var roles = ViewBag.Roles as IEnumerable<dynamic>;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+<!-- Encabezado Institucional -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 2px solid #E2DFD6;">
     <div>
-        <h4 class="mb-1" style="font-weight: 700; color: #2C2D2A;">Control de Acceso y Perfiles</h4>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <div class="brand-icon-box" style="width: 32px; height: 32px; border-radius: 6px;">
+                <i class="bi bi-people-fill text-white" style="font-size: 1.15rem;"></i>
+            </div>
+            <h4 class="mb-0 fw-bold" style="color: #2C2D2A;">
+                Control de Acceso y Usuarios
+            </h4>
+            <span class="badge" style="background-color: #EDE9DF; color: #4B4E47; border: 1px solid #D5D1C6; font-size: 0.75rem;">
+                Seguridad RBAC
+            </span>
+        </div>
         <p class="text-muted mb-0" style="font-size: 0.88rem;">
-            Matriz de usuarios registrados y catálogo oficial de roles de seguridad
+            Padrón de cuentas de usuario autorizadas, perfiles de seguridad y asignación de permisos territoriales.
         </p>
+    </div>
+    <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+        <span class="badge py-2 px-3 fw-semibold d-flex align-items-center gap-1" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; font-size: 0.8rem; border-radius: 20px;">
+            <i class="bi bi-shield-check"></i> PBKDF2 SHA-256 Activo
+        </span>
     </div>
 </div>
 
 <div class="row g-4 mb-4">
     <!-- Tabla de Usuarios Registrados -->
-    <div class="col-md-7">
-        <div class="card shadow-sm" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
-                <h6 class="m-0 fw-bold" style="color: #383B34;">Cuentas de Usuario Activas</h6>
-                <span class="badge" style="background-color: #5E7A4A;">PBKDF2 SHA-256</span>
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4 d-flex flex-wrap justify-content-between align-items-center gap-2" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <div class="d-flex align-items-center gap-2">
+                    <h6 class="m-0 fw-bold" style="color: #2C2D2A;">Cuentas de Usuario Activas</h6>
+                    <span class="badge" style="background-color: #2E4636; color: #FFFFFF;" id="lblTotalUsuarios">@Model.Count() Registros</span>
+                </div>
+                <div class="input-group input-group-sm" style="max-width: 240px;">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" id="filtroUsuariosInput" class="form-control border-start-0" placeholder="Buscar usuario o rol..." onkeyup="filtrarUsuariosTabla()" />
+                </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover table-custom m-0">
-                    <thead>
+                <table class="table table-hover align-middle m-0" id="tablaUsuarios">
+                    <thead style="background: #FAF9F5; border-bottom: 2px solid #E2DFD6;">
                         <tr>
-                            <th>ID</th>
+                            <th class="ps-3" style="width: 50px;">ID</th>
                             <th>Cuenta (Login)</th>
-                            <th>Nombre</th>
+                            <th>Nombre Completo</th>
                             <th>Rol(es) Asignado(s)</th>
-                            <th class="text-center">Estado</th>
+                            <th class="text-center pe-3" style="width: 90px;">Estado</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var u in Model)
                         {
                             <tr>
-                                <td>@u.IdUsuario</td>
-                                <td><code>@u.Login</code></td>
-                                <td><strong>@u.Nombre</strong></td>
+                                <td class="ps-3 text-muted font-monospace">@u.IdUsuario</td>
+                                <td><code class="px-2 py-1 rounded fw-bold" style="background: #F1EFEA; color: #2E4636;">@u.Login</code></td>
+                                <td class="fw-semibold text-dark">@u.Nombre</td>
                                 <td>
                                     @if (!string.IsNullOrEmpty(u.RolesAsignados))
                                     {
                                         foreach (var rol in ((string)u.RolesAsignados).Split(','))
                                         {
                                             var rolTrim = rol.Trim();
-                                            var badgeColor = rolTrim switch {
-                                                "Administrador" => "#2B2D29",
-                                                "Lecturador" => "#5E7A4A",
-                                                "Cortador" => "#B84A39",
-                                                "Catastro" => "#C89D3C",
-                                                "Reconexion" => "#5F7482",
-                                                _ => "#6B6D66"
+                                            var badgeStyle = rolTrim switch {
+                                                "Administrador" => "background-color: #24382B; color: #FFFFFF;",
+                                                "Lecturador" => "background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;",
+                                                "Cortador" => "background-color: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;",
+                                                "Catastro" => "background-color: #FEF3C7; color: #78350F; border: 1px solid #FDE68A;",
+                                                "Reconexion" => "background-color: #E0E7FF; color: #3730A3; border: 1px solid #C7D2FE;",
+                                                _ => "background-color: #F1F5F9; color: #475569;"
                                             };
-                                            <span class="badge me-1" style="background-color: @badgeColor;">@rolTrim</span>
+                                            <span class="badge fw-bold me-1" style="@badgeStyle font-size: 0.74rem;">@rolTrim</span>
                                         }
                                     }
                                     else
                                     {
-                                        <span class="text-muted small">Sin rol</span>
+                                        <span class="text-muted small fst-italic">Sin rol</span>
                                     }
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center pe-3">
                                     @if (u.Activo == true)
                                     {
-                                        <span class="badge bg-success">Activo</span>
+                                        <span class="badge" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;">Activo</span>
                                     }
                                     else
                                     {
@@ -80,10 +102,11 @@
     </div>
 
     <!-- Catálogo de Roles Oficiales -->
-    <div class="col-md-5">
-        <div class="card shadow-sm" style="background: #FFFFFF; border: 1px solid #E2DFD6;">
-            <div class="card-header py-3" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
-                <h6 class="m-0 fw-bold" style="color: #383B34;">Catálogo de Roles del Sistema (5 Roles)</h6>
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <h6 class="m-0 fw-bold" style="color: #2C2D2A;">Perfiles de Seguridad del Sistema</h6>
+                <span class="badge" style="background: #C89D3C; color: #FFFFFF;">5 Roles</span>
             </div>
             <div class="card-body p-0">
                 <div class="list-group list-group-flush" style="font-size: 0.88rem;">
@@ -91,17 +114,45 @@
                     {
                         foreach (var r in roles)
                         {
-                            <div class="list-group-item p-3">
+                            <div class="list-group-item p-3 border-bottom">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <strong style="color: #2D302B;">@r.NombreRol</strong>
+                                    <strong style="color: #2E4636;" class="d-flex align-items-center gap-1">
+                                        <i class="bi bi-shield-check text-primary"></i>
+                                        @r.NombreRol
+                                    </strong>
                                     <span class="badge" style="background-color: #EDE8DC; color: #4B4E47; border: 1px solid #D5D1C6;">ID: @r.IdRol</span>
                                 </div>
-                                <div class="text-muted small">@(r.Descripcion ?? "Sin descripción")</div>
+                                <div class="text-muted small">@(r.Descripcion ?? "Sin descripción configurada")</div>
                             </div>
                         }
                     }
                 </div>
             </div>
+            <div class="card-footer py-2 px-3 bg-light text-muted small" style="border-top: 1px solid #E2DFD6; font-size: 0.78rem;">
+                <i class="bi bi-info-circle me-1"></i> La matriz detallada de permisos por módulo puede consultarse en <strong>Perfiles y Permisos (RBAC)</strong>.
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    function filtrarUsuariosTabla() {
+        const input = document.getElementById('filtroUsuariosInput').value.toLowerCase().trim();
+        const filas = document.querySelectorAll('#tablaUsuarios tbody tr');
+        let visibles = 0;
+
+        filas.forEach(fila => {
+            const textoFila = fila.innerText.toLowerCase();
+            if (textoFila.includes(input)) {
+                fila.style.display = '';
+                visibles++;
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+
+        document.getElementById('lblTotalUsuarios').innerText = `${visibles} Registros`;
+    }
+</script>
+}

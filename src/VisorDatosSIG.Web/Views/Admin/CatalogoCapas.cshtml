@@ -2,107 +2,153 @@
     ViewData["Title"] = "Catálogo de Capas Cartográficas";
 }
 
-<div class="row mb-3 align-items-center">
-    <div class="col">
-        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">
-            <i class="bi bi-layers me-2 text-primary"></i>
-            Catálogo de Capas Cartográficas
-        </h4>
-        <p class="text-muted small mb-0">
-            Metadatos espaciales, atributos consultables, tipos de geometría y simbología del sistema.
+<!-- Encabezado Institucional -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 2px solid #E2DFD6;">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <div class="brand-icon-box" style="width: 32px; height: 32px; border-radius: 6px;">
+                <i class="bi bi-layers-half text-white" style="font-size: 1.15rem;"></i>
+            </div>
+            <h4 class="mb-0 fw-bold" style="color: #2C2D2A;">
+                Catálogo Oficial de Capas Cartográficas
+            </h4>
+            <span class="badge" style="background-color: #EDE9DF; color: #4B4E47; border: 1px solid #D5D1C6; font-size: 0.75rem;">
+                OGC Standard
+            </span>
+        </div>
+        <p class="text-muted mb-0" style="font-size: 0.88rem;">
+            Metadatos espaciales, tipos geométricos, sistemas de coordenadas de referencia y simbología temática.
         </p>
+    </div>
+    <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+        <a asp-controller="Mapa" asp-action="Index" class="btn btn-sig-chiquitano d-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-map"></i>
+            <span>Ver Capas en el Mapa</span>
+        </a>
     </div>
 </div>
 
-<div class="row g-3">
+<div class="row g-4 mb-4">
     <!-- Manzanas -->
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100 border">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <strong class="d-flex align-items-center gap-2">
-                    <span class="legend-badge" style="border: 1.5px solid #5E7A4A; background: rgba(94, 122, 74, 0.2);"></span>
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <strong class="d-flex align-items-center gap-2 text-dark">
+                    <span class="legend-badge" style="border: 2px solid #10B981; background: rgba(16, 185, 129, 0.2); width: 16px; height: 16px;"></span>
                     Manzanas Urbanas
                 </strong>
-                <span class="badge bg-secondary">dbo.Manzanas</span>
+                <span class="badge" style="background: #2E4636; color: #FFFFFF;">dbo.Manzanas</span>
             </div>
-            <div class="card-body small">
-                <table class="table table-sm table-borderless m-0">
-                    <tr><td class="text-muted" style="width: 40%;">Tipo Geométrico:</td><td><strong>MultiPolygon (OGC)</strong></td></tr>
-                    <tr><td class="text-muted">Sistema de Coordenadas:</td><td><strong>SRID 4326 (WGS 84)</strong></td></tr>
-                    <tr><td class="text-muted">Total Entidades:</td><td><strong>863 polígonos</strong></td></tr>
-                    <tr><td class="text-muted">Campos Visibles:</td><td><code>IdOrigen, UV_MZA, UV, MZA</code></td></tr>
-                    <tr><td class="text-muted">Campos Buscables:</td><td><code>UV, MZA, UV_MZA</code></td></tr>
-                    <tr><td class="text-muted">Estilo por Defecto:</td><td>Borde verde olivo (#5E7A4A), relleno transparente 5%</td></tr>
+            <div class="card-body p-3 p-md-4">
+                <table class="table table-sm table-borderless m-0" style="font-size: 0.88rem;">
+                    <tbody>
+                        <tr class="border-bottom"><td class="text-muted py-2" style="width: 42%;">Tipo Geométrico:</td><td class="py-2 fw-bold text-dark">MultiPolygon (OGC)</td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Sistema Coordenadas:</td><td class="py-2"><span class="badge bg-secondary">SRID 4326 (WGS 84)</span></td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Total Entidades:</td><td class="py-2 fw-bold text-success">863 polígonos</td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Campos de Consulta:</td><td class="py-2"><code style="color: #2E4636;">IdManzana, UV_MZA, UV, MZA</code></td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Campos Buscables:</td><td class="py-2">UV, MZA, UV_MZA</td></tr>
+                        <tr><td class="text-muted py-2">Simbología por Defecto:</td><td class="py-2">Trazo Verde (#10B981), Relleno Opaco 8%</td></tr>
+                    </tbody>
                 </table>
+            </div>
+            <div class="card-footer py-2 px-3 bg-light d-flex justify-content-between align-items-center" style="border-top: 1px solid #E2DFD6;">
+                <small class="text-muted">Servicio: <code>/api/capas/manzanas</code></small>
+                <a asp-controller="Mapa" asp-action="Index" class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 0.78rem;">
+                    <i class="bi bi-eye"></i> Inspeccionar
+                </a>
             </div>
         </div>
     </div>
 
     <!-- Lotes -->
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100 border">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <strong class="d-flex align-items-center gap-2">
-                    <span class="legend-badge" style="border: 1px solid #C89D3C; background: rgba(200, 157, 60, 0.25);"></span>
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <strong class="d-flex align-items-center gap-2 text-dark">
+                    <span class="legend-badge" style="border: 2px solid #C89D3C; background: rgba(200, 157, 60, 0.25); width: 16px; height: 16px;"></span>
                     Lotes Catastrales
                 </strong>
-                <span class="badge bg-secondary">dbo.Lotes</span>
+                <span class="badge" style="background: #C89D3C; color: #FFFFFF;">dbo.Lotes</span>
             </div>
-            <div class="card-body small">
-                <table class="table table-sm table-borderless m-0">
-                    <tr><td class="text-muted" style="width: 40%;">Tipo Geométrico:</td><td><strong>MultiPolygon (OGC)</strong></td></tr>
-                    <tr><td class="text-muted">Sistema de Coordenadas:</td><td><strong>SRID 4326 (WGS 84)</strong></td></tr>
-                    <tr><td class="text-muted">Total Entidades:</td><td><strong>15,280 parcelas</strong></td></tr>
-                    <tr><td class="text-muted">Campos Visibles:</td><td><code>IdOrigen, NroLote, Latitud, Longitud</code></td></tr>
-                    <tr><td class="text-muted">Campos Buscables:</td><td><code>NroLote, IdManzana</code></td></tr>
-                    <tr><td class="text-muted">Estilo por Defecto:</td><td>Borde dorado arena (#C89D3C), opacidad regulable 0-100%</td></tr>
+            <div class="card-body p-3 p-md-4">
+                <table class="table table-sm table-borderless m-0" style="font-size: 0.88rem;">
+                    <tbody>
+                        <tr class="border-bottom"><td class="text-muted py-2" style="width: 42%;">Tipo Geométrico:</td><td class="py-2 fw-bold text-dark">MultiPolygon (OGC)</td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Sistema Coordenadas:</td><td class="py-2"><span class="badge bg-secondary">SRID 4326 (WGS 84)</span></td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Total Entidades:</td><td class="py-2 fw-bold text-warning text-dark">15,280 parcelas</td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Campos de Consulta:</td><td class="py-2"><code style="color: #2E4636;">IdLote, NroLote, IdManzana, Lat, Lon</code></td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Campos Buscables:</td><td class="py-2">NroLote, UV, MZA</td></tr>
+                        <tr><td class="text-muted py-2">Simbología por Defecto:</td><td class="py-2">Borde Dorado (#B88B2A), Relleno Opaco 18%</td></tr>
+                    </tbody>
                 </table>
+            </div>
+            <div class="card-footer py-2 px-3 bg-light d-flex justify-content-between align-items-center" style="border-top: 1px solid #E2DFD6;">
+                <small class="text-muted">Servicio: <code>/api/capas/lotes</code></small>
+                <a asp-controller="Mapa" asp-action="Index" class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 0.78rem;">
+                    <i class="bi bi-eye"></i> Inspeccionar
+                </a>
             </div>
         </div>
     </div>
 
     <!-- Códigos Fijos -->
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100 border">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <strong class="d-flex align-items-center gap-2">
-                    <span class="legend-badge" style="background: #B84A39; border-radius: 50%;"></span>
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <strong class="d-flex align-items-center gap-2 text-dark">
+                    <span class="legend-badge" style="background: #2E4636; border-radius: 50%; width: 14px; height: 14px;"></span>
                     Códigos Fijos (Medidores)
                 </strong>
-                <span class="badge bg-secondary">dbo.CodigosFijos</span>
+                <span class="badge" style="background: #2E4636; color: #FFFFFF;">dbo.CodigosFijos</span>
             </div>
-            <div class="card-body small">
-                <table class="table table-sm table-borderless m-0">
-                    <tr><td class="text-muted" style="width: 40%;">Tipo Geométrico:</td><td><strong>Point (OGC)</strong></td></tr>
-                    <tr><td class="text-muted">Sistema de Coordenadas:</td><td><strong>SRID 4326 (WGS 84)</strong></td></tr>
-                    <tr><td class="text-muted">Total Entidades:</td><td><strong>6,271 puntos</strong></td></tr>
-                    <tr><td class="text-muted">Campos Visibles:</td><td><code>CodFijo, Nombre, Estado, FechaCambioEstado</code></td></tr>
-                    <tr><td class="text-muted">Campos Buscables:</td><td><code>CodFijo, Nombre (búsqueda parcial)</code></td></tr>
-                    <tr><td class="text-muted">Simbología Temática:</td><td>Normal (#5E7A4A), Para Corte (#C27D38), Cortado (#B84A39)</td></tr>
+            <div class="card-body p-3 p-md-4">
+                <table class="table table-sm table-borderless m-0" style="font-size: 0.88rem;">
+                    <tbody>
+                        <tr class="border-bottom"><td class="text-muted py-2" style="width: 42%;">Tipo Geométrico:</td><td class="py-2 fw-bold text-dark">Point (OGC)</td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Sistema Coordenadas:</td><td class="py-2"><span class="badge bg-secondary">SRID 4326 (WGS 84)</span></td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Total Entidades:</td><td class="py-2 fw-bold text-primary">6,271 puntos</td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Campos de Consulta:</td><td class="py-2"><code style="color: #2E4636;">CodFijo, Nombre, Estado, Fecha, UV, Mza, Lote</code></td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Campos Buscables:</td><td class="py-2">CodFijo, Nombre, CodSIG</td></tr>
+                        <tr><td class="text-muted py-2">Simbología Temática:</td><td class="py-2">Normal (#0D8258), Mora (#D97706), Corte (#DC2626)</td></tr>
+                    </tbody>
                 </table>
+            </div>
+            <div class="card-footer py-2 px-3 bg-light d-flex justify-content-between align-items-center" style="border-top: 1px solid #E2DFD6;">
+                <small class="text-muted">Servicio: <code>/api/capas/codigosfijos</code></small>
+                <a asp-controller="Consultas" asp-action="Index" class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 0.78rem;">
+                    <i class="bi bi-eye"></i> Padrón
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Vías -->
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100 border">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <strong class="d-flex align-items-center gap-2">
-                    <span class="legend-badge" style="height: 3px; background: #3B3D38; border-radius: 0;"></span>
+    <!-- Red Vial -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <strong class="d-flex align-items-center gap-2 text-dark">
+                    <span class="legend-badge" style="height: 4px; background: #475569; width: 18px; border-radius: 1px;"></span>
                     Red Vial Urbana
                 </strong>
-                <span class="badge bg-secondary">dbo.Vias</span>
+                <span class="badge" style="background: #475569; color: #FFFFFF;">dbo.Vias</span>
             </div>
-            <div class="card-body small">
-                <table class="table table-sm table-borderless m-0">
-                    <tr><td class="text-muted" style="width: 40%;">Tipo Geométrico:</td><td><strong>PolyLine / LineString (OGC)</strong></td></tr>
-                    <tr><td class="text-muted">Sistema de Coordenadas:</td><td><strong>SRID 4326 (WGS 84)</strong></td></tr>
-                    <tr><td class="text-muted">Total Entidades:</td><td><strong>578 ejes viales</strong></td></tr>
-                    <tr><td class="text-muted">Campos Visibles:</td><td><code>OBJECTID, Nombre, TipoVia, OSMID</code></td></tr>
-                    <tr><td class="text-muted">Campos Buscables:</td><td><code>Nombre, TipoVia</code></td></tr>
-                    <tr><td class="text-muted">Estilo por Defecto:</td><td>Trazo gris asfalto (#3B3D38), grosor 2.2 px</td></tr>
+            <div class="card-body p-3 p-md-4">
+                <table class="table table-sm table-borderless m-0" style="font-size: 0.88rem;">
+                    <tbody>
+                        <tr class="border-bottom"><td class="text-muted py-2" style="width: 42%;">Tipo Geométrico:</td><td class="py-2 fw-bold text-dark">LineString / PolyLine (OGC)</td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Sistema Coordenadas:</td><td class="py-2"><span class="badge bg-secondary">SRID 4326 (WGS 84)</span></td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Total Entidades:</td><td class="py-2 fw-bold text-dark">578 ejes viales</td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Campos de Consulta:</td><td class="py-2"><code style="color: #2E4636;">IdVia, OBJECTID, Nombre, TipoVia, OSMID</code></td></tr>
+                        <tr class="border-bottom"><td class="text-muted py-2">Campos Buscables:</td><td class="py-2">Nombre de Calle / Avenida</td></tr>
+                        <tr><td class="text-muted py-2">Simbología por Defecto:</td><td class="py-2">Trazo Gris Pizarra (#475569), Grosor 2px</td></tr>
+                    </tbody>
                 </table>
+            </div>
+            <div class="card-footer py-2 px-3 bg-light d-flex justify-content-between align-items-center" style="border-top: 1px solid #E2DFD6;">
+                <small class="text-muted">Servicio: <code>/api/capas/vias</code></small>
+                <a asp-controller="Mapa" asp-action="Index" class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 0.78rem;">
+                    <i class="bi bi-eye"></i> Inspeccionar
+                </a>
             </div>
         </div>
     </div>
