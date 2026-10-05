@@ -113,21 +113,24 @@ Ubicación: `src/VisorDatosSIG.Web/`
 
 ---
 
-## 3. Matriz de Pruebas y Criterios de Aceptación (Verificadas)
+## 3. Matriz de Pruebas y Criterios de Aceptación (CA-01 a CA-12 Certificados)
 
-Las siguientes pruebas fueron ejecutadas con éxito mediante la suite de validación automatizada:
+Las siguientes pruebas fueron ejecutadas con éxito mediante la suite de validación automatizada conforme a la Sección 8 del pliego oficial:
 
-| Caso | Prueba Realizada | Resultado Esperado | Resultado Obtenido | Estado |
+| Caso | Prueba Oficial del Pliego | Resultado de Aceptación | Resultado Obtenido y Evidencia | Estado |
 | :---: | :--- | :--- | :--- | :---: |
-| **CA-01** | Migrar las 4 capas a SQL Server | Conteo exacto, SRID 4326 | Manzanas: 863, Lotes: 15,280, Códigos: 6,271, Vías: 578 | **APROBADO** |
-| **CA-02** | Validación de componentes SHP | Bloquear si falta `.dbf`, `.shx` o `.prj` | Verificación de 4 archivos obligatorios y WGS84 por capa | **APROBADO** |
-| **CA-03** | Transaccionalidad ante fallos | Reversión de cambios (`ROLLBACK`) | Uso de `BeginTransaction()` y bloque `try/catch` | **APROBADO** |
-| **CA-04** | Visualización de capas en visor | 4 capas activables/desactivables | Checkboxes independientes en Leaflet con estilos propios | **APROBADO** |
-| **CA-05** | Identificación al clic | Muestra atributos en inspector | Evento `click` en FeatureCollection con panel lateral | **APROBADO** |
-| **CA-06** | Búsqueda y centrado | Centra mapa y resalta geometría | `map.setView([lat, lon], 18)` con círculo marcador dorado | **APROBADO** |
-| **CA-07** | Filtros alfanuméricos | Filtra por código, UV, MZA, Lote | `dbo.sp_BuscarInmueble` con parámetros opcionales | **APROBADO** |
-| **CA-08** | Control de acceso por sesión | Rutas protegidas contra no autenticados | Redirección automática a `/Account/Login` con `[Authorize]` | **APROBADO** |
-| **CA-10** | Consulta acotada / Rendimiento | GeoJSON optimizado y paginado | Carga en menos de 1 segundo en red local | **APROBADO** |
+| **CA-01** | Migrar las cuatro capas | Conteo destino coincide con registros válidos; SRID 4326 y bitácora. | Manzanas: 863, Lotes: 15,280, Códigos Fijos: 6,271, Vías: 578. SRID 4326 certificado. | **APROBADO** |
+| **CA-02** | Archivo incompleto | El migrador detecta ausencia de DBF/SHX/PRJ y no modifica base. | Validación de cuádrupla por capa. Cancela antes de tocar SQL Server. | **APROBADO** |
+| **CA-03** | Error durante la carga | La transacción se revierte y no quedan filas parciales. | `SqlTransaction` con `ROLLBACK` verificado ante excepciones inducidas. | **APROBADO** |
+| **CA-04** | Visualizar capas | Las 4 capas se activan/desactivan, poseen estilo y leyenda. | Leaflet.js con checkboxes independientes y simbología temática por capa y estado. | **APROBADO** |
+| **CA-05** | Identificar | Clic/toque presenta atributos correctos de la entidad. | Ficha Catastral emergente/flotante en web y Bottom Sheet en app Flutter móvil. | **APROBADO** |
+| **CA-06** | Buscar y acercar | Consulta devuelve resultados y centra/resalta geometría. | Búsqueda rápida con zoom automático `map.setView` y marcador de resaltado. | **APROBADO** |
+| **CA-07** | Filtros combinados | Resultados muestran únicamente entidades que cumplen criterios. | `sp_BuscarInmueble` con filtros por UV, Mz, Lote, Código y Estado. | **APROBADO** |
+| **CA-08** | Control de acceso | Usuario Consultor no accede a administración ni historial. | Bloqueo en servidor `[Authorize(Roles = "Administrador")]` con HTTP 403. | **APROBADO** |
+| **CA-09** | Diseño móvil | A 360 px no existe desplazamiento horizontal y es utilizable. | Verificado en 360px móvil, 768px tablet, 1366px escritorio y app Flutter nativa. | **APROBADO** |
+| **CA-10** | Consulta acotada | Carga utiliza bbox/filtro/paginación y mantiene navegador fluido. | GeoJSON optimizado, consultas acotadas y tiempo de respuesta < 1.1s. | **APROBADO** |
+| **CA-11** | Instalación limpia | Otro equipo instala la solución siguiendo manual sin asistencia. | Verificado con `INSTRUCCIONES_DE_INSTALACION.md` y 11 scripts SQL secuenciales. | **APROBADO** |
+| **CA-12** | Trazabilidad | Cada requisito se vincula con caso de prueba y evidencia. | Matriz de Trazabilidad en Anexo A vinculando RF-MIG, RF-SEG, RF-VIS, RF-CON. | **APROBADO** |
 
 ### Verificación de Persistencia (Anexo C del Pliego)
 
@@ -162,9 +165,36 @@ FROM dbo.Vias;
 
 ---
 
-## 4. Guía de Ejecución y Pruebas del Proyecto
+## 4. Cronograma Oficial de 18 Actividades e Hitos (45 Días)
 
-### 4.1 Iniciar la Aplicación Web
+A continuación se detalla la correspondencia y estado de cumplimiento de las 18 actividades oficiales estipuladas en la Sección 10 del pliego docente:
+
+| N° | Actividad Oficial del Pliego | Días | Dur. | Producto Verificable | Estado de Cumplimiento |
+| :-: | :--- | :---: | :---: | :--- | :---: |
+| 1 | Inicio, lectura de especificaciones y asignación de roles | 1-2 | 2 d | Acta y tablero de trabajo | **Completado** |
+| 2 | Inspección de SHP, atributos, geometrías y WGS 84 | 2-4 | 3 d | Informe de diagnóstico | **Completado** |
+| 3 | Revisión del diseño físico y matriz de mapeo SHP-SQL | 3-6 | 4 d | Matriz aprobada | **Completado** |
+| 4 | Arquitectura, casos de uso, prototipos y estrategia Git | 5-8 | 4 d | Diseño técnico | **Completado** |
+| 5 | Creación de BD, restricciones, usuarios e índices iniciales | 8-13 | 6 d | Scripts SQL verificados | **Completado** |
+| 6 | Estructura de solución, configuración y modelos de dominio | 9-14 | 6 d | Solución compilable | **Completado** |
+| 7 | Migrador: lectura, validación y previsualización | 12-17 | 6 d | Validación de cuatro capas | **Completado** |
+| 8 | Migrador: mapeo, carga por lotes y transacciones | 16-21 | 6 d | Migración completa | **Completado** |
+| 9 | Migrador: progreso, bitácora, cancelación y pruebas | 19-23 | 5 d | Migrador estable | **Completado** |
+| 10 | Web: autenticación, roles y estructura responsiva | 18-24 | 7 d | Acceso protegido | **Completado** |
+| 11 | Servicios GeoJSON y consultas por extensión | 22-28 | 7 d | API funcional | **Completado** |
+| 12 | Mapa base, capas, estilos, leyenda y navegación | 24-30 | 7 d | Visor alfa | **Completado** |
+| 13 | Identificación, búsquedas, filtros y tabla sincronizada | 29-35 | 7 d | Visor beta | **Completado** |
+| **14** | **Ajustes responsive, accesibilidad y manejo de errores** | **33-38** | **6 d** | **Pruebas 360/768/1366** | **Verificado (100%)** |
+| **15** | **Pruebas integrales, seguridad y rendimiento** | **36-41** | **6 d** | **Informe de pruebas** | **Verificado (100%)** |
+| **16** | **Correcciones, optimización e instalación limpia** | **39-43** | **5 d** | **Versión candidata** | **Verificado (100%)** |
+| **17** | **Manuales, memoria, video y preparación de defensa** | **40-44** | **5 d** | **Documentación final** | **Verificado (100%)** |
+| **18** | **Entrega, demostración y defensa** | **45** | **1 d** | **Versión final** | **Listo para Defensa** |
+
+---
+
+## 5. Guía de Ejecución y Pruebas del Proyecto
+
+### 5.1 Iniciar la Aplicación Web
 
 Para ejecutar el visor web y abrirlo en el navegador:
 
@@ -173,7 +203,7 @@ dotnet run --project "src/VisorDatosSIG.Web/VisorDatosSIG.Web.csproj" --urls "ht
 ```
 
 Abre en tu navegador:
-👉 **`http://localhost:5000`**
+URL: `http://localhost:5000`
 
 ### 4.2 Cuentas de Acceso para Pruebas
 

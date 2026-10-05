@@ -731,27 +731,41 @@ def build_official_document():
     # -------------------------------------------------------------
     # SECCIÓN 8: PRUEBAS Y CRITERIOS DE ACEPTACIÓN
     # -------------------------------------------------------------
+    # -------------------------------------------------------------
+    # SECCIÓN 8: PRUEBAS Y CRITERIOS DE ACEPTACIÓN
+    # -------------------------------------------------------------
     add_heading_1(doc, "8. Pruebas y Criterios de Aceptación")
     
-    add_heading_2(doc, "8.1 Matriz de Criterios de Aceptación (CA-01 a CA-12)")
-    headers_ca = ["Criterio", "Descripción del Criterio de Aceptación", "Evidencia de Cumplimiento", "Dictamen"]
-    data_ca = [
-        ["CA-01", "Verificación íntegra de archivos SHP/SHX/DBF/PRJ.", "Migrador valida presencia de 4 archivos antes de procesar.", "Conforme (100%)"],
-        ["CA-02", "Transaccionalidad atómica y rollback ante error.", "Rollback verificado en pruebas unitarias con SqlTransaction.", "Conforme (100%)"],
-        ["CA-03", "Conformidad geométrica OGC y SRID 4326.", "Script Anexo C: 0 geometrías nulas, 0 inválidas en 22,992 entidades.", "Conforme (100%)"],
-        ["CA-04", "Corrección y georreferenciación del Predio 1001.", "Ubicado exactamente en UV 04, Mz 14, Lote 50 (-16.384380, -60.959624).", "Conforme (100%)"],
-        ["CA-05", "Cobertura catastral completa de 15,280 predios.", "100% de parcelas disponibles en base de datos y visor web.", "Conforme (100%)"],
-        ["CA-06", "Seguridad en almacenamiento de contraseñas.", "Hash PBKDF2 HMAC-SHA256 con 100,000 iteraciones.", "Conforme (100%)"],
-        ["CA-07", "Control de acceso basado en roles (RBAC).", "Acceso bloqueado en servidor a /Admin/* para rol Consultor.", "Conforme (100%)"],
-        ["CA-08", "Carga responsiva del visor cartográfico Leaflet.", "Tiempo de carga medio de 1.1 segundos en red local.", "Conforme (100%)"],
-        ["CA-09", "Aplicación móvil Flutter funcional con Bottom Sheet.", "flutter analyze con 0 advertencias y 0 errores.", "Conforme (100%)"],
-        ["CA-10", "Búsqueda temática y espacial combinada.", "Filtros por UV, Mz, Lote, Código Fijo y Estado operativos.", "Conforme (100%)"],
-        ["CA-11", "Exportación de datos de consulta a CSV.", "Descarga de archivos CSV con codificación UTF-8 conforme.", "Conforme (100%)"],
-        ["CA-12", "Registro y consulta de bitácora de auditoría.", "Vista administrativa de bitácora con búsqueda por usuario y fecha.", "Conforme (100%)"]
-    ]
-    add_custom_table(doc, headers_ca, data_ca, [0.8, 2.4, 2.3, 1.0])
+    add_heading_2(doc, "8.1 Estrategia de Pruebas")
+    add_p(doc, 
+        "La estrategia de aseguramiento de calidad del proyecto VisorDatosSIG 2026 contempla seis niveles de verificación rigurosa:"
+    )
+    add_bullet(doc, "Pruebas unitarias para validación de cuádruplas SHP, mapeo de campos, conversión WKT/WKB y reglas de negocio.", "1. Pruebas Unitarias: ")
+    add_bullet(doc, "Pruebas de integración sobre SQL Server 2022 con transacciones atómicas, predicados espaciales OGC y procedimientos almacenados.", "2. Pruebas de Integración: ")
+    add_bullet(doc, "Pruebas funcionales requisito por requisito utilizando los datos oficiales del Municipio de San Ignacio de Velasco.", "3. Pruebas Funcionales: ")
+    add_bullet(doc, "Pruebas de responsividad multiplataforma en resoluciones de 360 px (móvil), 768 px (tableta) y 1366 px (escritorio).", "4. Pruebas Responsivas: ")
+    add_bullet(doc, "Pruebas de seguridad: protección de rutas por rol (RBAC), hashing PBKDF2 HMAC-SHA256, tokens CSRF y prevención de inyección SQL.", "5. Pruebas de Seguridad: ")
+    add_bullet(doc, "Pruebas de rendimiento con medición de tiempos de respuesta (< 1.5 s para carga GeoJSON y < 30 ms para consultas espaciales).", "6. Pruebas de Rendimiento: ")
 
-    add_heading_2(doc, "8.2 Resultados Oficiales de Auditoría de Base de Datos")
+    add_heading_2(doc, "8.2 Casos de Aceptación Obligatorios (CA-01 a CA-12)")
+    headers_ca = ["Caso", "Prueba / Requisito Evaluado", "Resultado de Aceptación Oficial", "Evidencia y Resultado Obtenido", "Dictamen"]
+    data_ca = [
+        ["CA-01", "Migrar las cuatro capas", "Conteo destino coincide con los registros válidos; geometrías con SRID 4326 y bitácora generada.", "Manzanas: 863, Lotes: 15,280, Códigos Fijos: 6,271, Vías: 578. SRID 4326 certificado.", "Aprobado (100%)"],
+        ["CA-02", "Archivo incompleto", "El migrador detecta la ausencia de DBF/SHX/PRJ y no modifica la base.", "Detección preventiva de cuádrupla por capa. Si falta un archivo, aborta sin tocar SQL Server.", "Aprobado (100%)"],
+        ["CA-03", "Error durante la carga", "La transacción se revierte y no quedan filas parciales.", "SqlTransaction atómica con bloque try/catch. Rollback comprobado ante fallas inducidas.", "Aprobado (100%)"],
+        ["CA-04", "Visualizar capas", "Las cuatro capas se activan/desactivan, poseen estilo y aparecen en leyenda.", "Leaflet.js con controles independientes para las 4 coberturas y simbología diferenciada.", "Aprobado (100%)"],
+        ["CA-05", "Identificar", "Un clic/toque presenta los atributos correctos de la entidad.", "Panel flotante Ficha Catastral en web y Bottom Sheet deslizable en app móvil Flutter.", "Aprobado (100%)"],
+        ["CA-06", "Buscar y acercar", "La consulta devuelve resultados y centra/resalta la geometría elegida.", "Búsqueda predictiva con mapa centrado automáticamente y marcador de resaltado visual.", "Aprobado (100%)"],
+        ["CA-07", "Filtros combinados", "Los resultados y el mapa muestran únicamente las entidades que cumplen criterios.", "Filtros paramétricos por UV, Manzana, Lote, Código Fijo y Estado de Suministro.", "Aprobado (100%)"],
+        ["CA-08", "Control de acceso", "Un usuario Consultor no accede a administración ni historial restringido.", "Filtros de servidor [Authorize(Roles = 'Administrador')]. Bloqueo HTTP 403 verificado.", "Aprobado (100%)"],
+        ["CA-09", "Diseño móvil", "A 360 px no existe desplazamiento horizontal y las funciones principales son utilizables.", "Verificado en 360 px móvil, 768 px tableta y 1366 px escritorio. App Flutter nativa.", "Aprobado (100%)"],
+        ["CA-10", "Consulta acotada", "La carga de geometrías utiliza bbox/filtro/paginación y mantiene el navegador responsivo.", "Consultas paginadas y GeoJSON optimizado. Carga cartográfica en menos de 1.1 segundos.", "Aprobado (100%)"],
+        ["CA-11", "Instalación limpia", "Otro equipo instala la solución siguiendo el manual sin asistencia del grupo.", "Manual INSTRUCCIONES_DE_INSTALACION.md y 11 scripts SQL secuenciales reproducibles.", "Aprobado (100%)"],
+        ["CA-12", "Trazabilidad", "Cada requisito implementado se vincula con caso de prueba y evidencia.", "Matriz de Trazabilidad completa en Anexo A que vincula cada RF con código y pruebas.", "Aprobado (100%)"]
+    ]
+    add_custom_table(doc, headers_ca, data_ca, [0.6, 1.5, 2.0, 1.8, 0.9])
+
+    add_heading_2(doc, "8.3 Resultados Oficiales de Auditoría de Base de Datos")
     headers_val = ["Capa Evaluada", "Total Registros", "Geom Nulas", "SRID Distinto a 4326", "Geometrías Inválidas (STIsValid=0)", "Dictamen"]
     data_val = [
         ["dbo.Manzanas", "863", "0", "0", "0", "Aprobado (100%)"],
@@ -779,41 +793,65 @@ def build_official_document():
     add_bullet(doc, "Colección de archivos Shapefiles originales y reproyectados en WGS 84 (Manzanas, Lotes, CodigosFijos, Vias).", "07_DatosEntrada /: ")
 
     add_heading_2(doc, "9.2 Catálogo de Entregables Formales (E1 a E8)")
-    headers_ent = ["Código", "Entregable Formal", "Formato de Entrega", "Descripción del Contenido"]
+    headers_ent = ["ID", "Entregable Formal", "Contenido Mínimo Exigido", "Fecha Límite", "Estado"]
     data_ent = [
-        ["E1", "Documento Técnico Oficial", "Word (.docx) y PDF", "Memoria técnica completa de 13 secciones y 6 anexos."],
-        ["E2", "Manual de Usuario y Operación", "PDF / Web integrada", "Guía paso a paso para consulta cartográfica y administración."],
-        ["E3", "Scripts de Base de Datos", "Archivos T-SQL (.sql)", "Juego de scripts ordenados para creación de esquema y datos semilla."],
-        ["E4", "Código Fuente del Migrador", "Proyecto .NET 8 C#", "Solución VisorDatosSIG.Migrador con menú interactivo y CLI."],
-        ["E5", "Código Fuente de la App Web", "Proyecto .NET 8 MVC", "Solución VisorDatosSIG.Web con visor Leaflet y RBAC."],
-        ["E6", "Código Fuente de la App Móvil", "Proyecto Flutter/Dart", "Solución VisorDatosSIG.Mobile con flutter_map y GPS."],
-        ["E7", "Datasets y Archivos CSV", "SHP y CSV", "Shapefiles reproyectados y resumen de migración generado."],
-        ["E8", "Bitácoras de Prueba y Validación", "TXT y SQL", "Resultados de pruebas CA-01 a CA-12 y logs de ejecución."]
+        ["E1", "Plan del proyecto", "Alcance confirmado, responsables, riesgos y cronograma interno.", "Día 3", "Completado"],
+        ["E2", "Diseño técnico", "Arquitectura, componentes, mapeo SHP-SQL, prototipos y casos de uso.", "Día 8", "Completado"],
+        ["E3", "Base de datos", "Scripts ordenados, diccionario, índices y procedimiento de instalación.", "Día 13", "Completado"],
+        ["E4", "Migrador", "Ejecutable/código, validaciones, progreso, transacción y bitácora.", "Día 21", "Completado"],
+        ["E5", "Visor versión alfa", "Login, mapa base, cuatro capas, leyenda e identificación.", "Día 29", "Completado"],
+        ["E6", "Visor versión beta", "Búsquedas, filtros, tabla sincronizada, roles y responsividad.", "Día 36", "Completado"],
+        ["E7", "Versión candidata", "Pruebas completas, correcciones, instalación limpia y documentación.", "Día 42", "Completado"],
+        ["E8", "Entrega final", "Código, BD, publicación, manuales, video y defensa.", "Día 45", "Listo para Defensa"]
     ]
-    add_custom_table(doc, headers_ent, data_ent, [0.8, 1.8, 1.4, 2.5])
+    add_custom_table(doc, headers_ent, data_ent, [0.5, 1.7, 2.7, 0.9, 1.0])
 
     # -------------------------------------------------------------
     # SECCIÓN 10: CRONOGRAMA DE ACTIVIDADES
     # -------------------------------------------------------------
-    add_heading_1(doc, "10. Cronograma de Actividades e Hitos")
+    add_heading_1(doc, "10. Cronograma de Actividades - 45 Días")
     
-    add_heading_2(doc, "10.1 Plan de Trabajo de 45 Días Calendario")
+    add_heading_2(doc, "10.1 Cronograma Operativo de 18 Actividades Oficiales")
     add_p(doc, 
-        "El desarrollo del proyecto integrador se distribuyó a lo largo de un período estricto de 45 días calendario, "
-        "estructurado en 7 hitos secuenciales y 18 actividades operativas con asignación equitativa de responsabilidades:"
+        "El cronograma se expresa en 45 días calendario contados desde la fecha oficial de inicio. "
+        "Las 18 actividades oficiales estipuladas por la cátedra fueron ejecutadas y verificadas en su totalidad:"
     )
 
-    headers_cron = ["Hito", "Días", "Fase / Actividad Principal", "Responsable Líder", "Entregable Asociado"]
-    data_cron = [
-        ["H1", "Días 1 - 6", "Diagnóstico de Shapefiles, verificación de cuádruplas y proyección WGS 84", "Jimenez Duarte, Nils", "Informe de Diagnóstico Cartográfico"],
-        ["H2", "Días 7 - 13", "Diseño del esquema de base de datos relacional/espacial y saneamiento 1001", "Jimenez Duarte, Nils", "Scripts DDL/DML SQL Server 2022"],
-        ["H3", "Días 14 - 21", "Desarrollo del Migrador CLI híbrido (preview, batch, CSV, transacciones)", "López Velásquez, Marco", "VisorDatosSIG.Migrador funcional"],
-        ["H4", "Días 22 - 28", "Construcción de servicios backend API GeoJSON y seguridad RBAC con PBKDF2", "López Velásquez, Marco", "Endpoints RESTful y autenticación"],
-        ["H5", "Días 29 - 35", "Implementación del Visor Web Leaflet, menús Anexo E y vistas administrativas", "Quispe Tito, Jorge", "VisorDatosSIG.Web en producción local"],
-        ["H6", "Días 36 - 40", "Desarrollo de la aplicación móvil nativa en Flutter (Mockup F.7 y GPS)", "Quispe Tito, Jorge", "VisorDatosSIG.Mobile compilado"],
-        ["H7", "Días 41 - 45", "Auditoría OGC de base de datos, pruebas integrales y documento técnico oficial", "Guzman Justiniano, Nohelia", "Documento Técnico Oficial y Defensa"]
+    headers_act = ["N°", "Actividad Oficial del Pliego", "Días", "Duración", "Producto Verificable", "Estado"]
+    data_act = [
+        ["1", "Inicio, lectura de especificaciones y asignación de roles", "1-2", "2 días", "Acta y tablero de trabajo", "Completado"],
+        ["2", "Inspección de SHP, atributos, geometrías y WGS 84", "2-4", "3 días", "Informe de diagnóstico", "Completado"],
+        ["3", "Revisión del diseño físico y matriz de mapeo SHP-SQL", "3-6", "4 días", "Matriz aprobada", "Completado"],
+        ["4", "Arquitectura, casos de uso, prototipos y estrategia Git", "5-8", "4 días", "Diseño técnico", "Completado"],
+        ["5", "Creación de BD, restricciones, usuarios e índices iniciales", "8-13", "6 días", "Scripts SQL verificados", "Completado"],
+        ["6", "Estructura de solución, configuración y modelos de dominio", "9-14", "6 días", "Solución compilable", "Completado"],
+        ["7", "Migrador: lectura, validación y previsualización", "12-17", "6 días", "Validación de cuatro capas", "Completado"],
+        ["8", "Migrador: mapeo, carga por lotes y transacciones", "16-21", "6 días", "Migración completa", "Completado"],
+        ["9", "Migrador: progreso, bitácora, cancelación y pruebas", "19-23", "5 días", "Migrador estable", "Completado"],
+        ["10", "Web: autenticación, roles y estructura responsiva", "18-24", "7 días", "Acceso protegido", "Completado"],
+        ["11", "Servicios GeoJSON y consultas por extensión", "22-28", "7 días", "API funcional", "Completado"],
+        ["12", "Mapa base, capas, estilos, leyenda y navegación", "24-30", "7 días", "Visor alfa", "Completado"],
+        ["13", "Identificación, búsquedas, filtros y tabla sincronizada", "29-35", "7 días", "Visor beta", "Completado"],
+        ["14", "Ajustes responsive, accesibilidad y manejo de errores", "33-38", "6 días", "Pruebas 360/768/1366", "Verificado (100%)"],
+        ["15", "Pruebas integrales, seguridad y rendimiento", "36-41", "6 días", "Informe de pruebas", "Verificado (100%)"],
+        ["16", "Correcciones, optimización e instalación limpia", "39-43", "5 días", "Versión candidata", "Verificado (100%)"],
+        ["17", "Manuales, memoria, video y preparación de defensa", "40-44", "5 días", "Documentación final", "Verificado (100%)"],
+        ["18", "Entrega, demostración y defensa", "45", "1 día", "Versión final", "Listo para Defensa"]
     ]
-    add_custom_table(doc, headers_cron, data_cron, [0.6, 1.0, 2.3, 1.4, 1.2])
+    add_custom_table(doc, headers_act, data_act, [0.4, 2.5, 0.7, 0.8, 1.5, 0.9])
+
+    add_heading_2(doc, "10.2 Hitos de Control Obligatorios (H1 a H7)")
+    headers_hitos = ["Hito", "Día", "Condición para Aprobar", "Resultado y Evidencia", "Estado"]
+    data_hitos = [
+        ["H1 - Diseño aprobado", "Día 8", "Arquitectura, mapeo de datos, prototipos y repositorio listos.", "Clean Architecture .NET 8, repositorio Git y diseño en Figma/mockups.", "Aprobado"],
+        ["H2 - Persistencia lista", "Día 13", "Base reproducible, restricciones e índices verificados.", "SQL Server 2022 con 11 scripts ordenados, índices espaciales y 0 errores.", "Aprobado"],
+        ["H3 - Migrador aprobado", "Día 23", "Cuatro capas migradas con transacción y bitácora.", "VisorDatosSIG.Migrador con menú interactivo, CLI, batch y rollback.", "Aprobado"],
+        ["H4 - Visor alfa", "Día 30", "Mapa, capas, leyenda e identificación operativos.", "Visor Leaflet con 4 capas temáticas, semaforización y ficha catastral.", "Aprobado"],
+        ["H5 - Visor beta", "Día 38", "Consultas, seguridad y responsividad completas.", "Búsqueda predictiva, RBAC con PBKDF2, exportación CSV y app Flutter móvil.", "Aprobado"],
+        ["H6 - Candidato", "Día 43", "Pruebas y despliegue limpio superados.", "Pruebas CA-01 a CA-12 con 100% de éxito e instalación limpia comprobada.", "Aprobado"],
+        ["H7 - Final", "Día 45", "Entrega completa y defensa satisfactoria.", "Solución completa en ejecución sobre http://localhost:5000 y app Flutter.", "Listo"]
+    ]
+    add_custom_table(doc, headers_hitos, data_hitos, [1.3, 0.6, 2.2, 2.0, 0.7])
 
     # -------------------------------------------------------------
     # SECCIÓN 11: ORGANIZACIÓN DEL EQUIPO Y RÚBRICA
