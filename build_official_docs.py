@@ -583,6 +583,10 @@ def build_official_document():
     add_bullet(doc, "Aplicación ASP.NET Core 8.0 MVC que aloja los controladores, vistas Razor responsivas, endpoints de API RESTful GeoJSON y filtros de autorización.", "Capa Web (VisorDatosSIG.Web): ")
     add_bullet(doc, "Aplicación móvil multiplataforma desarrollada en Flutter para dispositivos Android e iOS, orientada a inspectores y lecturadores de campo.", "Capa Móvil (VisorDatosSIG.Mobile): ")
 
+    diag_clases = os.path.join(img_dir, "diagrama_clases_uml.png")
+    if os.path.exists(diag_clases):
+        add_image_box(doc, diag_clases, "Diagrama de Clases UML - Arquitectura Limpia en Cuatro Capas (.NET 8.0)", width=Inches(6.2))
+
     add_heading_2(doc, "4.2 Aplicación Web MVC Responsiva")
     add_p(doc, 
         "El visor web se fundamenta en Leaflet.js 1.9.4 integrado armónicamente con Bootstrap 5.3 y una hoja de estilos corporativa "
@@ -607,6 +611,10 @@ def build_official_document():
         "(xmin: -61.05, ymin: -16.45, xmax: -60.85, ymax: -16.30), optimizando las consultas espaciales STContains y STIntersects "
         "a menos de 30 milisegundos."
     )
+
+    diag_der = os.path.join(img_dir, "diagrama_entidad_relacion.png")
+    if os.path.exists(diag_der):
+        add_image_box(doc, diag_der, "Diagrama Entidad-Relación (DER) - Base de Datos Espacial SQL Server 2022 (SRID 4326)", width=Inches(6.2))
 
     # -------------------------------------------------------------
     # SECCIÓN 5: REQUISITOS FUNCIONALES

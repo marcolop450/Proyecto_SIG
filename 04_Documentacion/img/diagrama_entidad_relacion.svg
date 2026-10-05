@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 950" width="1400" height="950" style="background:#FDFCFA; font-family:'Segoe UI', Arial, sans-serif;">
+  <defs>
+    <filter id="shadow-der" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.12" flood-color="#000000"/>
+    </filter>
+    <marker id="crow-many" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 6 L 0 12" fill="none" stroke="#2E4636" stroke-width="1.5"/>
+    </marker>
+    <marker id="circle-one" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6">
+      <circle cx="5" cy="5" r="3.5" fill="#FFFFFF" stroke="#2E4636" stroke-width="1.5"/>
+    </marker>
+  </defs>
+
+  <!-- Titulo Principal DER -->
+  <rect x="30" y="25" width="1340" height="50" rx="8" fill="#1F382B" filter="url(#shadow-der)"/>
+  <text x="50" y="56" fill="#C89D3C" font-size="20" font-weight="bold">DIAGRAMA ENTIDAD-RELACIÓN (DER) - BASE DE DATOS ESPACIAL</text>
+  <text x="1060" y="56" fill="#E2DFD6" font-size="13">Microsoft SQL Server 2022 (WGS 84 SRID 4326)</text>
+
+  <!-- ================= SUB-ESQUEMA CATASTRAL Y ESPACIAL ================= -->
+  <rect x="30" y="95" width="760" height="825" rx="8" fill="#F4F8F5" stroke="#2E4636" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <rect x="45" y="105" width="730" height="30" rx="4" fill="#2E4636"/>
+  <text x="60" y="125" fill="#FFFFFF" font-size="13" font-weight="bold">Sub-Esquema Catastral y Georreferenciación (Tablas con Columna Geometry OGC)</text>
+
+  <!-- Tabla ManzanasCatastrales -->
+  <g filter="url(#shadow-der)">
+    <rect x="50" y="155" width="225" height="195" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="50" y="155" width="225" height="28" rx="5" fill="#1F382B"/>
+    <text x="162" y="174" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.ManzanasCatastrales</text>
+    <line x1="50" y1="183" x2="275" y2="183" stroke="#CBD5E1"/>
+    <text x="60" y="202" font-size="10.5" font-weight="bold" fill="#047857">PK  IdManzana: int (Identity)</text>
+    <text x="60" y="220" font-size="10.5" fill="#334155">    IdOrigen: int?</text>
+    <text x="60" y="238" font-size="10.5" fill="#334155">    UV_MZA: varchar(50)</text>
+    <text x="60" y="256" font-size="10.5" fill="#334155">    UV: varchar(20)</text>
+    <text x="60" y="274" font-size="10.5" fill="#334155">    MZA: varchar(20)</text>
+    <text x="60" y="292" font-size="10.5" font-weight="bold" fill="#0369A1">    Geometria: geometry (4326)</text>
+    <text x="60" y="310" font-size="10" fill="#64748B" font-style="italic">-- Total registros: 1,109</text>
+    <text x="60" y="326" font-size="10" fill="#B45309" font-weight="bold">IX: SPATIAL AUTO_GRID</text>
+  </g>
+
+  <!-- Tabla LotesCatastrales -->
+  <g filter="url(#shadow-der)">
+    <rect x="330" y="155" width="235" height="215" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="330" y="155" width="235" height="28" rx="5" fill="#1F382B"/>
+    <text x="447" y="174" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.LotesCatastrales</text>
+    <line x1="330" y1="183" x2="565" y2="183" stroke="#CBD5E1"/>
+    <text x="340" y="202" font-size="10.5" font-weight="bold" fill="#047857">PK  IdLote: int (Identity)</text>
+    <text x="340" y="220" font-size="10.5" font-weight="bold" fill="#B45309">FK  IdManzana: int?</text>
+    <text x="340" y="238" font-size="10.5" fill="#334155">    IdOrigen: int?</text>
+    <text x="340" y="256" font-size="10.5" fill="#334155">    NroLote: varchar(20)</text>
+    <text x="340" y="274" font-size="10.5" font-weight="bold" fill="#0369A1">    Geometria: geometry (4326)</text>
+    <text x="340" y="292" font-size="10.5" fill="#334155">    FechaRegistro: datetime2</text>
+    <text x="340" y="310" font-size="10" fill="#64748B" font-style="italic">-- Total registros: 15,280</text>
+    <text x="340" y="328" font-size="10" fill="#B45309" font-weight="bold">IX: SPATIAL AUTO_GRID</text>
+    <text x="340" y="344" font-size="10" fill="#4338CA">IX: UV_MZA_LOTE</text>
+  </g>
+
+  <!-- Tabla CodigosFijos -->
+  <g filter="url(#shadow-der)">
+    <rect x="330" y="420" width="235" height="255" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="330" y="420" width="235" height="28" rx="5" fill="#1F382B"/>
+    <text x="447" y="439" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.CodigosFijos (Medidores)</text>
+    <line x1="330" y1="448" x2="565" y2="448" stroke="#CBD5E1"/>
+    <text x="340" y="467" font-size="10.5" font-weight="bold" fill="#047857">PK  IdCodigo: int (Identity)</text>
+    <text x="340" y="485" font-size="10.5" font-weight="bold" fill="#B45309">FK  IdLote: int? (STContains)</text>
+    <text x="340" y="503" font-size="10.5" fill="#334155">    CodF_SQL: int?</text>
+    <text x="340" y="521" font-size="10.5" fill="#334155">    CodF_SIG: varchar(50)</text>
+    <text x="340" y="539" font-size="10.5" font-weight="bold" fill="#1E293B">    CodFijo: int (Código Comercial)</text>
+    <text x="340" y="557" font-size="10.5" fill="#334155">    Nombre: varchar(200)</text>
+    <text x="340" y="575" font-size="10.5" fill="#334155">    Estado: tinyint (1=Normal...)</text>
+    <text x="340" y="593" font-size="10.5" fill="#334155">    FechaCambioEstado: datetime2</text>
+    <text x="340" y="611" font-size="10.5" font-weight="bold" fill="#0369A1">    Geometria: geometry (Point 4326)</text>
+    <text x="340" y="629" font-size="10" fill="#64748B" font-style="italic">-- Total registros: 6,271</text>
+    <text x="340" y="647" font-size="10" fill="#B45309" font-weight="bold">IX: SPATIAL AUTO_GRID</text>
+  </g>
+
+  <!-- Tabla Vias -->
+  <g filter="url(#shadow-der)">
+    <rect x="50" y="420" width="225" height="195" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="50" y="420" width="225" height="28" rx="5" fill="#1F382B"/>
+    <text x="162" y="439" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.Vias (Red Vial Urbana)</text>
+    <line x1="50" y1="448" x2="275" y2="448" stroke="#CBD5E1"/>
+    <text x="60" y="467" font-size="10.5" font-weight="bold" fill="#047857">PK  IdVia: int (Identity)</text>
+    <text x="60" y="485" font-size="10.5" fill="#334155">    OBJECTID: int?</text>
+    <text x="60" y="503" font-size="10.5" fill="#334155">    Nombre: varchar(150)</text>
+    <text x="60" y="521" font-size="10.5" fill="#334155">    TipoVia: varchar(50)</text>
+    <text x="60" y="539" font-size="10.5" fill="#334155">    OSMID: varchar(50)</text>
+    <text x="60" y="557" font-size="10.5" font-weight="bold" fill="#0369A1">    Geometria: geometry (LineString)</text>
+    <text x="60" y="575" font-size="10" fill="#64748B" font-style="italic">-- Total registros: 1,834</text>
+    <text x="60" y="593" font-size="10" fill="#B45309" font-weight="bold">IX: SPATIAL AUTO_GRID</text>
+  </g>
+
+  <!-- Tabla HistorialMigraciones -->
+  <g filter="url(#shadow-der)">
+    <rect x="50" y="700" width="515" height="195" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="50" y="700" width="515" height="28" rx="5" fill="#1F382B"/>
+    <text x="307" y="719" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.HistorialMigraciones (Auditoría SHP a SQL)</text>
+    <line x1="50" y1="728" x2="565" y2="728" stroke="#CBD5E1"/>
+    <text x="60" y="747" font-size="10.5" font-weight="bold" fill="#047857">PK  IdMigracion: int (Identity)</text>
+    <text x="60" y="767" font-size="10.5" fill="#334155">    Capa: varchar(50)  |  ArchivoOrigen: varchar(255)  |  RegistrosLeidos: int</text>
+    <text x="60" y="787" font-size="10.5" fill="#334155">    RegistrosInsertados: int  |  RegistrosRechazados: int  |  Modo: varchar(20)</text>
+    <text x="60" y="807" font-size="10.5" fill="#334155">    FechaInicio: datetime2  |  FechaFin: datetime2  |  DuracionMs: int</text>
+    <text x="60" y="827" font-size="10.5" fill="#334155">    Usuario: varchar(50)  |  Estado: varchar(20)  |  Detalles: nvarchar(max)</text>
+  </g>
+
+  <!-- Relación Manzana 1 -> N Lote -->
+  <line x1="275" y1="210" x2="330" y2="210" stroke="#2E4636" stroke-width="1.8" marker-start="url(#circle-one)" marker-end="url(#crow-many)"/>
+  <text x="285" y="202" font-size="10" font-weight="bold" fill="#2E4636">1 : N</text>
+
+  <!-- Relación Lote 1 -> 0..1 CodigoFijo -->
+  <line x1="447" y1="370" x2="447" y2="420" stroke="#2E4636" stroke-width="1.8" marker-start="url(#circle-one)" marker-end="url(#crow-many)"/>
+  <text x="455" y="398" font-size="10" font-weight="bold" fill="#2E4636">1 : 0..1</text>
+
+  <!-- ================= SUB-ESQUEMA DE SEGURIDAD Y AUDITORÍA ================= -->
+  <rect x="810" y="95" width="560" height="825" rx="8" fill="#FFFDF8" stroke="#C89D3C" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <rect x="825" y="105" width="530" height="30" rx="4" fill="#C89D3C"/>
+  <text x="840" y="125" fill="#FFFFFF" font-size="13" font-weight="bold">Sub-Esquema de Seguridad Criptográfica y RBAC (Anexo E Pliego)</text>
+
+  <!-- Tabla Usuarios -->
+  <g filter="url(#shadow-der)">
+    <rect x="830" y="155" width="245" height="215" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="830" y="155" width="245" height="28" rx="5" fill="#334155"/>
+    <text x="952" y="174" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.Usuarios</text>
+    <line x1="830" y1="183" x2="1075" y2="183" stroke="#CBD5E1"/>
+    <text x="840" y="202" font-size="10.5" font-weight="bold" fill="#047857">PK  IdUsuario: int (Identity)</text>
+    <text x="840" y="220" font-size="10.5" font-weight="bold" fill="#1E293B">    Login: varchar(50) (Unique)</text>
+    <text x="840" y="238" font-size="10.5" fill="#334155">    Nombre: varchar(100)</text>
+    <text x="840" y="256" font-size="10.5" font-weight="bold" fill="#B45309">    PasswordHash: varbinary(32)</text>
+    <text x="840" y="274" font-size="10.5" font-weight="bold" fill="#B45309">    PasswordSalt: varbinary(16)</text>
+    <text x="840" y="292" font-size="10.5" fill="#334155">    Iteraciones: int (= 100,000)</text>
+    <text x="840" y="310" font-size="10.5" fill="#334155">    Activo: bit (= 1)</text>
+    <text x="840" y="328" font-size="10.5" fill="#334155">    FechaRegistro: datetime2</text>
+  </g>
+
+  <!-- Tabla Roles -->
+  <g filter="url(#shadow-der)">
+    <rect x="1120" y="155" width="235" height="155" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="1120" y="155" width="235" height="28" rx="5" fill="#334155"/>
+    <text x="1237" y="174" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.Roles</text>
+    <line x1="1120" y1="183" x2="1355" y2="183" stroke="#CBD5E1"/>
+    <text x="1130" y="202" font-size="10.5" font-weight="bold" fill="#047857">PK  IdRol: int (Identity)</text>
+    <text x="1130" y="222" font-size="10.5" font-weight="bold" fill="#1E293B">    NombreRol: varchar(50) (Unique)</text>
+    <text x="1130" y="242" font-size="10.5" fill="#334155">    Descripcion: varchar(200)</text>
+    <text x="1130" y="262" font-size="10.5" fill="#334155">    Estado: bit (= 1)</text>
+  </g>
+
+  <!-- Tabla UsuariosRoles -->
+  <g filter="url(#shadow-der)">
+    <rect x="980" y="390" width="230" height="120" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="980" y="390" width="230" height="28" rx="5" fill="#334155"/>
+    <text x="1095" y="409" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.UsuariosRoles</text>
+    <line x1="980" y1="418" x2="1210" y2="418" stroke="#CBD5E1"/>
+    <text x="990" y="437" font-size="10.5" font-weight="bold" fill="#047857">PK, FK1  IdUsuario: int</text>
+    <text x="990" y="457" font-size="10.5" font-weight="bold" fill="#047857">PK, FK2  IdRol: int</text>
+    <text x="990" y="477" font-size="10.5" fill="#334155">         FechaAsignacion: datetime2</text>
+  </g>
+
+  <!-- Relaciones Usuarios -> UsuariosRoles <- Roles -->
+  <line x1="952" y1="370" x2="1030" y2="390" stroke="#334155" stroke-width="1.8" marker-start="url(#circle-one)" marker-end="url(#crow-many)"/>
+  <line x1="1237" y1="310" x2="1150" y2="390" stroke="#334155" stroke-width="1.8" marker-start="url(#circle-one)" marker-end="url(#crow-many)"/>
+
+  <!-- Tabla MenuOpciones -->
+  <g filter="url(#shadow-der)">
+    <rect x="1120" y="540" width="235" height="175" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="1120" y="540" width="235" height="28" rx="5" fill="#334155"/>
+    <text x="1237" y="559" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.MenuOpciones</text>
+    <line x1="1120" y1="568" x2="1355" y2="568" stroke="#CBD5E1"/>
+    <text x="1130" y="587" font-size="10.5" font-weight="bold" fill="#047857">PK  IdMenu: int (Identity)</text>
+    <text x="1130" y="605" font-size="10.5" fill="#334155">FK  IdMenuPadre: int?</text>
+    <text x="1130" y="623" font-size="10.5" fill="#334155">    Nivel: int</text>
+    <text x="1130" y="641" font-size="10.5" fill="#334155">    NombreMenu: varchar(100)</text>
+    <text x="1130" y="659" font-size="10.5" fill="#334155">    Url: varchar(200)</text>
+    <text x="1130" y="677" font-size="10.5" fill="#334155">    Icono: varchar(50)  |  Orden: int</text>
+  </g>
+
+  <!-- Tabla UsuarioMenu -->
+  <g filter="url(#shadow-der)">
+    <rect x="830" y="540" width="245" height="175" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="830" y="540" width="245" height="28" rx="5" fill="#334155"/>
+    <text x="952" y="559" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.UsuarioMenu (Permisos)</text>
+    <line x1="830" y1="568" x2="1075" y2="568" stroke="#CBD5E1"/>
+    <text x="840" y="587" font-size="10.5" font-weight="bold" fill="#047857">PK  IdUsuarioMenu: int</text>
+    <text x="840" y="605" font-size="10.5" font-weight="bold" fill="#B45309">FK  IdUsuario: int</text>
+    <text x="840" y="623" font-size="10.5" font-weight="bold" fill="#B45309">FK  IdMenu: int</text>
+    <text x="840" y="641" font-size="10.5" fill="#334155">    PuedeVer: bit (= 1)</text>
+    <text x="840" y="659" font-size="10.5" fill="#334155">    PuedeCrear: bit  |  PuedeEditar: bit</text>
+    <text x="840" y="677" font-size="10.5" fill="#334155">    PuedeEliminar: bit</text>
+  </g>
+
+  <!-- Relación Usuario -> UsuarioMenu <- MenuOpciones -->
+  <line x1="952" y1="370" x2="952" y2="540" stroke="#334155" stroke-width="1.8" marker-start="url(#circle-one)" marker-end="url(#crow-many)"/>
+  <line x1="1120" y1="620" x2="1075" y2="620" stroke="#334155" stroke-width="1.8" marker-start="url(#circle-one)" marker-end="url(#crow-many)"/>
+
+  <!-- Tabla Bitacora -->
+  <g filter="url(#shadow-der)">
+    <rect x="830" y="745" width="525" height="150" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="830" y="745" width="525" height="28" rx="5" fill="#78350F"/>
+    <text x="1092" y="764" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">dbo.Bitacora (Trazabilidad e Inmutabilidad)</text>
+    <line x1="830" y1="773" x2="1355" y2="773" stroke="#CBD5E1"/>
+    <text x="840" y="792" font-size="10.5" font-weight="bold" fill="#047857">PK  IdBitacora: int (Identity)</text>
+    <text x="840" y="812" font-size="10.5" fill="#334155">    Fecha: datetime2  |  Usuario: varchar(50)  |  Modulo: varchar(50)</text>
+    <text x="840" y="832" font-size="10.5" fill="#334155">    Accion: varchar(50)  |  Detalles: nvarchar(max)  |  Ip: varchar(45)</text>
+    <text x="840" y="852" font-size="10.5" fill="#334155">    Severidad: varchar(20) (INFO, WARNING, AUDIT, ERROR)</text>
+  </g>
+
+</svg>

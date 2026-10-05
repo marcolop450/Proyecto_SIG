@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using VisorDatosSIG.Application.Interfaces;
 using VisorDatosSIG.Infrastructure.Services;
 
@@ -36,6 +36,17 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.Value?.Contains('.') != true)
+    {
+        context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+        context.Response.Headers.Append("Pragma", "no-cache");
+        context.Response.Headers.Append("Expires", "0");
+    }
+    await next();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

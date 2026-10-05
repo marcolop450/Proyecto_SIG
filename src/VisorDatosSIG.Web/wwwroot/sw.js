@@ -1,7 +1,6 @@
 // Service Worker para VisorDatosSIG PWA (Caché offline de recursos estáticos)
-const CACHE_NAME = 'visordatos-sig-v1';
+const CACHE_NAME = 'visordatos-sig-v2';
 const STATIC_ASSETS = [
-  '/',
   '/favicon.svg',
   '/logo.svg',
   '/manifest.json',
@@ -31,25 +30,29 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Solo aplicar caché a solicitudes GET de recursos estáticos
+  // Solo aplicar caché a solicitudes GET de recursos estáticos puros
   if (event.request.method !== 'GET') return;
+
+  // Las solicitudes de navegación (páginas HTML dinámicas) siempre van directo a la red para preservar la sesión y claims del usuario
+  if (event.request.mode === 'navigate') {
+    return;
+  }
 
   const url = new URL(event.request.url);
 
-  // No almacenar en caché llamadas a la API de datos espaciales ni autenticación
-  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/Account/')) {
+  // No almacenar en caché llamadas a la API de datos espaciales ni autenticación ni controladores dinámicos
+  if (url.pathname.startsWith('/api/') || 
+      url.pathname.startsWith('/Account/') || 
+      url.pathname.startsWith('/Home/') || 
+      url.pathname.startsWith('/Mapa') || 
+      url.pathname.startsWith('/Consultas') || 
+      url.pathname.startsWith('/Admin/')) {
     return;
   }
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(() => {
-        // Si no hay conexión y no está en caché, dejar pasar
-        return caches.match('/');
-      });
+      return cachedResponse || fetch(event.request);
     })
   );
 });
