@@ -365,18 +365,20 @@
                         fillOpacity: 0.08
                     },
                     onEachFeature: function (f, l) {
-                        l.on('click', () => {
+                        l.on('click', (e) => {
+                            const p = f.properties || {};
+                            const latlng = e.latlng || { lat: -16.377, lng: -60.963 };
                             mostrarFichaDesdePropiedades({
-                                nombre: "MANZANA " + (f.properties.MZA || f.properties.UV_MZA || ""),
-                                idSistema: "MZ-" + (f.properties.IdManzana || ""),
+                                nombre: "MANZANA " + (p.mza || p.MZA || p.uv_mza || p.UV_MZA || ""),
+                                idSistema: "MZ-" + (p.id || p.IdManzana || ""),
                                 codFijo: "-",
-                                codSIG: f.properties.UV_MZA || "-",
-                                uv: f.properties.UV || "-",
-                                mza: f.properties.MZA || "-",
+                                codSIG: p.uv_mza || p.UV_MZA || "-",
+                                uv: p.uv || p.UV || "-",
+                                mza: p.mza || p.MZA || "-",
                                 lote: "-",
                                 estado: 1,
-                                latitud: f.properties.Latitud || -16.377,
-                                longitud: f.properties.Longitud || -60.963
+                                latitud: latlng.lat,
+                                longitud: latlng.lng
                             });
                         });
                     }
@@ -396,18 +398,21 @@
                         fillOpacity: 0.18
                     },
                     onEachFeature: function (f, l) {
-                        l.on('click', () => {
+                        l.on('click', (e) => {
+                            const p = f.properties || {};
+                            const latlng = e.latlng || { lat: -16.377, lng: -60.963 };
+                            const nroLote = p.nroLote || p.NroLote || "";
                             mostrarFichaDesdePropiedades({
-                                nombre: "LOTE CATASTRAL " + (f.properties.NroLote || ""),
-                                idSistema: "LT-" + (f.properties.IdLote || ""),
+                                nombre: "LOTE CATASTRAL " + nroLote,
+                                idSistema: "LT-" + (p.id || p.IdLote || ""),
                                 codFijo: "-",
-                                codSIG: f.properties.NroLote || "-",
-                                uv: f.properties.UV || "-",
-                                mza: f.properties.MZA || "-",
-                                lote: f.properties.NroLote || "-",
+                                codSIG: nroLote || "-",
+                                uv: p.uv || p.UV || "-",
+                                mza: p.mza || p.MZA || "-",
+                                lote: nroLote || "-",
                                 estado: 1,
-                                latitud: f.properties.Latitud || -16.377,
-                                longitud: f.properties.Longitud || -60.963
+                                latitud: latlng.lat,
+                                longitud: latlng.lng
                             });
                         });
                     }
@@ -435,18 +440,24 @@
                 rawCodigosFijos = (data.features || []).map(f => {
                     const p = f.properties || {};
                     const coords = f.geometry?.coordinates || [0, 0];
+                    const codFijoVal = p.codFijo || p.CodFijo || p.id || p.IdCodigo;
+                    const uvVal = p.uv || p.UV || "-";
+                    const mzaVal = p.mza || p.MZA || "-";
+                    const loteVal = p.nroLote || p.lote || p.Lote || "-";
+                    const nomVal = (p.nombre || p.Nombre || "SIN TITULAR REGISTRADO").trim();
+                    const estadoVal = p.estado !== undefined ? p.estado : (p.Estado !== undefined ? p.Estado : 1);
                     return {
-                        idCodigo: p.IdCodigo,
-                        codFijo: p.CodFijo,
-                        codSIG: p.CodF_SIG || (p.UV && p.MZA && p.Lote ? `${p.UV}.${p.MZA}.${p.Lote}` : "-"),
-                        nombre: (p.Nombre || "SIN TITULAR REGISTRADO").trim(),
-                        uv: p.UV || "-",
-                        mza: p.MZA || "-",
-                        lote: p.Lote || "-",
-                        estado: p.Estado || 1,
-                        latitud: p.Latitud || coords[1],
-                        longitud: p.Longitud || coords[0],
-                        fechaEstado: p.FechaEstado ? new Date(p.FechaEstado).toLocaleDateString('es-ES') : "22/9/2026"
+                        idCodigo: p.id || p.IdCodigo || codFijoVal,
+                        codFijo: codFijoVal,
+                        codSIG: p.codSIG || p.CodF_SIG || (uvVal !== "-" && mzaVal !== "-" && loteVal !== "-" ? `${uvVal}.${mzaVal}.${loteVal}` : "-"),
+                        nombre: nomVal,
+                        uv: uvVal,
+                        mza: mzaVal,
+                        lote: loteVal,
+                        estado: estadoVal,
+                        latitud: p.latitud || p.Latitud || coords[1],
+                        longitud: p.longitud || p.Longitud || coords[0],
+                        fechaEstado: p.fechaCambioEstado || p.FechaEstado ? String(p.fechaCambioEstado || p.FechaEstado).substring(0, 10) : "2026-10-04"
                     };
                 });
 
@@ -454,6 +465,9 @@
 
                 renderizarCapaCodigosFijos(rawCodigosFijos);
                 renderizarListaCards(rawCodigosFijos);
+
+                // Re-verificar parámetros de URL ahora que los datos ya están en memoria
+                verificarParametrosURL();
             }).catch(e => console.error("Error cargando códigos fijos:", e));
     }
 
@@ -824,19 +838,23 @@
     }
 
     function ejecutarFiltroLateral() {
-        const mza = document.getElementById('selFiltroMza').value.trim();
-        const lote = document.getElementById('selFiltroLote').value.trim();
+        const mza = document.getElementById('selFiltroMza').value.trim().toLowerCase();
+        const lote = document.getElementById('selFiltroLote').value.trim().toLowerCase();
         const texto = document.getElementById('txtBusquedaPredio').value.trim().toLowerCase();
 
         let filtrados = rawCodigosFijos.filter(item => {
             let ok = true;
-            if (mza && item.mza !== mza) ok = false;
-            if (lote && item.lote !== lote) ok = false;
+            if (mza && !String(item.mza || '').toLowerCase().includes(mza)) ok = false;
+            if (lote && !String(item.lote || '').toLowerCase().includes(lote)) ok = false;
             if (texto) {
-                const matchCod = String(item.codFijo || '').includes(texto);
+                const matchCod = String(item.codFijo || '').toLowerCase().includes(texto);
+                const matchId = String(item.idCodigo || '').toLowerCase().includes(texto);
                 const matchNom = String(item.nombre || '').toLowerCase().includes(texto);
                 const matchSIG = String(item.codSIG || '').toLowerCase().includes(texto);
-                if (!matchCod && !matchNom && !matchSIG) ok = false;
+                const matchUV = String(item.uv || '').toLowerCase().includes(texto);
+                const matchMza = String(item.mza || '').toLowerCase().includes(texto);
+                const matchLote = String(item.lote || '').toLowerCase().includes(texto);
+                if (!matchCod && !matchId && !matchNom && !matchSIG && !matchUV && !matchMza && !matchLote) ok = false;
             }
             return ok;
         });
@@ -874,6 +892,7 @@
         map.fitBounds(initialBounds);
     }
 
+    let urlParamProcesado = false;
     function verificarParametrosURL() {
         const urlParams = new URLSearchParams(window.location.search);
         const lat = urlParams.get('lat');
@@ -881,35 +900,64 @@
         const codFijo = urlParams.get('codFijo') || urlParams.get('cod');
         const texto = urlParams.get('texto');
 
-        if (texto) {
+        if (texto && !document.getElementById('txtBusquedaPredio').value) {
             document.getElementById('txtBusquedaPredio').value = texto;
         }
 
+        // Si tenemos coordenadas, volar inmediatamente
         if (lat && lon) {
             const pLat = parseFloat(lat);
             const pLon = parseFloat(lon);
-            map.flyTo([pLat, pLon], 18);
+            if (!isNaN(pLat) && !isNaN(pLon)) {
+                map.flyTo([pLat, pLon], 18);
+            }
+        }
 
-            setTimeout(() => {
-                // Buscar si coincide con algún código fijo
-                const target = rawCodigosFijos.find(c => (codFijo && (c.codFijo == codFijo || c.idCodigo == codFijo)) || (Math.abs(c.latitud - pLat) < 0.0001 && Math.abs(c.longitud - pLon) < 0.0001));
-                if (target) {
-                    seleccionarPredioEnMapa(target);
-                } else {
-                    mostrarFichaDesdePropiedades({
-                        nombre: "PREDIO SELECCIONADO",
-                        idSistema: "GEO-" + Math.round(pLat * 1000),
-                        codFijo: codFijo || "-",
-                        codSIG: "-",
-                        uv: "-",
-                        mza: "-",
-                        lote: "-",
-                        estado: 1,
-                        latitud: pLat,
-                        longitud: pLon
-                    });
+        // Si aún no se han cargado los códigos fijos, esperar a que fetch termine
+        if (!rawCodigosFijos || rawCodigosFijos.length === 0) {
+            return;
+        }
+
+        if (urlParamProcesado) return;
+
+        if (codFijo || (lat && lon)) {
+            const pLat = lat ? parseFloat(lat) : null;
+            const pLon = lon ? parseFloat(lon) : null;
+
+            // Buscar coincidencia exacta por código o proximidad espacial
+            const target = rawCodigosFijos.find(c => {
+                if (codFijo && (String(c.codFijo) === String(codFijo) || String(c.idCodigo) === String(codFijo))) {
+                    return true;
                 }
-            }, 1000);
+                if (pLat !== null && pLon !== null && Math.abs(c.latitud - pLat) < 0.0002 && Math.abs(c.longitud - pLon) < 0.0002) {
+                    return true;
+                }
+                return false;
+            });
+
+            if (target) {
+                urlParamProcesado = true;
+                document.getElementById('txtBusquedaPredio').value = target.codFijo || target.idCodigo;
+                ejecutarFiltroLateral();
+                seleccionarPredioEnMapa(target);
+            } else if (pLat !== null && pLon !== null) {
+                urlParamProcesado = true;
+                mostrarFichaDesdePropiedades({
+                    nombre: "PREDIO SELECCIONADO",
+                    idSistema: "GEO-" + Math.round(pLat * 1000),
+                    codFijo: codFijo || "-",
+                    codSIG: "-",
+                    uv: "-",
+                    mza: "-",
+                    lote: "-",
+                    estado: 1,
+                    latitud: pLat,
+                    longitud: pLon
+                });
+            }
+        } else if (texto) {
+            urlParamProcesado = true;
+            ejecutarFiltroLateral();
         }
     }
 

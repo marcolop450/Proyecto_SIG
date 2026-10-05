@@ -144,6 +144,9 @@ public class GeoDataService : IGeoDataService
             props["nroLote"] = nroLote;
             props["uv"] = uv;
             props["mza"] = mza;
+            props["codSIG"] = codSig ?? (uv != null && mza != null && nroLote != null ? $"{uv}.{mza}.{nroLote}" : "-");
+            props["latitud"] = (double?)r.Latitud;
+            props["longitud"] = (double?)r.Longitud;
         });
     }
 

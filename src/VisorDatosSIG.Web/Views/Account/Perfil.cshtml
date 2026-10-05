@@ -1,61 +1,156 @@
 @using System.Security.Claims
 @{
     ViewData["Title"] = "Mi Perfil";
+    var nombreUsuario = User.Identity?.Name ?? "usuario";
+    var nombreCompleto = User.FindFirst("NombreCompleto")?.Value ?? nombreUsuario;
+    var roles = string.Join(", ", User.FindAll(ClaimTypes.Role).Select(c => c.Value));
+    if (string.IsNullOrWhiteSpace(roles)) roles = "Consultor";
+    var iniciales = string.Concat(nombreCompleto.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0])).ToUpper();
 }
 
-<div class="row mb-3 align-items-center">
-    <div class="col">
-        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">
-            <i class="bi bi-person-badge me-2 text-primary"></i>
-            Mi Perfil de Usuario
-        </h4>
-        <p class="text-muted small mb-0">
-            Información de la cuenta activa, roles autorizados y parámetros de sesión.
-        </p>
+<!-- Encabezado de Perfil Institucional -->
+<div class="card shadow-sm border-0 mb-4 overflow-hidden" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+    <div class="p-4" style="background: linear-gradient(135deg, #24382B 0%, #2E4636 100%); border-bottom: 3px solid var(--accent-gold);">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center justify-content-center fw-bold shadow text-white" 
+                     style="width: 68px; height: 68px; border-radius: 50%; background: #C89D3C; font-size: 1.5rem; letter-spacing: 1px; border: 3px solid rgba(255,255,255,0.4);">
+                    @iniciales
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <h4 class="mb-0 fw-bold text-white">@nombreCompleto</h4>
+                        <span class="badge" style="background: rgba(200,157,60,0.25); color: #F5E6C4; border: 1px solid rgba(200,157,60,0.5); font-size: 0.72rem;">
+                            @roles
+                        </span>
+                    </div>
+                    <div class="text-white-50 small d-flex align-items-center gap-3">
+                        <span><i class="bi bi-person me-1"></i> Usuario: <strong class="text-white">@nombreUsuario</strong></span>
+                        <span><i class="bi bi-geo-alt me-1"></i> Jurisdicción: San Ignacio de Velasco</span>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge py-2 px-3 fw-semibold d-flex align-items-center gap-1" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; font-size: 0.8rem; border-radius: 20px;">
+                    <i class="bi bi-shield-check"></i> Sesión Autorizada
+                </span>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="row g-3">
-    <div class="col-md-6">
-        <div class="card shadow-sm border">
-            <div class="card-header bg-white">
-                <strong class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-circle text-primary"></i>
-                    Datos de la Cuenta
-                </strong>
+<div class="row g-4">
+    <!-- Card 1: Datos de la Cuenta -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <h6 class="card-title m-0 fw-bold d-flex align-items-center gap-2" style="color: #2C2D2A;">
+                    <i class="bi bi-person-badge text-primary"></i>
+                    Información de la Cuenta
+                </h6>
             </div>
-            <div class="card-body small">
-                <table class="table table-sm table-borderless m-0">
-                    <tr><td class="text-muted" style="width: 40%;">Nombre Completo:</td><td><strong>@(User.FindFirst("NombreCompleto")?.Value ?? User.Identity?.Name)</strong></td></tr>
-                    <tr><td class="text-muted">Nombre de Usuario (Login):</td><td><code>@User.Identity?.Name</code></td></tr>
-                    <tr><td class="text-muted">Rol Asignado:</td><td><span class="badge bg-primary">@string.Join(", ", User.FindAll(ClaimTypes.Role).Select(c => c.Value))</span></td></tr>
-                    <tr><td class="text-muted">Tipo de Autenticación:</td><td>Cookies Seguras (.AspNetCore.Cookies)</td></tr>
-                    <tr><td class="text-muted">Algoritmo Criptográfico:</td><td>PBKDF2 HMAC-SHA256 (NIST SP 800-132)</td></tr>
-                    <tr><td class="text-muted">Duración de Sesión:</td><td>2 horas de actividad continua</td></tr>
+            <div class="card-body p-3 p-md-4">
+                <table class="table table-sm table-borderless m-0" style="font-size: 0.88rem;">
+                    <tbody>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2" style="width: 42%;">Nombre Oficial:</td>
+                            <td class="py-2 text-end fw-bold text-dark">@nombreCompleto</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Identificador (Login):</td>
+                            <td class="py-2 text-end">
+                                <code class="fw-bold px-2 py-1 rounded" style="color: #2E4636; background: #F1EFEA;">@nombreUsuario</code>
+                            </td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Rol Asignado:</td>
+                            <td class="py-2 text-end">
+                                <span class="badge" style="background: #2E4636; color: #FFFFFF;">@roles</span>
+                            </td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Área Funcional:</td>
+                            <td class="py-2 text-end text-dark">Catastro y Suministros Municipales</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Nivel de Acceso:</td>
+                            <td class="py-2 text-end">
+                                @if (User.IsInRole("Administrador"))
+                                {
+                                    <span class="badge bg-danger">Administración Total</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Consulta y Georreferenciación</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted py-2">Estado de Cuenta:</td>
+                            <td class="py-2 text-end">
+                                <span class="badge" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;">
+                                    <i class="bi bi-check-circle me-1"></i>Habilitada
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6">
-        <div class="card shadow-sm border">
-            <div class="card-header bg-white">
-                <strong class="d-flex align-items-center gap-2">
-                    <i class="bi bi-key text-primary"></i>
-                    Seguridad de la Cuenta
-                </strong>
+    <!-- Card 2: Seguridad y Gestión de Sesión -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <h6 class="card-title m-0 fw-bold d-flex align-items-center gap-2" style="color: #2C2D2A;">
+                    <i class="bi bi-shield-lock text-primary"></i>
+                    Parámetros de Seguridad y Sesión
+                </h6>
             </div>
-            <div class="card-body small">
-                <div class="alert alert-light border small text-muted mb-3">
-                    Para solicitar el cambio o restablecimiento de su contraseña, comuníquese con el <strong>Administrador del Sistema</strong> mediante el módulo de gestión de usuarios.
+            <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
+                <table class="table table-sm table-borderless m-0 mb-3" style="font-size: 0.88rem;">
+                    <tbody>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2" style="width: 45%;">Mecanismo de Autenticación:</td>
+                            <td class="py-2 text-end text-dark fw-semibold">Cookies Seguras (.AspNetCore.Cookies)</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Algoritmo de Hashing:</td>
+                            <td class="py-2 text-end text-dark">PBKDF2 HMAC-SHA256 (NIST SP 800-132)</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Vigencia de Sesión:</td>
+                            <td class="py-2 text-end text-dark">2 horas de inactividad máxima</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted py-2">Protección CSRF:</td>
+                            <td class="py-2 text-end">
+                                <span class="badge" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;">Activa</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="p-3 rounded-2 mb-3" style="background: #FAF9F5; border: 1px solid #E2DFD6; font-size: 0.82rem;">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-info-circle text-primary mt-1"></i>
+                        <div>
+                            <span class="fw-bold text-dark">Gestión de Claves:</span>
+                            <span class="text-muted d-block">Para solicitar un cambio o restablecimiento de contraseña institucional, contacte al Administrador del Sistema mediante el módulo de gestión de usuarios.</span>
+                        </div>
+                    </div>
                 </div>
-                <form asp-controller="Account" asp-action="Logout" method="post">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">
-                        <i class="bi bi-box-arrow-right"></i>
-                        Cerrar Sesión Activa
-                    </button>
-                </form>
+
+                <div class="d-flex justify-content-end pt-2">
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger d-flex align-items-center gap-2">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Cerrar Sesión Activa</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

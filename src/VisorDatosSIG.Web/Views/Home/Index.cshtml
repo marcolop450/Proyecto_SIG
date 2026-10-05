@@ -1,134 +1,286 @@
-﻿@model VisorDatosSIG.Application.DTOs.EstadisticasCapasDto
+@model VisorDatosSIG.Application.DTOs.EstadisticasCapasDto
 @{
     ViewData["Title"] = "Panel Principal";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 2px solid #E2DFD6;">
+<!-- Encabezado Institucional -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 2px solid #E2DFD6;">
     <div>
-        <h4 class="mb-1" style="font-weight: 700; color: #2C2D2A;">
-            <i class="bi bi-speedometer2 me-2" style="color: var(--primary);"></i>
-            Panel Principal
-        </h4>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <div class="brand-icon-box" style="width: 32px; height: 32px; border-radius: 6px;">
+                <i class="bi bi-speedometer2 text-white" style="font-size: 1.15rem;"></i>
+            </div>
+            <h4 class="mb-0 fw-bold" style="color: #2C2D2A; letter-spacing: -0.3px;">
+                Panel Principal de Control
+            </h4>
+            <span class="badge" style="background-color: #EDE9DF; color: #4B4E47; border: 1px solid #D5D1C6; font-size: 0.75rem;">
+                San Ignacio de Velasco
+            </span>
+        </div>
         <p class="text-muted mb-0" style="font-size: 0.88rem;">
-            Métricas de las capas cartográficas consolidadas en Microsoft SQL Server 2022
+            Métricas oficiales y accesos directos del Sistema de Información Geográfica Catastral y de Servicios.
         </p>
     </div>
-    <div>
-        <a asp-controller="Mapa" asp-action="Index" class="btn btn-olive d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+        <a asp-controller="Mapa" asp-action="Index" class="btn btn-sig-chiquitano d-flex align-items-center gap-2 shadow-sm">
             <i class="bi bi-map"></i>
-            Abrir Visor Cartográfico
+            <span>Abrir Visor Cartográfico</span>
         </a>
     </div>
 </div>
 
+<!-- Tarjetas de Métricas Estadísticas (4 Capas Geoespaciales) -->
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-value">@Model.TotalManzanas.ToString("N0")</div>
-                    <div class="stat-label">Manzanas</div>
+    <!-- Manzanas -->
+    <div class="col-sm-6 col-lg-3">
+        <a asp-controller="Mapa" asp-action="Index" class="text-decoration-none">
+            <div class="card h-100 shadow-sm border-0 stat-card-impeccable" style="border-top: 4px solid #10B981 !important; background: #FFFFFF;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-uppercase fw-bold text-muted" style="font-size: 0.74rem; letter-spacing: 0.5px;">Manzanas Urbanas</span>
+                        <div class="stat-icon-wrap" style="background: rgba(16, 185, 129, 0.12); color: #059669;">
+                            <i class="bi bi-grid-3x3"></i>
+                        </div>
+                    </div>
+                    <div class="fs-2 fw-bold text-dark mb-1" style="line-height: 1.1;">
+                        @Model.TotalManzanas.ToString("N0")
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 mt-2 border-top">
+                        <span class="text-muted small" style="font-size: 0.76rem;">Delimitaciones en SRID 4326</span>
+                        <span class="badge" style="background: #D1FAE5; color: #065F46; font-size: 0.7rem;">Capa Activa</span>
+                    </div>
                 </div>
-                <i class="bi bi-grid-3x3 text-muted" style="font-size: 1.6rem;"></i>
             </div>
-            <div class="text-muted small mt-2">Delimitaciones Urbanas</div>
-        </div>
+        </a>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card card-amber">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-value">@Model.TotalLotes.ToString("N0")</div>
-                    <div class="stat-label">Lotes Catastrales</div>
+
+    <!-- Lotes Catastrales -->
+    <div class="col-sm-6 col-lg-3">
+        <a asp-controller="Consultas" asp-action="Index" class="text-decoration-none">
+            <div class="card h-100 shadow-sm border-0 stat-card-impeccable" style="border-top: 4px solid #C89D3C !important; background: #FFFFFF;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-uppercase fw-bold text-muted" style="font-size: 0.74rem; letter-spacing: 0.5px;">Lotes Catastrales</span>
+                        <div class="stat-icon-wrap" style="background: rgba(200, 157, 60, 0.15); color: #926E1D;">
+                            <i class="bi bi-bounding-box"></i>
+                        </div>
+                    </div>
+                    <div class="fs-2 fw-bold text-dark mb-1" style="line-height: 1.1;">
+                        @Model.TotalLotes.ToString("N0")
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 mt-2 border-top">
+                        <span class="text-muted small" style="font-size: 0.76rem;">Parcelas registradas</span>
+                        <span class="badge" style="background: #FEF3C7; color: #78350F; font-size: 0.7rem;">Total Predios</span>
+                    </div>
                 </div>
-                <i class="bi bi-bounding-box text-muted" style="font-size: 1.6rem;"></i>
             </div>
-            <div class="text-muted small mt-2">Parcelas Urbanas</div>
-        </div>
+        </a>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card card-terracota">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-value">@Model.TotalCodigosFijos.ToString("N0")</div>
-                    <div class="stat-label">Códigos Fijos</div>
+
+    <!-- Códigos Fijos / Medidores -->
+    <div class="col-sm-6 col-lg-3">
+        <a asp-controller="Consultas" asp-action="Index" asp-route-tipoPredio="CON_SUMINISTRO" class="text-decoration-none">
+            <div class="card h-100 shadow-sm border-0 stat-card-impeccable" style="border-top: 4px solid #2E4636 !important; background: #FFFFFF;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-uppercase fw-bold text-muted" style="font-size: 0.74rem; letter-spacing: 0.5px;">Códigos Fijos</span>
+                        <div class="stat-icon-wrap" style="background: rgba(46, 70, 54, 0.12); color: #2E4636;">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                    </div>
+                    <div class="fs-2 fw-bold text-dark mb-1" style="line-height: 1.1;">
+                        @Model.TotalCodigosFijos.ToString("N0")
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 mt-2 border-top">
+                        <span class="text-muted small" style="font-size: 0.76rem;">Puntos de medición de agua</span>
+                        <span class="badge" style="background: #E0E7FF; color: #3730A3; font-size: 0.7rem;">Suministros</span>
+                    </div>
                 </div>
-                <i class="bi bi-geo-alt text-muted" style="font-size: 1.6rem;"></i>
             </div>
-            <div class="text-muted small mt-2">Puntos de Medición</div>
-        </div>
+        </a>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card card-dark">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-value">@Model.TotalVias.ToString("N0")</div>
-                    <div class="stat-label">Red Vial</div>
+
+    <!-- Red Vial -->
+    <div class="col-sm-6 col-lg-3">
+        <a asp-controller="Mapa" asp-action="Index" class="text-decoration-none">
+            <div class="card h-100 shadow-sm border-0 stat-card-impeccable" style="border-top: 4px solid #475569 !important; background: #FFFFFF;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-uppercase fw-bold text-muted" style="font-size: 0.74rem; letter-spacing: 0.5px;">Red Vial Urbana</span>
+                        <div class="stat-icon-wrap" style="background: rgba(71, 85, 105, 0.12); color: #334155;">
+                            <i class="bi bi-signpost-2-fill"></i>
+                        </div>
+                    </div>
+                    <div class="fs-2 fw-bold text-dark mb-1" style="line-height: 1.1;">
+                        @Model.TotalVias.ToString("N0")
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 mt-2 border-top">
+                        <span class="text-muted small" style="font-size: 0.76rem;">Ejes de calles y avenidas</span>
+                        <span class="badge" style="background: #F1F5F9; color: #475569; font-size: 0.7rem;">OpenStreetMap</span>
+                    </div>
                 </div>
-                <i class="bi bi-signpost-2 text-muted" style="font-size: 1.6rem;"></i>
             </div>
-            <div class="text-muted small mt-2">Ejes Viales</div>
-        </div>
+        </a>
     </div>
 </div>
 
+<!-- Sección Operativa: Accesos Directos e Infraestructura Técnica -->
 <div class="row g-4">
-    <div class="col-md-7">
-        <div class="card shadow-sm" style="border: 1px solid #E2DFD6; background: #FFFFFF;">
-            <div class="card-header py-3" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
-                <h6 class="card-title m-0 fw-bold d-flex align-items-center gap-2" style="color: #383B34;">
-                    <i class="bi bi-lightning-charge"></i>
-                    Accesos Directos
+    <!-- Accesos Directos Operativos -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <h6 class="card-title m-0 fw-bold d-flex align-items-center gap-2" style="color: #2C2D2A;">
+                    <i class="bi bi-grid-fill" style="color: var(--accent-gold);"></i>
+                    Módulos y Operaciones Rápidas
                 </h6>
+                <span class="small text-muted">Acceso directo</span>
             </div>
-            <div class="card-body p-4">
-                <p class="text-muted" style="font-size: 0.9rem;">
-                    Seleccione un módulo operativo para comenzar la navegación cartográfica o la consulta de predios:
-                </p>
-                <div class="d-flex flex-wrap gap-2 mt-3">
-                    <a asp-controller="Mapa" asp-action="Index" class="btn btn-olive px-4 py-2 d-flex align-items-center gap-2">
-                        <i class="bi bi-map"></i>
-                        Explorar Mapa y Capas
-                    </a>
-                    <a asp-controller="Consultas" asp-action="Index" class="btn btn-sand px-4 py-2 d-flex align-items-center gap-2">
-                        <i class="bi bi-search"></i>
-                        Consulta Temática
-                    </a>
+            <div class="card-body p-3 p-md-4">
+                <div class="row g-3">
+                    <!-- Tarjeta 1: Visor Cartográfico -->
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100 d-flex flex-column justify-content-between bg-light bg-opacity-50 hover-lift">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <div class="brand-icon-box" style="width: 28px; height: 28px; border-radius: 4px;">
+                                        <i class="bi bi-map text-white small"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0 text-dark">Visor Cartográfico</h6>
+                                </div>
+                                <p class="text-muted small mb-3">
+                                    Navegación espacial interactiva con capas de manzanas, parcelas, vías y puntos de servicio.
+                                </p>
+                            </div>
+                            <a asp-controller="Mapa" asp-action="Index" class="btn btn-sm btn-sig-chiquitano d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-arrow-right-circle"></i> Explorar Mapa
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2: Consulta Temática -->
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100 d-flex flex-column justify-content-between bg-light bg-opacity-50 hover-lift">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <div class="brand-icon-box" style="width: 28px; height: 28px; border-radius: 4px; background: #C89D3C;">
+                                        <i class="bi bi-search text-white small"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0 text-dark">Consulta Temática</h6>
+                                </div>
+                                <p class="text-muted small mb-3">
+                                    Búsqueda tabular multicriterio por código fijo, titular, UV, Manzana y estado de suministro.
+                                </p>
+                            </div>
+                            <a asp-controller="Consultas" asp-action="Index" class="btn btn-sm btn-sand d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-table"></i> Buscar Predios
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 3: Filtro Para Corte -->
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100 d-flex flex-column justify-content-between bg-light bg-opacity-50 hover-lift">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge" style="background-color: #FEF3C7; color: #78350F; border: 1px solid #FDE68A;">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>Mora
+                                    </span>
+                                    <h6 class="fw-bold mb-0 text-dark">Para Corte</h6>
+                                </div>
+                                <p class="text-muted small mb-3">
+                                    Filtrado inmediato de predios con facturación vencida sujetos a suspensión de servicio.
+                                </p>
+                            </div>
+                            <a asp-controller="Consultas" asp-action="Index" asp-route-tipoPredio="PARA_CORTE" class="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center gap-1 text-dark fw-semibold">
+                                <i class="bi bi-funnel"></i> Ver Para Corte
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 4: Filtro Cortados -->
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100 d-flex flex-column justify-content-between bg-light bg-opacity-50 hover-lift">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge" style="background-color: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;">
+                                        <i class="bi bi-slash-circle me-1"></i>Corte
+                                    </span>
+                                    <h6 class="fw-bold mb-0 text-dark">Servicio Cortado</h6>
+                                </div>
+                                <p class="text-muted small mb-3">
+                                    Padrón de medidores cortados físicamente en campo para inspección y reconexión.
+                                </p>
+                            </div>
+                            <a asp-controller="Consultas" asp-action="Index" asp-route-tipoPredio="CORTADO" class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-eye"></i> Ver Cortados
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-5">
-        <div class="card shadow-sm" style="border: 1px solid #E2DFD6; background: #FFFFFF;">
-            <div class="card-header py-3" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
-                <h6 class="card-title m-0 fw-bold d-flex align-items-center gap-2" style="color: #383B34;">
-                    <i class="bi bi-hdd-network"></i>
-                    Infraestructura de Datos
+    <!-- Infraestructura de Datos Técnicos -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4 d-flex justify-content-between align-items-center" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <h6 class="card-title m-0 fw-bold d-flex align-items-center gap-2" style="color: #2C2D2A;">
+                    <i class="bi bi-hdd-network text-primary"></i>
+                    Infraestructura Tecnológica
                 </h6>
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.72rem;">
+                    Conectado
+                </span>
             </div>
-            <div class="card-body p-3">
-                <ul class="list-unstyled mb-0" style="font-size: 0.88rem;">
-                    <li class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Motor Espacial:</span>
-                        <strong class="text-success d-flex align-items-center gap-1">
-                            <i class="bi bi-check-circle-fill"></i>
-                            SQL Server 2022
-                        </strong>
-                    </li>
-                    <li class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Base de Datos:</span>
-                        <code>VisorDatosSIG</code>
-                    </li>
-                    <li class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Sistema de Coordenadas:</span>
-                        <span class="badge" style="background-color: #5E7A4A;">WGS 84 (SRID 4326)</span>
-                    </li>
-                    <li class="d-flex justify-content-between py-2">
-                        <span class="text-muted">Servicios GeoJSON:</span>
-                        <span class="badge" style="background-color: #5E7A4A;">Operativos</span>
-                    </li>
-                </ul>
+            <div class="card-body p-3 p-md-4">
+                <table class="table table-sm table-borderless m-0" style="font-size: 0.85rem;">
+                    <tbody>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2" style="width: 45%;">Motor Espacial:</td>
+                            <td class="py-2 text-end">
+                                <span class="fw-bold text-dark d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-database-check text-success"></i> Microsoft SQL Server 2022
+                                </span>
+                            </td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Base de Datos:</td>
+                            <td class="py-2 text-end"><code class="fw-bold" style="color: #2E4636; background: #F1EFEA; padding: 2px 6px; border-radius: 4px;">VisorDatosSIG</code></td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Sistema Referencia:</td>
+                            <td class="py-2 text-end"><span class="badge" style="background-color: #2E4636; color: #FFFFFF;">WGS 84 (SRID 4326)</span></td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Backend Framework:</td>
+                            <td class="py-2 text-end"><span class="fw-semibold text-dark">ASP.NET Core 8 (.NET 8.0)</span></td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Librería SIG / Topología:</td>
+                            <td class="py-2 text-end"><span class="fw-semibold text-dark">NetTopologySuite + Leaflet</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted py-2">Servicios GeoJSON:</td>
+                            <td class="py-2 text-end">
+                                <span class="badge" style="background-color: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0;">
+                                    <i class="bi bi-check2-circle me-1"></i>4 Capas Operativas
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="p-3 mt-3 rounded-2" style="background-color: #FAF9F5; border: 1px solid #E2DFD6; font-size: 0.8rem;">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-shield-check text-primary mt-1"></i>
+                        <div>
+                            <span class="fw-bold text-dark">Seguridad y Respaldo Institucional:</span>
+                            <span class="text-muted d-block mt-0">Auditoría transaccional de estados de medidores activa en bitácora de base de datos.</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

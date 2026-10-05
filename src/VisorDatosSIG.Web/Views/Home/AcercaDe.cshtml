@@ -2,83 +2,184 @@
     ViewData["Title"] = "Acerca del Sistema";
 }
 
-<div class="row mb-3 align-items-center">
-    <div class="col">
-        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">
-            <i class="bi bi-info-circle me-2 text-primary"></i>
-            Acerca del Sistema
-        </h4>
-        <p class="text-muted small mb-0">
-            Ficha técnica del proyecto integrador, institución académica y equipo de desarrollo.
+<!-- Encabezado Institucional -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 2px solid #E2DFD6;">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <div class="brand-icon-box" style="width: 32px; height: 32px; border-radius: 6px;">
+                <i class="bi bi-info-circle text-white" style="font-size: 1.15rem;"></i>
+            </div>
+            <h4 class="mb-0 fw-bold" style="color: #2C2D2A;">
+                Acerca del Sistema de Información Geográfica
+            </h4>
+        </div>
+        <p class="text-muted mb-0" style="font-size: 0.88rem;">
+            Ficha técnica oficial del proyecto integrador, institución académica y equipo de desarrollo.
         </p>
+    </div>
+    <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+        <span class="badge py-2 px-3 fw-semibold" style="background-color: #2E4636; color: #FFFFFF; border-radius: 20px;">
+            Versión 2.0 Oficial
+        </span>
     </div>
 </div>
 
-<div class="row g-3">
-    <!-- Información Académica -->
-    <div class="col-md-6">
-        <div class="card shadow-sm border h-100">
-            <div class="card-header bg-white">
-                <strong class="d-flex align-items-center gap-2">
-                    <img src="~/logo.svg" alt="UAGRM" style="width: 20px; height: 20px;" />
-                    Información Institucional
-                </strong>
+<div class="row g-4 mb-4">
+    <!-- Información Institucional y Académica -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong class="d-flex align-items-center gap-2 text-dark">
+                        <img src="~/logo.svg" alt="UAGRM" style="width: 22px; height: 22px;" />
+                        Información Académica e Institucional
+                    </strong>
+                    <span class="badge" style="background: #EDE9DF; color: #4B4E47; border: 1px solid #D5D1C6;">INF442</span>
+                </div>
             </div>
-            <div class="card-body small">
-                <table class="table table-sm table-borderless m-0">
-                    <tr><td class="text-muted" style="width: 35%;">Universidad:</td><td><strong>Universidad Autónoma Gabriel René Moreno (UAGRM)</strong></td></tr>
-                    <tr><td class="text-muted">Facultad:</td><td>Facultad de Ingeniería en Ciencias de la Computación y Telecomunicaciones (FICCT)</td></tr>
-                    <tr><td class="text-muted">Materia:</td><td><strong>[2-2026] SISTEMAS DE INFORM.GEOGRAFICA - DI INF442</strong></td></tr>
-                    <tr><td class="text-muted">Docente:</td><td><strong>Ing. PEREZ FERREIRA UBALDO</strong></td></tr>
-                    <tr><td class="text-muted">Semestre:</td><td>Semestre 2 - 2026</td></tr>
-                    <tr><td class="text-muted">Modalidad:</td><td>Proyecto Grupal Integrador</td></tr>
-                    <tr><td class="text-muted">Versión:</td><td>VisorDatosSIG 2026 v2.0 (Build .NET 8 / SQL Server 2022)</td></tr>
+            <div class="card-body p-3 p-md-4">
+                <table class="table table-sm table-borderless m-0" style="font-size: 0.88rem;">
+                    <tbody>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2" style="width: 35%;">Universidad:</td>
+                            <td class="py-2 text-dark fw-bold">Universidad Autónoma Gabriel René Moreno (UAGRM)</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Facultad:</td>
+                            <td class="py-2 text-dark">Facultad de Ingeniería en Ciencias de la Computación y Telecomunicaciones (FICCT)</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Materia:</td>
+                            <td class="py-2 text-dark fw-bold">[2-2026] SISTEMAS DE INFORM.GEOGRAFICA - DI INF442</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Docente:</td>
+                            <td class="py-2 text-dark fw-bold">Ing. PEREZ FERREIRA UBALDO</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Semestre:</td>
+                            <td class="py-2 text-dark">Semestre 2 - 2026</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-muted py-2">Ámbito Geográfico:</td>
+                            <td class="py-2 text-dark">Municipio de San Ignacio de Velasco, Santa Cruz, Bolivia</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted py-2">Plataforma:</td>
+                            <td class="py-2 text-dark">VisorDatosSIG v2.0 (.NET 8 + SQL Server 2022 Spatial)</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Integrantes del Proyecto -->
-    <div class="col-md-6">
-        <div class="card shadow-sm border h-100">
-            <div class="card-header bg-white">
-                <strong class="d-flex align-items-center gap-2">
-                    <i class="bi bi-people text-primary"></i>
-                    Equipo de Desarrollo
-                </strong>
+    <!-- Integrantes del Equipo de Desarrollo (Orden Alfabético Estricto) -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong class="d-flex align-items-center gap-2 text-dark">
+                        <i class="bi bi-people-fill text-primary"></i>
+                        Equipo de Desarrollo
+                    </strong>
+                    <span class="badge" style="background: #2E4636; color: #FFFFFF;">4 Integrantes</span>
+                </div>
             </div>
             <div class="card-body p-0">
-                <table class="table table-sm table-hover align-middle m-0" style="font-size: 0.88rem;">
-                    <thead style="background: #FAF9F5;">
+                <table class="table table-hover align-middle m-0" style="font-size: 0.88rem;">
+                    <thead style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
                         <tr>
-                            <th class="ps-3 text-center" style="width: 10%;">#</th>
-                            <th>Integrante</th>
-                            <th class="text-center pe-3">Registro</th>
+                            <th class="ps-3 text-center" style="width: 12%;">#</th>
+                            <th>Apellidos y Nombres</th>
+                            <th class="text-center pe-3" style="width: 25%;">Registro</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="ps-3 text-center fw-bold">1</td>
-                            <td><strong>Guzman Justiniano</strong>, Nohelia</td>
-                            <td class="text-center pe-3"><code>222049367</code></td>
+                            <td class="ps-3 text-center fw-bold text-muted">1</td>
+                            <td>
+                                <div class="fw-bold text-dark">Guzman Justiniano, Nohelia</div>
+                                <small class="text-muted">Desarrollo y Documentación SIG</small>
+                            </td>
+                            <td class="text-center pe-3">
+                                <code class="px-2 py-1 rounded fw-bold" style="background: #F1EFEA; color: #2E4636;">222049367</code>
+                            </td>
                         </tr>
                         <tr>
-                            <td class="ps-3 text-center fw-bold">2</td>
-                            <td><strong>Jimenez Duarte</strong>, Nils Jonathan</td>
-                            <td class="text-center pe-3"><code>222008741</code></td>
+                            <td class="ps-3 text-center fw-bold text-muted">2</td>
+                            <td>
+                                <div class="fw-bold text-dark">Jimenez Duarte, Nils Jonathan</div>
+                                <small class="text-muted">Desarrollo Backend y Arquitectura</small>
+                            </td>
+                            <td class="text-center pe-3">
+                                <code class="px-2 py-1 rounded fw-bold" style="background: #F1EFEA; color: #2E4636;">222008741</code>
+                            </td>
                         </tr>
                         <tr>
-                            <td class="ps-3 text-center fw-bold">3</td>
-                            <td><strong>López Velásquez</strong>, Marco Alejandro</td>
-                            <td class="text-center pe-3"><code>222008891</code></td>
+                            <td class="ps-3 text-center fw-bold text-muted">3</td>
+                            <td>
+                                <div class="fw-bold text-dark">López Velásquez, Marco Alejandro</div>
+                                <small class="text-muted">Desarrollo Frontend y Cartografía</small>
+                            </td>
+                            <td class="text-center pe-3">
+                                <code class="px-2 py-1 rounded fw-bold" style="background: #F1EFEA; color: #2E4636;">222008891</code>
+                            </td>
                         </tr>
                         <tr>
-                            <td class="ps-3 text-center fw-bold">4</td>
-                            <td><strong>Quispe Tito</strong>, Jorge Gabriel</td>
-                            <td class="text-center pe-3"><code>222009527</code></td>
+                            <td class="ps-3 text-center fw-bold text-muted">4</td>
+                            <td>
+                                <div class="fw-bold text-dark">Quispe Tito, Jorge Gabriel</div>
+                                <small class="text-muted">Base de Datos Espacial y Migraciones</small>
+                            </td>
+                            <td class="text-center pe-3">
+                                <code class="px-2 py-1 rounded fw-bold" style="background: #F1EFEA; color: #2E4636;">222009527</code>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tarjeta de Arquitectura y Componentes Técnicos -->
+<div class="card shadow-sm border-0" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+    <div class="card-header py-3 px-3 px-md-4" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+        <h6 class="card-title m-0 fw-bold d-flex align-items-center gap-2" style="color: #2C2D2A;">
+            <i class="bi bi-stack text-primary"></i>
+            Arquitectura y Componentes Técnicos
+        </h6>
+    </div>
+    <div class="card-body p-3 p-md-4">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="p-3 border rounded-2 h-100 bg-light bg-opacity-50">
+                    <div class="text-muted small text-uppercase fw-bold mb-1">Capa de Datos</div>
+                    <div class="fw-bold text-dark mb-1">SQL Server 2022 Spatial</div>
+                    <p class="text-muted small mb-0">Tablas espaciales con columnas <code>geography/geometry</code> y métodos OGC (STAsText, STCentroid).</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded-2 h-100 bg-light bg-opacity-50">
+                    <div class="text-muted small text-uppercase fw-bold mb-1">Backend</div>
+                    <div class="fw-bold text-dark mb-1">ASP.NET Core 8 (.NET 8)</div>
+                    <p class="text-muted small mb-0">Arquitectura limpia con Dapper, NetTopologySuite y serialización GeoJSON optimizada.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded-2 h-100 bg-light bg-opacity-50">
+                    <div class="text-muted small text-uppercase fw-bold mb-1">Frontend GIS</div>
+                    <div class="fw-bold text-dark mb-1">Leaflet 1.9.4 + Canvas</div>
+                    <p class="text-muted small mb-0">Motor de renderizado por hardware para 6,271 puntos de medición y 15,280 parcelas catastrales.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded-2 h-100 bg-light bg-opacity-50">
+                    <div class="text-muted small text-uppercase fw-bold mb-1">Seguridad</div>
+                    <div class="fw-bold text-dark mb-1">RBAC + PBKDF2</div>
+                    <p class="text-muted small mb-0">Autenticación por cookies seguras, hashing criptográfico de contraseñas y bitácora de auditoría.</p>
+                </div>
             </div>
         </div>
     </div>

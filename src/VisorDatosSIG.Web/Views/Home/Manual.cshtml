@@ -1,76 +1,193 @@
 @{
-    ViewData["Title"] = "Manual de Usuario";
+    ViewData["Title"] = "Manual de Operación";
 }
 
-<div class="row mb-3 align-items-center">
-    <div class="col">
-        <h4 class="m-0" style="font-weight: 700; color: #2C2D2A;">
-            <i class="bi bi-book me-2 text-primary"></i>
-            Manual de Usuario e Instrucciones de Operación
-        </h4>
-        <p class="text-muted small mb-0">
-            Guía paso a paso para el uso del Visor Cartográfico, Consultas Temáticas y Exportación de Datos.
+<!-- Encabezado Institucional -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3" style="border-bottom: 2px solid #E2DFD6;">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <div class="brand-icon-box" style="width: 32px; height: 32px; border-radius: 6px;">
+                <i class="bi bi-book-half text-white" style="font-size: 1.15rem;"></i>
+            </div>
+            <h4 class="mb-0 fw-bold" style="color: #2C2D2A;">
+                Manual de Usuario e Instrucciones de Operación
+            </h4>
+        </div>
+        <p class="text-muted mb-0" style="font-size: 0.88rem;">
+            Guía oficial paso a paso para el uso del Visor Cartográfico, Consultas Temáticas y Gestión de Estados.
         </p>
+    </div>
+    <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+        <a asp-controller="Mapa" asp-action="Index" class="btn btn-sig-chiquitano d-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-map"></i>
+            <span>Ir al Visor Cartográfico</span>
+        </a>
     </div>
 </div>
 
-<div class="row g-3">
-    <div class="col-md-4">
-        <div class="card shadow-sm border h-100">
-            <div class="card-header bg-white">
-                <strong class="d-flex align-items-center gap-2">
-                    <i class="bi bi-map text-primary"></i>
-                    1. Navegación en el Mapa
-                </strong>
+<div class="row g-4 mb-4">
+    <!-- Módulo 1: Navegación Cartográfica -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge" style="background: #2E4636; color: #FFFFFF; font-size: 0.72rem;">Módulo 01</span>
+                    <i class="bi bi-map" style="color: var(--accent-gold); font-size: 1.2rem;"></i>
+                </div>
+                <h6 class="fw-bold mb-0 mt-2 text-dark">Navegación Cartográfica</h6>
             </div>
-            <div class="card-body small">
-                <p>El visor cartográfico permite interactuar con la cartografía urbana de San Ignacio de Velasco:</p>
-                <ul>
-                    <li><strong>Zoom y Desplazamiento:</strong> Use la rueda del ratón o los controles táctiles de pellizco para acercar o alejar.</li>
-                    <li><strong>Control de Capas:</strong> Use el panel flotante lateral para encender/apagar Manzanas, Lotes, Códigos Fijos y Vías.</li>
-                    <li><strong>Opacidad de Lotes:</strong> Deslice el control de 0% a 100% para transparentar el relleno y visualizar el mapa satelital base.</li>
-                    <li><strong>Extensión General:</strong> Haga clic en "Extensión" para regresar a la vista panorámica de la ciudad.</li>
-                    <li><strong>Geolocalización GPS:</strong> Presione "Ubicación" para centrar el mapa en su posición actual en terreno.</li>
+            <div class="card-body p-3 p-md-4">
+                <p class="text-muted small mb-3">
+                    Herramientas de inspección visual en el entorno espacial de San Ignacio de Velasco:
+                </p>
+                <ul class="list-unstyled small d-flex flex-column gap-3 mb-0">
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-zoom-in text-primary mt-1"></i>
+                        <div>
+                            <strong>Zoom y Desplazamiento:</strong> Utilice la rueda del ratón o el gesto táctil de pellizco en dispositivos móviles.
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-layers text-primary mt-1"></i>
+                        <div>
+                            <strong>Control de Capas:</strong> Conmute visibilidad de Manzanas (verde), Lotes (dorado), Códigos Fijos y Red Vial desde la barra lateral.
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-globe-americas text-primary mt-1"></i>
+                        <div>
+                            <strong>Mapas Base:</strong> Alterne entre OpenStreetMap, Relieve Topográfico y Satélite ESRI según la necesidad de campo.
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-arrows-fullscreen text-primary mt-1"></i>
+                        <div>
+                            <strong>Extensión General:</strong> Restablezca la panorámica urbana completa de la ciudad con un solo clic.
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm border h-100">
-            <div class="card-header bg-white">
-                <strong class="d-flex align-items-center gap-2">
-                    <i class="bi bi-search text-primary"></i>
-                    2. Búsqueda y Filtros
-                </strong>
+    <!-- Módulo 2: Consultas y Filtros -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge" style="background: #C89D3C; color: #FFFFFF; font-size: 0.72rem;">Módulo 02</span>
+                    <i class="bi bi-search" style="color: var(--accent-gold); font-size: 1.2rem;"></i>
+                </div>
+                <h6 class="fw-bold mb-0 mt-2 text-dark">Búsqueda y Filtros Temáticos</h6>
             </div>
-            <div class="card-body small">
-                <p>El módulo de consultas temáticas ofrece herramientas de filtrado multicriterio:</p>
-                <ul>
-                    <li><strong>Selector de Predios:</strong> Filtre entre "Todos los Predios (15,280)", "Con Suministro (5,118)" o "Sin Medidor / Baldíos (11,333)".</li>
-                    <li><strong>Búsqueda por Texto:</strong> Ingrese el código fijo o nombre del titular para coincidencias instantáneas.</li>
-                    <li><strong>Filtros por UV y Manzana:</strong> Seleccione una UV en el ComboBox y la lista de Manzanas se actualizará automáticamente.</li>
-                    <li><strong>Paginación:</strong> Navegue en bloques de a 20 registros con controles "Anterior" y "Siguiente".</li>
+            <div class="card-body p-3 p-md-4">
+                <p class="text-muted small mb-3">
+                    Filtrado multicriterio de predios catastrales y suministros de agua:
+                </p>
+                <ul class="list-unstyled small d-flex flex-column gap-3 mb-0">
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-input-cursor-text text-primary mt-1"></i>
+                        <div>
+                            <strong>Búsqueda por Texto:</strong> Ingrese el Código Fijo (ej. 4936) o nombre de titular para coincidencias instantáneas.
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-funnel text-primary mt-1"></i>
+                        <div>
+                            <strong>Filtros por Territorio:</strong> Seleccione Unidad Vecinal (UV), Manzana (Mza) o Nro. de Lote.
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-toggles text-primary mt-1"></i>
+                        <div>
+                            <strong>Estado del Servicio:</strong> Filtre entre Normal (Activo), Para Corte (Mora), Cortado (Suspendido) o Baldíos.
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-arrow-repeat text-primary mt-1"></i>
+                        <div>
+                            <strong>Paginación Ágil:</strong> Navegación en bloques de a 20 registros con recuento global dinámico.
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm border h-100">
-            <div class="card-header bg-white">
-                <strong class="d-flex align-items-center gap-2">
-                    <i class="bi bi-file-earmark-arrow-down text-primary"></i>
-                    3. Ficha Técnica y Exportación
-                </strong>
+    <!-- Módulo 3: Ficha Técnica y Operación -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 h-100" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+            <div class="card-header py-3 px-3 px-md-4" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge" style="background: #475569; color: #FFFFFF; font-size: 0.72rem;">Módulo 03</span>
+                    <i class="bi bi-card-checklist" style="color: var(--accent-gold); font-size: 1.2rem;"></i>
+                </div>
+                <h6 class="fw-bold mb-0 mt-2 text-dark">Ficha y Gestión de Estados</h6>
             </div>
-            <div class="card-body small">
-                <p>Visualización de atributos y descarga de datos oficiales:</p>
-                <ul>
-                    <li><strong>Identificación por Clic:</strong> Al hacer clic en un lote o medidor, se abre la Ficha Técnica con coordenadas y titular.</li>
-                    <li><strong>Vínculo Bidireccional:</strong> Al hacer clic en "Ver en Mapa" en la tabla, el visor viaja automáticamente a la entidad resaltándola con un círculo dorado.</li>
-                    <li><strong>Exportación a CSV:</strong> Haga clic en "Exportar CSV" para descargar todos los predios que cumplen con el filtro activo, sin límite de paginación.</li>
+            <div class="card-body p-3 p-md-4">
+                <p class="text-muted small mb-3">
+                    Inspección detallada y actualización operativa en campo:
+                </p>
+                <ul class="list-unstyled small d-flex flex-column gap-3 mb-0">
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-geo-alt-fill text-primary mt-1"></i>
+                        <div>
+                            <strong>Selección en Mapa:</strong> Al hacer clic en un medidor o lote, se despliega la Ficha Catastral flotante.
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-arrow-left-right text-primary mt-1"></i>
+                        <div>
+                            <strong>Vínculo Bidireccional:</strong> Al pulsar "Mapa" en la tabla, el visor vuela a la entidad resaltándola con un anillo dorado.
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-check2-circle text-primary mt-1"></i>
+                        <div>
+                            <strong>Modificar Estado:</strong> Actualice estados de suministro (Normal, Para Corte, Cortado) con registro de auditoría.
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-file-earmark-spreadsheet text-primary mt-1"></i>
+                        <div>
+                            <strong>Exportación CSV:</strong> Descargue el padrón completo según los filtros activos para informes de gestión.
+                        </div>
+                    </li>
                 </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Guía de Atajos y Consejos Prácticos -->
+<div class="card shadow-sm border-0" style="background: #FFFFFF; border: 1px solid #E2DFD6 !important; border-radius: 8px;">
+    <div class="card-header py-3 px-3 px-md-4" style="background: #FAF9F5; border-bottom: 1px solid #E2DFD6;">
+        <h6 class="card-title m-0 fw-bold d-flex align-items-center gap-2" style="color: #2C2D2A;">
+            <i class="bi bi-lightbulb text-primary"></i>
+            Recomendaciones para Trabajo de Campo
+        </h6>
+    </div>
+    <div class="card-body p-3 p-md-4">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="p-3 rounded-2 h-100" style="background: #FAF9F5; border-left: 3px solid #2E4636;">
+                    <div class="fw-bold text-dark mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-phone"></i> Uso en Teléfonos Móviles y Tablets
+                    </div>
+                    <p class="text-muted small mb-0">
+                        En dispositivos móviles, utilice el botón <strong>"Filtros y Capas"</strong> situado arriba a la izquierda. Al seleccionar un predio, el panel se cerrará automáticamente para mostrar el mapa y la ficha en la parte inferior de la pantalla.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 rounded-2 h-100" style="background: #FAF9F5; border-left: 3px solid #C89D3C;">
+                    <div class="fw-bold text-dark mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-shield-lock"></i> Trazabilidad y Seguridad
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Cada actualización de estado efectuada desde el mapa o tabla registra el usuario que realizó la acción, la fecha y hora exacta, garantizando el cumplimiento de las normativas de la cooperativa de agua potable.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
